@@ -53,7 +53,7 @@ def index() -> str:
 # requests.post("http://127.0.0.1:30015/parse", json={"href": "https://texty.org.ua/articles/feed.xml"}).text
 @app.post("/parse")
 def parse(
-    payload: dict[str, str]
+    payload: dict[str, str | bool]
 ) -> list[Update]:
     "Parse one feed by URL"
     results = parse_href(payload['href'])
