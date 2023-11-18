@@ -4,7 +4,7 @@ from enum import Enum
 from fastapi import FastAPI, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
-from parsers.base import parse_href
+import parsers.base as parser_base
 
 
 app = FastAPI(
@@ -55,10 +55,11 @@ def index() -> str:
 def parse(
     payload: dict[str, str | bool]
 ) -> list[Update]:
-    "Parse one feed by URL"
-    results = parse_href(payload['href'])
+    "Parse one feed by URL."
+    results = parser_base.parse_href(
+        href=payload['href'],
+    )
 
-    print(results)
     return results
 
 
