@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 import parsers.base as parser_base
+import parsers.base_async as parser_base_async
 
 
 app = FastAPI(
@@ -50,31 +51,29 @@ def index() -> str:
 
 # python3
 # import requests
-# requests.post("http://127.0.0.1:30015/parse", json={"href": "https://texty.org.ua/articles/feed.xml"}).text
-@app.post("/parse")
+# requests.get("http://127.0.0.1:30015/parse?href=https://texty.org.ua/articles/feed.xml").text
+@app.get("/parse/")
 def parse(
-    payload: dict[str, str | bool]
+    href: str,
 ) -> list[Update]:
     "Parse one feed by URL."
     results = parser_base.parse_href(
-        href=payload['href'],
+        href=href,
     )
 
     return results
 
 
-# @app.post("/runner")
-# def runner():
-#     "Parse multiple feeds"
-
-
-@app.post("/parse/async")
+# python3
+# import requests
+# requests.get("http://127.0.0.1:30015/parse/async?href=https://texty.org.ua/articles/feed.xml").text
+@app.get("/parse/async")
 async def parse_async(
-    payload: dict[str, str | bool]
+    href: str,
 ) -> list[Update]:
     "Parse one feed by URL. Asynchronously."
     results = await parser_base_async.parse_href(
-        href=payload['href'],
+        href=href,
     )
 
     return results
