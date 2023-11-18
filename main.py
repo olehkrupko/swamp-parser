@@ -66,3 +66,15 @@ def parse(
 # @app.post("/runner")
 # def runner():
 #     "Parse multiple feeds"
+
+
+@app.post("/parse/async")
+async def parse_async(
+    payload: dict[str, str | bool]
+) -> list[Update]:
+    "Parse one feed by URL. Asynchronously."
+    results = await parser_base_async.parse_href(
+        href=payload['href'],
+    )
+
+    return results
