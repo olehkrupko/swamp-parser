@@ -206,19 +206,14 @@ async def parse_href(href: str, **kwargs: dict):
             async with session.get(
                 href,
                 headers=headers,
+                # ssl=False,
             ) as response:
+                # ssl._create_default_https_context = getattr(
+                #     ssl, "_create_unverified_context"
+                # )
                 rss_str = await response.read()
 
-        # try:
         request = feedparser.parse(rss_str)
-        # except urllib.error.URLError:
-        #     ssl._create_default_https_context = getattr(
-        #         ssl, "_create_unverified_context"
-        #     )
-        #     request = feedparser.parse(
-        #         href,
-        #         request_headers=headers,
-        #     )
 
         for each in request["items"]:
             if not each:
