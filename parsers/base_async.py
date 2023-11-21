@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from typing import List, Dict
 
 import aiohttp
+import feedparser
 
 # import requests
 # from bs4 import BeautifulSoup, SoupStrainer
@@ -47,7 +48,7 @@ async def parse_href(href: str, **kwargs: dict):
 
         href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}&format=Atom"
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
             processed=True,
         )
@@ -102,7 +103,7 @@ async def parse_href(href: str, **kwargs: dict):
         href_base = "https://proxitok.pabloferreiro.es"
         href = f"{href_base}/@{ href.split('@')[-1] }/rss"
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
         )
 
@@ -119,7 +120,7 @@ async def parse_href(href: str, **kwargs: dict):
         href_base = "https://www.youtube.com/feeds/videos.xml"
         href = f"{href_base}?channel_id={href[32:-7]}"
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
         )
 
@@ -129,7 +130,7 @@ async def parse_href(href: str, **kwargs: dict):
         name = href[22:]
         href = "feed://readmanga.live/rss/manga?name=" + name
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
         )
 
@@ -148,7 +149,7 @@ async def parse_href(href: str, **kwargs: dict):
         name = href[21:]
         href = "feed://mintmanga.com/rss/manga?name=" + name
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
             processed=True,
         )
@@ -166,7 +167,7 @@ async def parse_href(href: str, **kwargs: dict):
         href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
         href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
 
-        results = parse_href(
+        results = await parse_href(
             href=href,
             processed=True,
         )
@@ -204,8 +205,7 @@ async def parse_href(href: str, **kwargs: dict):
     else:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                url,
-                params=payload,
+                href,
                 headers=headers,
             ) as response:
                 rss_str = await response.read()
@@ -223,13 +223,13 @@ async def parse_href(href: str, **kwargs: dict):
 
         for each in request["items"]:
             if not each:
-                message = f"Feed {self=} is empty, skipping"
+                message = f"Feed {href=} is empty, skipping"
                 print(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                print(f"Data missing URL, skipping item {self=} {each=}")
+                print(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates

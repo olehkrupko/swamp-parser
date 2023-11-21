@@ -67,7 +67,7 @@ def parse(
 # python3
 # import requests
 # requests.get("http://127.0.0.1:30015/parse/async?href=https://texty.org.ua/articles/feed.xml").text
-@app.get("/parse/async")
+@app.get("/parse/async/")
 async def parse_async(
     href: str,
 ) -> list[Update]:

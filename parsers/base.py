@@ -227,13 +227,13 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
 
         for each in request["items"]:
             if not each:
-                message = f"Feed {self=} is empty, skipping"
+                message = f"Feed {href=} is empty, skipping"
                 print(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                print(f"Data missing URL, skipping item {self=} {each=}")
+                print(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates
