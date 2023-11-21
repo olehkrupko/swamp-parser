@@ -60,11 +60,9 @@ def parse(
     href: str,
 ) -> list[Update]:
     "Parse one feed by URL."
-    results = parser_base.parse_href(
+    return parser_base.parse_href(
         href=href,
     )
-
-    return results
 
 
 # python3

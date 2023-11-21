@@ -1,7 +1,7 @@
 import json
 import os
 import random
-# import ssl
+import ssl
 import string
 # import urllib
 from datetime import datetime
@@ -20,7 +20,6 @@ async def parse_href(href: str, **kwargs: dict):
     ###############################
     #  PREPARING REQUIRED VARIABLES
     ###############################
-
     results = []
 
     # avoiding blocks
