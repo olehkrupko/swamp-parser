@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from enum import Enum
 
@@ -6,6 +7,8 @@ from pydantic import BaseModel, Field
 
 import parsers.base as parser_base
 import parsers.base_async as parser_base_async
+from runner.runner import runner as runner_func
+from runner.runner_async import runner as runner_async_func
 
 
 app = FastAPI(
@@ -77,3 +80,15 @@ async def parse_async(
     )
 
     return results
+
+
+@app.get("/runner/")
+def runner() -> dict:
+    "Parse multiple feeds."
+    return runner_func()
+
+
+@app.get("/runner/async/")
+async def runner_async() -> dict:
+    "Parse multiple feeds. Asynchronously."
+    return await runner_async_func()
