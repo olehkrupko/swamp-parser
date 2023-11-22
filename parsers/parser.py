@@ -1,15 +1,15 @@
 import feedparser
-import json
-import os
 import random
 import ssl
 import string
 import urllib
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
-from dateutil.relativedelta import relativedelta
-from typing import List, Dict
 
+from sentry_sdk import capture_message
+
+# import os
+# import json
 # import requests
 # from bs4 import BeautifulSoup, SoupStrainer
 
@@ -41,14 +41,21 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
         return "NOPE"
 
     # rss-bridge instagram import converter
-    elif 'instagram.com' in href and not kwargs.get("processed"):
+    elif "instagram.com" in href and not kwargs.get("processed"):
         RSS_BRIDGE_URL = "http://192.168.0.155:31000"
-        RSS_BRIDGE_ARGS = "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        RSS_BRIDGE_ARGS = (
+            "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        )
 
-        timeout = 24*60*60  # 24 hours
+        timeout = 24 * 60 * 60  # 24 hours
         username = href[26:-1]
 
-        href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}&format=Atom"
+        href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
+            RSS_BRIDGE_URL,
+            RSS_BRIDGE_ARGS,
+            username,
+            timeout,
+        )
 
         results = parse_href(
             href=href,
@@ -56,7 +63,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             processed=True,
         )
         # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]['name']:
+        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
             results = []
 
     # # custom twitter import converter
@@ -94,7 +101,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
     #     base_domain = 'twitter.com'
     #     for each in results:
     #         each['href'] = each['href'].replace('#m', '')
-    #         each['href'] = each['href'].replace('http://', 'https://')
+    #         each['href'] = each['href'].replace('http://','https://')
 
     #         href_split = each['href'].split('/')
     #         href_split[2] = base_domain
@@ -227,13 +234,13 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
 
         for each in request["items"]:
             if not each:
-                message = f"Feed {self=} is empty, skipping"
-                print(message)
+                message = f"Feed {href=} is empty, skipping"
+                capture_message(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                print(f"Data missing URL, skipping item {self=} {each=}")
+                capture_message(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates
@@ -244,7 +251,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             elif "updated" in each:
                 result_datetime = each["updated"]
             else:
-                print("result_datetime broke for feed")
+                capture_message("result_datetime broke for feed")
 
             tzinfos = {
                 "PDT": tz.gettz("America/Los_Angeles"),
