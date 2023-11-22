@@ -1,8 +1,8 @@
 import feedparser
-import json
-import os
+# import json
+# import os
 import random
-import ssl
+# import ssl
 import string
 import urllib
 from datetime import datetime
@@ -98,7 +98,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
     #     base_domain = 'twitter.com'
     #     for each in results:
     #         each['href'] = each['href'].replace('#m', '')
-    #         each['href'] = each['href'].replace('http://', 'https://')
+    #         each['href'] = each['href'].replace('http://','https://')
 
     #         href_split = each['href'].split('/')
     #         href_split[2] = base_domain

@@ -1,13 +1,11 @@
-import json
-import os
+# import json
+# import os
 import random
-import ssl
+# import ssl
 import string
 # import urllib
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
-from dateutil.relativedelta import relativedelta
-from typing import List, Dict
 
 import aiohttp
 import feedparser

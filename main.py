@@ -4,7 +4,7 @@ from enum import Enum
 
 import sentry_sdk
 from fastapi import FastAPI, Path, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 import parsers.parser as parser_base
 import parsers.parser_async
@@ -25,9 +25,10 @@ sentry_sdk.init(
 )
 
 
+URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
-    description="Parser micro-service for Swamp project ([swamp-api](https://github.com/olehkrupko/swamp-api), to be exact)",
+    description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
     version="0.1",
 )
 
