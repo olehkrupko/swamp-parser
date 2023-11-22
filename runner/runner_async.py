@@ -15,7 +15,7 @@ async def task(href):
 async def runner():
     global connection_semaphore
     connection_semaphore = asyncio.Semaphore(
-        os.environ.get("AIOHTTP_SEMAPHORE"),
+        int(os.environ.get("AIOHTTP_SEMAPHORE")),
     )
 
     # run coroutines
