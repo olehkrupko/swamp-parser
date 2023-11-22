@@ -1,17 +1,15 @@
 import feedparser
-# import json
-# import os
 import random
-# import ssl
+import ssl
 import string
 import urllib
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
-from dateutil.relativedelta import relativedelta
-from typing import List, Dict
 
 from sentry_sdk import capture_message
 
+# import os
+# import json
 # import requests
 # from bs4 import BeautifulSoup, SoupStrainer
 
@@ -52,7 +50,8 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
         timeout = 24 * 60 * 60  # 24 hours
         username = href[26:-1]
 
-        href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}&format=Atom"
+        href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}"
+        href += "&format=Atom"
 
         results = parse_href(
             href=href,
