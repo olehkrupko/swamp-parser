@@ -7,9 +7,9 @@ import aiohttp
 import parsers.base_async as parser_base_async
 
 
-async def task(href):
+async def task(feed):
     async with connection_semaphore:
-        updates = await parser_base_async.parse_href(href["href"])
+        updates = await parser_base_async.parse_href(feed["href"])
 
     results = []
     async with connection_semaphore:
