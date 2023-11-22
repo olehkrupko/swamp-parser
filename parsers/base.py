@@ -43,11 +43,13 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
         return "NOPE"
 
     # rss-bridge instagram import converter
-    elif 'instagram.com' in href and not kwargs.get("processed"):
+    elif "instagram.com" in href and not kwargs.get("processed"):
         RSS_BRIDGE_URL = "http://192.168.0.155:31000"
-        RSS_BRIDGE_ARGS = "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        RSS_BRIDGE_ARGS = (
+            "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        )
 
-        timeout = 24*60*60  # 24 hours
+        timeout = 24 * 60 * 60  # 24 hours
         username = href[26:-1]
 
         href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}&format=Atom"
@@ -58,7 +60,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             processed=True,
         )
         # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]['name']:
+        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
             results = []
 
     # # custom twitter import converter

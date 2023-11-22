@@ -7,7 +7,9 @@ import parsers.base as parser_base
 
 
 def runner():
-    feeds = requests.get(f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true").json()
+    feeds = requests.get(
+        f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true"
+    ).json()
 
     results = []
     for feed in feeds:
@@ -18,8 +20,8 @@ def runner():
         )
         results.append(
             {
-                'title': feed['title'],
-                'updates': len(updates),
+                "title": feed["title"],
+                "updates": len(updates),
             }
         )
 

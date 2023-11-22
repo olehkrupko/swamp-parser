@@ -22,8 +22,8 @@ async def task(href):
 
                 results.append(
                     {
-                        'title': feed['title'],
-                        'updates': len(updates),
+                        "title": feed["title"],
+                        "updates": len(updates),
                     }
                 )
 
@@ -39,7 +39,9 @@ async def runner():
     # run coroutines
     coroutines = []
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true") as response:
+        async with session.get(
+            f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true"
+        ) as response:
             feeds = await response.json()
 
             for feed in feeds:

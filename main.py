@@ -129,16 +129,16 @@ async def test() -> dict:
     t_total = t_end_total - t_start_total
 
     return {
-        'async_improvement': round(improvement, 10),
-        'total': round(t_total, 10),
-        'base': {
-            'result': result,
-            'result_len': len(result),
-            'time': round(t_sync, 2),
+        "async_improvement": round(improvement, 10),
+        "total": round(t_total, 10),
+        "base": {
+            "result": result,
+            "result_len": len(result),
+            "time": round(t_sync, 2),
         },
-        'base_async': {
-            'result': result_async,
-            'result_len': len(result_async),
-            'time': round(t_async, 2),
+        "base_async": {
+            "result": result_async,
+            "result_len": len(result_async),
+            "time": round(t_async, 2),
         },
     }
