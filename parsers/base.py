@@ -10,6 +10,8 @@ from dateutil import parser, tz  # adding custom timezones
 from dateutil.relativedelta import relativedelta
 from typing import List, Dict
 
+from sentry_sdk import capture_message
+
 # import requests
 # from bs4 import BeautifulSoup, SoupStrainer
 
@@ -228,12 +230,12 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
         for each in request["items"]:
             if not each:
                 message = f"Feed {href=} is empty, skipping"
-                print(message)
+                capture_message(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                print(f"Data missing URL, skipping item {href=} {each=}")
+                capture_message(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates
@@ -244,7 +246,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             elif "updated" in each:
                 result_datetime = each["updated"]
             else:
-                print("result_datetime broke for feed")
+                capture_message("result_datetime broke for feed")
 
             tzinfos = {
                 "PDT": tz.gettz("America/Los_Angeles"),
