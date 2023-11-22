@@ -50,8 +50,12 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
         timeout = 24 * 60 * 60  # 24 hours
         username = href[26:-1]
 
-        href = f"{RSS_BRIDGE_URL}/?{RSS_BRIDGE_ARGS}&u={username}&_cache_timeout={timeout}"
-        href += "&format=Atom"
+        href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
+            RSS_BRIDGE_URL,
+            RSS_BRIDGE_ARGS,
+            username,
+            timeout,
+        )
 
         results = parse_href(
             href=href,
