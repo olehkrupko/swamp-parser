@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 from enum import Enum
 
+import sentry_sdk
 from fastapi import FastAPI, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
@@ -10,6 +11,18 @@ import parsers.base_async as parser_base_async
 from responses.PrettyJSONResponse import PrettyJSONResponse
 from runner.runner import runner as runner_func
 from runner.runner_async import runner as runner_async_func
+
+
+sentry_sdk.init(
+    dsn="https://c58d3f06bb9a299f7968c8a38db3ee57@o4505676526583808.ingest.sentry.io/4506268897050624",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 
 
 app = FastAPI(
