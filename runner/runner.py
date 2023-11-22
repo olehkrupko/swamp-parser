@@ -1,9 +1,8 @@
 import os
-import time
 
 import requests
 
-import parsers.base as parser_base
+import parsers.parser as parser_base
 
 
 def runner():

@@ -3,18 +3,18 @@ from datetime import datetime
 from enum import Enum
 
 import sentry_sdk
-from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel, Field
 
-import parsers.base as parser_base
-import parsers.base_async as parser_base_async
+import parsers.parser as parser_base
+import parsers.parser_async
 from responses.PrettyJSONResponse import PrettyJSONResponse
 from runner.runner import runner as runner_func
 from runner.runner_async import runner as runner_async_func
 
 
 sentry_sdk.init(
-    dsn="https://c58d3f06bb9a299f7968c8a38db3ee57@o4505676526583808.ingest.sentry.io/4506268897050624",
+    dsn=os.environ["SENTRY_SDK_DSN"],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
@@ -87,7 +87,7 @@ async def parse_async(
     href: str,
 ) -> list[Update]:
     "Parse one feed by URL. Asynchronously."
-    results = await parser_base_async.parse_href(
+    results = await parser_async.parse_href(
         href=href,
     )
 
@@ -131,12 +131,12 @@ async def test() -> dict:
     return {
         "async_improvement": round(improvement, 10),
         "total": round(t_total, 10),
-        "base": {
+        "parser_base": {
             "result": result,
             "result_len": len(result),
             "time": round(t_sync, 2),
         },
-        "base_async": {
+        "parser_async": {
             "result": result_async,
             "result_len": len(result_async),
             "time": round(t_async, 2),

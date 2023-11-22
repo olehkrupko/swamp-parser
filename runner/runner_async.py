@@ -1,15 +1,14 @@
 import asyncio
 import os
-import time
 
 import aiohttp
 
-import parsers.base_async as parser_base_async
+import parsers.parser_async as parser_async
 
 
 async def task(feed):
     async with connection_semaphore:
-        updates = await parser_base_async.parse_href(feed["href"])
+        updates = await parser_async.parse_href(feed["href"])
 
     results = []
     async with connection_semaphore:
