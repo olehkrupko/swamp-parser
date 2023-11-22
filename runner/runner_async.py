@@ -9,7 +9,25 @@ import parsers.base_async as parser_base_async
 
 async def task(href):
     async with connection_semaphore:
-        return await parser_base_async.parse_href(href["href"])
+        updates = await parser_base_async.parse_href(href["href"])
+
+    results = []
+    async with connection_semaphore:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/{ feed['feed_id'] }/",
+                data=updates,
+            ) as response:
+                new_updates = await response.json()
+
+                results.append(
+                    {
+                        'title': feed['title'],
+                        'new_updates': new_updates,
+                    }
+                )
+
+    return feeds
 
 
 async def runner():

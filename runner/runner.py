@@ -11,7 +11,11 @@ def runner():
 
     results = []
     for feed in feeds:
-        res = parser_base.parse_href(feed["href"])
+        updates = parser_base.parse_href(feed["href"])
+        requests.put(
+            f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/{ feed['feed_id'] }/push/",
+            data=updates,
+        )
         results.append(
             {
                 'len': type(res),
