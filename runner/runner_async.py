@@ -18,16 +18,16 @@ async def task(href):
                 f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/{ feed['feed_id'] }/",
                 data=updates,
             ) as response:
-                new_updates = await response.json()
+                updates = await response.json()
 
                 results.append(
                     {
                         'title': feed['title'],
-                        'new_updates': new_updates,
+                        'updates': len(updates),
                     }
                 )
 
-    return feeds
+    return results
 
 
 async def runner():
@@ -39,7 +39,7 @@ async def runner():
     # run coroutines
     coroutines = []
     async with aiohttp.ClientSession() as session:
-        async with session.get(os.environ["SWAMP_API_FEEDS"]) as response:
+        async with session.get(f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true") as response:
             feeds = await response.json()
 
             for feed in feeds:
@@ -51,6 +51,6 @@ async def runner():
                 )
 
     # Await completion
-    # results = await asyncio.gather(*coroutines, return_exceptions=True)
-    # return results
-    await asyncio.gather(*coroutines, return_exceptions=True)
+    results = await asyncio.gather(*coroutines, return_exceptions=True)
+
+    return results
