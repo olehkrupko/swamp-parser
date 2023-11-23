@@ -2,31 +2,30 @@ import asyncio
 import os
 
 import aiohttp
+from sentry_sdk import capture_message
 
 import parsers.parser_async as parser_async
 
 
 async def task(feed):
     async with connection_semaphore:
-        updates = await parser_async.parse_href(feed["href"])
+        updates = []
+        for each in await parser_async.parse_href(feed["href"]):
+            each["datetime"] = each["datetime"].isoformat()
+            updates.append(each)
 
-    results = []
     async with connection_semaphore:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/{ feed['feed_id'] }/",
-                data=updates,
+                f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
+                json=updates,
             ) as response:
                 updates = await response.json()
 
-                results.append(
-                    {
-                        "title": feed["title"],
-                        "updates": len(updates),
-                    }
-                )
-
-    return results
+                return {
+                    "title": feed["title"],
+                    "updates": len(updates),
+                }
 
 
 async def runner():
@@ -39,7 +38,7 @@ async def runner():
     coroutines = []
     async with aiohttp.ClientSession() as session:
         async with session.get(
-            f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/?requires_update=true"
+            f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
         ) as response:
             feeds = await response.json()
 
@@ -54,4 +53,14 @@ async def runner():
     # Await completion
     results = await asyncio.gather(*coroutines, return_exceptions=True)
 
-    return results
+    # prepare results
+    errors = list(filter(lambda x: not isinstance(x, dict), results))
+    map(lambda x: capture_message(x), errors)
+    errors = map(lambda x: str(x), errors)
+    results = list(filter(lambda x: isinstance(x, dict), results))
+
+    return {
+        "total_new": sum([x["updates"] for x in results]),
+        "results": results,
+        "errors": errors,
+    }
