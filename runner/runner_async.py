@@ -14,7 +14,7 @@ async def task(feed):
             each["datetime"] = each["datetime"].isoformat()
             updates.append(each)
 
-    async with connection_semaphore:
+    async with push_semaphore:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
@@ -29,10 +29,12 @@ async def task(feed):
 
 
 async def runner():
-    global connection_semaphore
+    global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
     )
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix wit each other
+    push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
     coroutines = []
