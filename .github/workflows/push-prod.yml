@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'main'
+      - '1-asyncio-support'
 jobs:
   deploy:
     runs-on: self-hosted
