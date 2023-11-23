@@ -14,8 +14,8 @@ async def task(feed):
     async with connection_semaphore:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f"{ os.environ['SWAMP_API_FEEDS'] }/feeds/{ feed['feed_id'] }/",
                 data=updates,
+                f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
             ) as response:
                 updates = await response.json()
 
