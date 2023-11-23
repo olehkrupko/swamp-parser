@@ -53,6 +53,6 @@ async def runner():
     results = await asyncio.gather(*coroutines, return_exceptions=True)
 
     return {
-        'total_new': sum([x["updates"] for x in results]),
-        'results': results,
+        "total_new": sum([x["updates"] for x in results]),
+        "results": results,
     }
