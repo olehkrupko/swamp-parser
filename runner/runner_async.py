@@ -52,7 +52,13 @@ async def runner():
     # Await completion
     results = await asyncio.gather(*coroutines, return_exceptions=True)
 
+    # prepare results
+    errors = list(filter(lambda x: not isinstance(x, dict), results))
+    errors = map(lambda x: str(x), errors)
+    results = list(filter(lambda x: isinstance(x, dict), results))
+
     return {
         "total_new": sum([x["updates"] for x in results]),
         "results": results,
+        "errors": errors,
     }
