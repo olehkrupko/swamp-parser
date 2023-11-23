@@ -2,6 +2,7 @@ import asyncio
 import os
 
 import aiohttp
+from sentry_sdk import capture_message
 
 import parsers.parser_async as parser_async
 
@@ -54,6 +55,7 @@ async def runner():
 
     # prepare results
     errors = list(filter(lambda x: not isinstance(x, dict), results))
+    map(lambda x: capture_message(x), errors)
     errors = map(lambda x: str(x), errors)
     results = list(filter(lambda x: isinstance(x, dict), results))
 
