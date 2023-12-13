@@ -18,18 +18,24 @@ async def task(feed):
 
     async with push_semaphore:
         print('>>>>', 2, "push data")
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
-                json=updates,
-            ) as response:
-                updates = await response.json()
+        params = pika.URLParameters(os.environ["RABBITMQ_CONNECTION_STRING"])
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
 
-                print('>>>>', 3, "return data")
-                return {
-                    "title": feed["title"],
-                    "updates": len(updates),
-                }
+        channel.basic_publish(
+            exchange="swamp",
+            routing_key="feed.push",
+            body=json.dumps({
+                "_id": feed['_id'],
+                "updates": updates,
+            }),
+        )
+
+    print('>>>>', 3, "return data")
+    return {
+        "title": feed["title"],
+        "updates": len(updates),
+    }
 
 
 async def runner():
