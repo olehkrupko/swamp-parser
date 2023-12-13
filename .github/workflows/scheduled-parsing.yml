@@ -6,6 +6,7 @@ on:
 jobs:
   data_parsing:
     runs-on: self-hosted
+    timeout-minutes: 15
     steps:
       - name: Send request and save status code
         run: echo "status_code=`curl --write-out '%{http_code}' --max-time 900 --silent --output /dev/null -X GET 'http://192.168.0.155:30015/runner/async/'`" >> "$GITHUB_ENV"
