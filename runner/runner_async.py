@@ -11,11 +11,13 @@ import parsers.parser_async as parser_async
 
 async def task(feed):
     async with connection_semaphore:
+        print(">>>>", 0, feed["title"])
         updates = []
         for each in await parser_async.parse_href(feed["href"]):
             each["datetime"] = each["datetime"].isoformat()
             updates.append(each)
 
+        print(">>>>", 1, len(updates))
         params = pika.URLParameters(os.environ["RABBITMQ_CONNECTION_STRING"])
         connection = pika.BlockingConnection(params)
         channel = connection.channel()
@@ -28,7 +30,7 @@ async def task(feed):
             }),
         )
 
-        print("Feed { feed['title'] }, parsed { len(updates) } updates to queue")
+        print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
         return {
             "title": feed["title"],
             "status": "Finished: passed to queue",
