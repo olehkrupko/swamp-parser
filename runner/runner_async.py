@@ -17,31 +17,44 @@ async def task(feed):
             each["datetime"] = each["datetime"].isoformat()
             updates.append(each)
 
-        print(">>>>", 1, len(updates))
-        params = pika.URLParameters(os.environ["RABBITMQ_CONNECTION_STRING"])
-        connection = pika.BlockingConnection(params)
-        channel = connection.channel()
-        channel.basic_publish(
-            exchange="swamp",
-            routing_key="feed.push",
-            body=json.dumps({
-                "_id": feed['_id'],
-                "updates": updates,
-            }),
-        )
+        # print(">>>>", 1, len(updates))
+        # params = pika.URLParameters(os.environ["RABBITMQ_CONNECTION_STRING"])
+        # connection = pika.BlockingConnection(params)
+        # channel = connection.channel()
+        # channel.basic_publish(
+        #     exchange="swamp",
+        #     routing_key="feed.push",
+        #     body=json.dumps({
+        #         "_id": feed['_id'],
+        #         "updates": updates,
+        #     }),
+        # )
 
-        print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
-        return {
-            "title": feed["title"],
-            "status": "Finished: passed to queue",
-        }
+    async with push_semaphore:
+        print('>>>>', 2, "push data")
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
+                json=updates,
+            ) as response:
+                updates = await response.json()
+
+                print('>>>>', 3, "return data")
+                print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
+                return {
+                    "title": feed["title"],
+                    "updates": len(updates),
+                    "updates_new": sum([x["updates"] for x in updates]),
+                }
 
 
 async def runner():
-    global connection_semaphore
+    global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
     )
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix wit each other
+    push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
     coroutines = []
