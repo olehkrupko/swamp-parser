@@ -1,5 +1,5 @@
-name: push-prod
-run-name: Push update to PROD from ${{ github.ref_name }}
+name: push-lint
+run-name: Lint push to ${{ github.ref_name }}
 on: push
 jobs:
   lint-flake8-errors:
