@@ -1,0 +1,15 @@
+name: push-prod
+run-name: Push update to PROD from ${{ github.ref_name }}
+on:
+  push:
+    branches:
+      - 'main'
+      - '5-asyncio-timeout'
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: ${{github.job}}
