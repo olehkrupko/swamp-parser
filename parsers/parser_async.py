@@ -5,7 +5,7 @@ from dateutil import parser, tz  # adding custom timezones
 
 import aiohttp
 import feedparser
-from sentry_sdk import capture_message
+from sentry_sdk import capture_exception
 
 # import json
 # import os
@@ -224,12 +224,12 @@ async def parse_href(href: str, **kwargs: dict):
         for each in request["items"]:
             if not each:
                 message = f"Feed {href=} is empty, skipping"
-                capture_message(message)
+                capture_exception(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                capture_message(f"Data missing URL, skipping item {href=} {each=}")
+                capture_exception(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates
@@ -240,7 +240,7 @@ async def parse_href(href: str, **kwargs: dict):
             elif "updated" in each:
                 result_datetime = each["updated"]
             else:
-                capture_message("result_datetime broke for feed")
+                capture_exception("result_datetime broke for feed")
 
             tzinfos = {
                 "PDT": tz.gettz("America/Los_Angeles"),
