@@ -140,7 +140,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
     elif "http://readmanga.live/" in href and href.find("/rss/") == -1:
         # 22 = len('http://readmanga.live/')
         name = href[22:]
-        href = "feed://readmanga.live/rss/manga?name=" + name
+        href = "https://readmanga.live/rss/manga?name=" + name
 
         results = parse_href(
             href=href,
