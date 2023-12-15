@@ -212,7 +212,7 @@ async def parse_href(href: str, **kwargs: dict):
             async with session.get(
                 href,
                 headers=headers,
-                # ssl=False,
+                ssl=False,
             ) as response:
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
