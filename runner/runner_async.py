@@ -79,11 +79,15 @@ async def runner():
 
     # prepare results
     errors = list(filter(lambda x: not isinstance(x, dict), results))
-    map(lambda x: capture_exception(x), errors)
+    # map(lambda x: capture_exception(x), errors)
+    # capture_exception("ERROR!!!")
+    for err in errors:
+        capture_exception(err)
     # errors = map(lambda x: str(x), errors)
     errors = map(lambda x: str(type(x)), errors)
     results = list(filter(lambda x: isinstance(x, dict), results))
 
+    print('>>>>', results)
     return {
         "results": results,
         "errors": errors,
