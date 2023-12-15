@@ -43,8 +43,7 @@ async def task(feed):
                 print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
                 return {
                     "title": feed["title"],
-                    "updates": len(updates),
-                    "updates_new": sum([x["updates"] for x in updates]),
+                    "updates_new": len(updates),
                 }
 
 
@@ -88,4 +87,5 @@ async def runner():
     return {
         "results": results,
         "errors": errors,
+        "updates_new": sum([x["updates_new"] for x in results]),
     }
