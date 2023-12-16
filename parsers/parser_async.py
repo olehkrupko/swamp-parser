@@ -213,6 +213,9 @@ async def parse_href(href: str, **kwargs: dict):
                 href,
                 headers=headers,
                 ssl=False,
+                # trying to fix this error:
+                # https://swamp.sentry.io/issues/4729544013/?project=4506268897050624&query=is%3Aunresolved&referrer=issue-stream&sort=date&statsPeriod=24h&stream_index=0
+                trust_env=True,
             ) as response:
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
