@@ -133,7 +133,7 @@ async def parse_href(href: str, **kwargs: dict):
     elif "http://readmanga.live/" in href and href.find("/rss/") == -1:
         # 22 = len('http://readmanga.live/')
         name = href[22:]
-        href = "feed://readmanga.live/rss/manga?name=" + name
+        href = "https://readmanga.live/rss/manga?name=" + name
 
         results = await parse_href(
             href=href,
@@ -152,7 +152,7 @@ async def parse_href(href: str, **kwargs: dict):
     ):
         # 21 = len('http://mintmanga.com/')
         name = href[21:]
-        href = "feed://mintmanga.com/rss/manga?name=" + name
+        href = "https://mintmanga.com/rss/manga?name=" + name
 
         results = await parse_href(
             href=href,

@@ -160,7 +160,7 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
     ):
         # 21 = len('http://mintmanga.com/')
         name = href[21:]
-        href = "feed://mintmanga.com/rss/manga?name=" + name
+        href = "https://mintmanga.com/rss/manga?name=" + name
 
         results = parse_href(
             href=href,
