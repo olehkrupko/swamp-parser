@@ -43,7 +43,7 @@ async def parse_href(href: str, **kwargs: dict):
             "action=display&bridge=InstagramBridge&context=Username&media_type=all"
         )
 
-        timeout = 24 * 60 * 60  # 24 hours
+        timeout = 31 * 24 * 60 * 60  # 31 days
         username = href[26:-1]
 
         href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
