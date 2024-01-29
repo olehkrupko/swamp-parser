@@ -58,8 +58,9 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
         # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
-            results = []
+        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+            capture_exception(results[0]["name"])
+            return []
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:
@@ -124,7 +125,8 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
         # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
+        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+            capture_exception(results[0]["name"])
             results = []
 
     # # custom tiktok import
