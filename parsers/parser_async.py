@@ -120,6 +120,7 @@ async def parse_href(href: str, **kwargs: dict):
             timeout,
         )
 
+        results.reverse()
         results = await parse_href(
             href=href,
             processed=True,
@@ -128,6 +129,10 @@ async def parse_href(href: str, **kwargs: dict):
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
             capture_exception(results[0]["name"])
             results = []
+        
+        for each in results:
+            # parser returns each["name"] == "Video" by default
+            each["name"] = "" if each["name"] == "Video" else each["name"]
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
