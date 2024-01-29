@@ -111,7 +111,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         timeout = random.randrange(31) * 24 * 60 * 60  # 1-31 days
-        username = href[26:-1]
+        username = href[24:]
 
         href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
             os.environ.get("RSS_BRIDGE_URL"),
