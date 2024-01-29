@@ -1,3 +1,4 @@
+import os
 import random
 import string
 from datetime import datetime
@@ -38,7 +39,6 @@ async def parse_href(href: str, **kwargs: dict):
 
     # rss-bridge instagram import converter
     elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_URL = "http://192.168.0.155:31000"
         RSS_BRIDGE_ARGS = (
             "action=display&bridge=InstagramBridge&context=Username&media_type=all"
         )
@@ -47,7 +47,7 @@ async def parse_href(href: str, **kwargs: dict):
         username = href[26:-1]
 
         href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
-            RSS_BRIDGE_URL,
+            os.environ.get("RSS_BRIDGE_URL"),
             RSS_BRIDGE_ARGS,
             username,
             timeout,
@@ -104,19 +104,43 @@ async def parse_href(href: str, **kwargs: dict):
     #         each['href'] = '/'.join(href_split)
 
     # custom tiktok import
-    elif "https://www.tiktok.com/@" in href:
-        href_base = "https://proxitok.pabloferreiro.es"
-        href = f"{href_base}/@{ href.split('@')[-1] }/rss"
+    elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
+        RSS_BRIDGE_ARGS = (
+            "action=display&bridge=TikTokBridge&context=By+user"
+        )
+
+        timeout = random.randrange(31) * 24 * 60 * 60  # 1-31 days
+        username = href[26:-1]
+
+        href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
+            os.environ.get("RSS_BRIDGE_URL"),
+            RSS_BRIDGE_ARGS,
+            username,
+            timeout,
+        )
 
         results = await parse_href(
             href=href,
+            processed=True,
         )
+        # safeguard against failed attempts
+        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
+            results = []
 
-        results.reverse()
-        for each in results:
-            each["href"] = each["href"].replace(
-                "proxitok.pabloferreiro.es", "tiktok.com"
-            )
+    # # custom tiktok import
+    # elif "https://www.tiktok.com/@" in href:
+    #     href_base = "https://proxitok.pabloferreiro.es"
+    #     href = f"{href_base}/@{ href.split('@')[-1] }/rss"
+
+    #     results = await parse_href(
+    #         href=href,
+    #     )
+
+    #     results.reverse()
+    #     for each in results:
+    #         each["href"] = each["href"].replace(
+    #             "proxitok.pabloferreiro.es", "tiktok.com"
+    #         )
 
     # custom RSS YouTube converter
     elif "https://www.youtube.com/channel/" in href:
