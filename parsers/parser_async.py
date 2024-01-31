@@ -133,6 +133,9 @@ async def parse_href(href: str, **kwargs: dict):
         for each in results:
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
+            # and it uses current datetime as well
+            each["datetime"] = datetime.now()
+            # the only valid data there is a URL
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
