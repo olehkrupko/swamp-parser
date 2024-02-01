@@ -110,7 +110,7 @@ async def parse_href(href: str, **kwargs: dict):
             "action=display&bridge=TikTokBridge&context=By+user"
         )
 
-        timeout = random.randrange(31) * 24 * 60 * 60  # 1-31 days
+        timeout = random.randrange(1, 32) * 24 * 60 * 60  # 1-31 days
         username = href[24:]
 
         href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
@@ -125,7 +125,7 @@ async def parse_href(href: str, **kwargs: dict):
             href=href,
             processed=True,
         )
-        # safeguard against failed attempts
+        # safeguard against failed attempts' error messages stored as updates
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
             capture_exception(results[0]["name"])
             results = []
@@ -135,7 +135,7 @@ async def parse_href(href: str, **kwargs: dict):
             each["name"] = "" if each["name"] == "Video" else each["name"]
             # and it uses current datetime as well
             each["datetime"] = datetime.now()
-            # the only valid data there is a URL
+            # the only valid data there is a URL. But it works!
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
