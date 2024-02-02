@@ -48,6 +48,7 @@ async def task(feed):
 
 
 async def runner():
+    print("Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
