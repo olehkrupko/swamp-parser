@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 import string
@@ -136,6 +137,7 @@ async def parse_href(href: str, **kwargs: dict):
             # and it uses current datetime as well
             each["datetime"] = datetime.now()
             # the only valid data there is a URL. But it works!
+            asyncio.sleep(60)  # trying to wait so that datetimes are at least a bit different
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
