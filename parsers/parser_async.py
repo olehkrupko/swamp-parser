@@ -60,8 +60,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_exception(results[0]["name"])
-            return []
+            raise Exception(results[0]["name"])
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:
@@ -128,8 +127,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts' error messages stored as updates
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_exception(results[0]["name"])
-            results = []
+            raise Exception(results[0]["name"])
         
         for each in results:
             # parser returns each["name"] == "Video" by default
