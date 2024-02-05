@@ -7,7 +7,7 @@ from dateutil import parser, tz  # adding custom timezones
 
 import aiohttp
 import feedparser
-from sentry_sdk import capture_exception
+from sentry_sdk import capture_exception, capture_message
 
 # import json
 # import os
@@ -60,7 +60,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_exception(results[0]["name"])
+            capture_message(results[0]["name"])
             return []
 
     # # custom twitter import converter
@@ -128,7 +128,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts' error messages stored as updates
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_exception(results[0]["name"])
+            capture_message(results[0]["name"])
             results = []
         
         for each in results:
