@@ -121,7 +121,7 @@ async def parse_href(href: str, **kwargs: dict):
             timeout,
         )
 
-        # results.reverse()
+        results.reverse()
         results = await parse_href(
             href=href,
             processed=True,
