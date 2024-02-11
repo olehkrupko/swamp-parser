@@ -128,7 +128,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts' error messages stored as updates
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_message(results[0]["name"])
+            capture_message(f"{ href } - { results[0]['name'] }")
             results = []
         
         # returns from new to old, but we need to process old ones first
