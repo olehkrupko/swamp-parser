@@ -60,7 +60,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
         # safeguard against failed attempts
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_message(results[0]["name"])
+            # capture_message(f"{ href } - { results[0]['name'] }")
             return []
 
     # # custom twitter import converter
