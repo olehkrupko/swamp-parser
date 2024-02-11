@@ -131,7 +131,8 @@ async def parse_href(href: str, **kwargs: dict):
             capture_message(results[0]["name"])
             results = []
         
-        # older items have lower index
+        # returns from new to old, but we need to process old ones first
+        results.reverse()
         for index, each in enumerate(results):
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
