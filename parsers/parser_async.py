@@ -131,11 +131,12 @@ async def parse_href(href: str, **kwargs: dict):
             capture_message(results[0]["name"])
             results = []
         
-        for each in results:
+        results.reverse()  # older first
+        for index, each in enumerate(results):
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
             # and it uses current datetime as well
-            each["datetime"] = datetime.now()
+            each["datetime"] = each["datetime"].replace(microsecond=index)
             # the only valid data there is a URL. But it works!
             await asyncio.sleep(60)  # trying to wait so that datetimes are at least a bit different
 
