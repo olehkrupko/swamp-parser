@@ -131,14 +131,15 @@ async def parse_href(href: str, **kwargs: dict):
             capture_message(f"{ href } - { results[0]['name'] }")
             results = []
         
-        # returns from new to old, but we need to process old ones first
+        # reversing order to sort data from old to new
         results.reverse()
         for index, each in enumerate(results):
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
             # and it uses current datetime as well
-            each["datetime"] = each["datetime"].replace(microsecond=index)
-            # the only valid data there is a URL. But it works!
+            # seconds are added so we could properly order data by datetime
+            each["datetime"] = each["datetime"].replace(second=index)
+            # the only valid data there is a URL. But at least it works!
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
