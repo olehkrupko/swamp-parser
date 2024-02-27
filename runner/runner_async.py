@@ -3,7 +3,6 @@ import json
 import os
 
 import aiohttp
-# import pika
 from sentry_sdk import capture_exception
 
 import parsers.parser_async as parser_async
@@ -16,19 +15,6 @@ async def task(feed):
         for each in await parser_async.parse_href(feed["href"]):
             each["datetime"] = each["datetime"].isoformat()
             updates.append(each)
-
-        # print(">>>>", 1, len(updates))
-        # params = pika.URLParameters(os.environ["RABBITMQ_CONNECTION_STRING"])
-        # connection = pika.BlockingConnection(params)
-        # channel = connection.channel()
-        # channel.basic_publish(
-        #     exchange="swamp",
-        #     routing_key="feed.push",
-        #     body=json.dumps({
-        #         "_id": feed['_id'],
-        #         "updates": updates,
-        #     }),
-        # )
 
     async with push_semaphore:
         # print('>>>>', 2, "push data")
