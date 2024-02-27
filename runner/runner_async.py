@@ -10,14 +10,12 @@ import parsers.parser_async as parser_async
 
 async def task(feed):
     async with connection_semaphore:
-        # print(">>>>", 0, feed["title"])
         updates = []
         for each in await parser_async.parse_href(feed["href"]):
             each["datetime"] = each["datetime"].isoformat()
             updates.append(each)
 
     async with push_semaphore:
-        # print('>>>>', 2, "push data")
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
@@ -25,7 +23,6 @@ async def task(feed):
             ) as response:
                 updates = await response.json()
 
-                # print('>>>>', 3, "return data")
                 print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
                 return {
                     "title": feed["title"],
@@ -66,8 +63,6 @@ async def runner():
 
     # prepare results
     errors = list(filter(lambda x: not isinstance(x, dict), results))
-    # map(lambda x: capture_exception(x), errors)
-    # capture_exception("ERROR!!!")
     for err in errors:
         capture_exception(err)
     # errors = map(lambda x: str(x), errors)
