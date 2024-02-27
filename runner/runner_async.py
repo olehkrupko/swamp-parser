@@ -72,7 +72,8 @@ async def runner():
     if errors:
         print('runner():', 'errors:', errors)
     print('runner():', 'updates_new:', updates_new)
-    print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
+    if updates_new > 0:
+        print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
     print('runner():', 'return()')
     return {
         "errors": errors,
