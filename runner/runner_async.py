@@ -71,6 +71,7 @@ async def runner():
     results = list(filter(lambda x: isinstance(x, dict), results))
 
     print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
+    print('runner():', 'errors:', list(filter(lambda x: not isinstance(x, dict), results)))
     return {
         "results": results,
         "errors": errors,
