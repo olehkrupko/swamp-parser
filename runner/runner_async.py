@@ -64,7 +64,7 @@ async def runner():
     errors = list(filter(lambda x: not isinstance(x, dict), results))
     for err in errors:
         capture_exception(err)
-    errors = map(lambda x: f"{ type(x) }: {x}", errors)
+    errors = list(map(lambda x: f"{ type(x) }: {x}", errors))
     results = list(filter(lambda x: isinstance(x, dict), results))
     updates_new = sum([x["updates_new"] for x in results])
 
