@@ -1,5 +1,5 @@
 name: scheduled-parsing
-run-name: Scheduled parsing initiated by adding feeds to queue
+run-name: Scheduled parsing initiated
 on: []
   # schedule:
   #   - cron: '* */6 * * *'

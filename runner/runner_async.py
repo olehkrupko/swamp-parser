@@ -23,7 +23,7 @@ async def task(feed):
             ) as response:
                 updates = await response.json()
 
-                print(f"Feed { feed['title'] }, parsed { len(updates) } updates to queue")
+                print(f"Feed { feed['title'] }, parsed { len(updates) } updates")
                 return {
                     "title": feed["title"],
                     "updates_new": len(updates),
