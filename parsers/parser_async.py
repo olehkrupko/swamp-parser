@@ -111,7 +111,7 @@ async def parse_href(href: str, **kwargs: dict):
             "action=display&bridge=TikTokBridge&context=By+user"
         )
 
-        timeout = 31 * 24 * 60 * 60
+        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
         username = href[24:]
 
         href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
