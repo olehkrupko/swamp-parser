@@ -31,7 +31,7 @@ async def task(feed):
 
 
 async def runner():
-    print("Starting...")
+    print("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
@@ -65,6 +65,8 @@ async def runner():
     errors = list(filter(lambda x: not isinstance(x, dict), results))
     for err in errors:
         capture_exception(err)
+        # raise err
+        print(1, err)
     # errors = map(lambda x: str(x), errors)
     errors = map(lambda x: str(type(x)), errors)
     results = list(filter(lambda x: isinstance(x, dict), results))
