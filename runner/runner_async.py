@@ -23,7 +23,6 @@ async def task(feed):
             ) as response:
                 updates = await response.json()
 
-                print(f"Feed { feed['title'] }, parsed { len(updates) } updates")
                 return {
                     "title": feed["title"],
                     "updates_new": len(updates),
@@ -71,7 +70,7 @@ async def runner():
     errors = map(lambda x: str(type(x)), errors)
     results = list(filter(lambda x: isinstance(x, dict), results))
 
-    print('>>>>', list(filter(lambda x: x["updates_new"] > 0, results)))
+    print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
     return {
         "results": results,
         "errors": errors,
