@@ -1,4 +1,3 @@
-import asyncio
 import os
 import random
 import string
@@ -9,12 +8,13 @@ import aiohttp
 import feedparser
 from sentry_sdk import capture_exception, capture_message
 
+from parsers.source_other import OtherSource
+
 # import json
 # import os
 # import ssl
 # import requests
 # import urllib
-# from bs4 import BeautifulSoup, SoupStrainer
 
 
 async def parse_href(href: str, **kwargs: dict):
@@ -215,15 +215,33 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
 
-    # custom onlyfans import
-    elif "onlyfans.com" in href:
-        # TODO
-        return []
+    # custom source_1 import
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_1_FROM"),
+            os.environ.get("SOURCE_1_TO"),
+        )
 
-    # custom patreon import
-    elif "patreon.com" in href:
-        # TODO
-        return []
+        # receive data
+        response_str = await OtherSource.request(href=href)
+
+        # process data
+        results = OtherSource.parse(response_str=response_str)
+
+    # custom source_2 import
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_2_FROM"),
+            os.environ.get("SOURCE_2_TO"),
+        )
+
+        # receive data
+        response_str = await OtherSource.request(href=href)
+
+        # process data
+        results = OtherSource.parse(response_str=response_str)
 
     # # custom lightnovelpub import
     # elif 'https://www.lightnovelpub.com/' in href:
@@ -255,9 +273,9 @@ async def parse_href(href: str, **kwargs: dict):
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
                 # )
-                rss_str = await response.read()
+                response_str = await response.read()
 
-        request = feedparser.parse(rss_str)
+        request = feedparser.parse(response_str)
 
         for each in request["items"]:
             if not each:

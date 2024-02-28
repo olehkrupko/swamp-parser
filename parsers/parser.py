@@ -187,16 +187,6 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             processed=True,
         )
 
-    # custom onlyfans import
-    elif "onlyfans.com" in href:
-        # TODO
-        return []
-
-    # custom patreon import
-    elif "patreon.com" in href:
-        # TODO
-        return []
-
     # # custom lightnovelpub import
     # elif 'https://www.lightnovelpub.com/' in href:
     #     request = requests.get(href, headers=headers, proxies=proxyDict)
