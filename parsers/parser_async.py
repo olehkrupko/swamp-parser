@@ -1,3 +1,5 @@
+import asyncio
+import os
 import random
 import string
 from datetime import datetime
@@ -5,7 +7,7 @@ from dateutil import parser, tz  # adding custom timezones
 
 import aiohttp
 import feedparser
-from sentry_sdk import capture_message
+from sentry_sdk import capture_exception, capture_message
 
 # import json
 # import os
@@ -38,16 +40,15 @@ async def parse_href(href: str, **kwargs: dict):
 
     # rss-bridge instagram import converter
     elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_URL = "http://192.168.0.155:31000"
         RSS_BRIDGE_ARGS = (
             "action=display&bridge=InstagramBridge&context=Username&media_type=all"
         )
 
-        timeout = 24 * 60 * 60  # 24 hours
+        timeout = 31 * 24 * 60 * 60  # 31 days
         username = href[26:-1]
 
         href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
-            RSS_BRIDGE_URL,
+            os.environ.get("RSS_BRIDGE_URL"),
             RSS_BRIDGE_ARGS,
             username,
             timeout,
@@ -58,8 +59,9 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
         # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
-            results = []
+        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+            # capture_message(f"{ href } - { results[0]['name'] }")
+            return []
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:
@@ -104,19 +106,55 @@ async def parse_href(href: str, **kwargs: dict):
     #         each['href'] = '/'.join(href_split)
 
     # custom tiktok import
-    elif "https://www.tiktok.com/@" in href:
-        href_base = "https://proxitok.pabloferreiro.es"
-        href = f"{href_base}/@{ href.split('@')[-1] }/rss"
+    elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
+        RSS_BRIDGE_ARGS = (
+            "action=display&bridge=TikTokBridge&context=By+user"
+        )
 
-        results = await parse_href(
-            href=href,
+        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
+        username = href[24:]
+
+        href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
+            os.environ.get("RSS_BRIDGE_URL"),
+            RSS_BRIDGE_ARGS,
+            username,
+            timeout,
         )
 
         results.reverse()
-        for each in results:
-            each["href"] = each["href"].replace(
-                "proxitok.pabloferreiro.es", "tiktok.com"
-            )
+        results = await parse_href(
+            href=href,
+            processed=True,
+        )
+        # safeguard against failed attempts' error messages stored as updates
+        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+            capture_message(f"{ href } - { results[0]['name'] }")
+            results = []
+        
+        # reversing order to sort data from old to new
+        results.reverse()
+        for index, each in enumerate(results):
+            # parser returns each["name"] == "Video" by default
+            each["name"] = "" if each["name"] == "Video" else each["name"]
+            # and it uses current datetime as well
+            # seconds are added so we could properly order data by datetime
+            each["datetime"] = each["datetime"].replace(second=index)
+            # the only valid data there is a URL. But at least it works!
+
+    # # custom tiktok import
+    # elif "https://www.tiktok.com/@" in href:
+    #     href_base = "https://proxitok.pabloferreiro.es"
+    #     href = f"{href_base}/@{ href.split('@')[-1] }/rss"
+
+    #     results = await parse_href(
+    #         href=href,
+    #     )
+
+    #     results.reverse()
+    #     for each in results:
+    #         each["href"] = each["href"].replace(
+    #             "proxitok.pabloferreiro.es", "tiktok.com"
+    #         )
 
     # custom RSS YouTube converter
     elif "https://www.youtube.com/channel/" in href:
@@ -133,7 +171,7 @@ async def parse_href(href: str, **kwargs: dict):
     elif "http://readmanga.live/" in href and href.find("/rss/") == -1:
         # 22 = len('http://readmanga.live/')
         name = href[22:]
-        href = "feed://readmanga.live/rss/manga?name=" + name
+        href = "https://readmanga.live/rss/manga?name=" + name
 
         results = await parse_href(
             href=href,
@@ -152,7 +190,7 @@ async def parse_href(href: str, **kwargs: dict):
     ):
         # 21 = len('http://mintmanga.com/')
         name = href[21:]
-        href = "feed://mintmanga.com/rss/manga?name=" + name
+        href = "https://mintmanga.com/rss/manga?name=" + name
 
         results = await parse_href(
             href=href,
@@ -212,7 +250,7 @@ async def parse_href(href: str, **kwargs: dict):
             async with session.get(
                 href,
                 headers=headers,
-                # ssl=False,
+                verify_ssl=False,
             ) as response:
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
@@ -224,12 +262,12 @@ async def parse_href(href: str, **kwargs: dict):
         for each in request["items"]:
             if not each:
                 message = f"Feed {href=} is empty, skipping"
-                capture_message(message)
+                capture_exception(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                capture_message(f"Data missing URL, skipping item {href=} {each=}")
+                capture_exception(f"Data missing URL, skipping item {href=} {each=}")
                 continue
 
             # DATE RESULT: parsing dates
@@ -240,7 +278,7 @@ async def parse_href(href: str, **kwargs: dict):
             elif "updated" in each:
                 result_datetime = each["updated"]
             else:
-                capture_message("result_datetime broke for feed")
+                capture_exception("result_datetime broke for feed")
 
             tzinfos = {
                 "PDT": tz.gettz("America/Los_Angeles"),

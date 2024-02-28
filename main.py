@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 from datetime import datetime
@@ -32,6 +33,17 @@ app = FastAPI(
     description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
     version="0.1",
 )
+
+
+async def runned_async_schedule():
+    while True:
+        await runner_async_func()
+        await asyncio.sleep(3*60)
+
+
+@app.on_event("startup")
+def startup_function():
+    asyncio.create_task(runned_async_schedule())
 
 
 #########

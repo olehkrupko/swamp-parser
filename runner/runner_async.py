@@ -1,8 +1,9 @@
 import asyncio
+import json
 import os
 
 import aiohttp
-from sentry_sdk import capture_message
+from sentry_sdk import capture_exception
 
 import parsers.parser_async as parser_async
 
@@ -24,11 +25,12 @@ async def task(feed):
 
                 return {
                     "title": feed["title"],
-                    "updates": len(updates),
+                    "updates_new": len(updates),
                 }
 
 
 async def runner():
+    print("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
@@ -53,16 +55,29 @@ async def runner():
                 )
 
     # Await completion
-    results = await asyncio.gather(*coroutines, return_exceptions=True)
+    results = await asyncio.gather(
+        *coroutines,
+        return_exceptions=True,
+    )
 
     # prepare results
     errors = list(filter(lambda x: not isinstance(x, dict), results))
-    map(lambda x: capture_message(x), errors)
-    errors = map(lambda x: str(x), errors)
+    for err in errors:
+        capture_exception(err)
+    errors = list(map(lambda x: f"{ type(x) }: {x}", errors))
     results = list(filter(lambda x: isinstance(x, dict), results))
+    updates_new = sum([x["updates_new"] for x in results])
 
+    # print and return results
+    if errors:
+        print('runner():', 'errors:', errors)
+    print('runner():', f"{updates_new=}, {len(errors)=}")
+    if updates_new > 0:
+        print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
+    print('runner():', 'Returning...')
+    print()
     return {
-        "total_new": sum([x["updates"] for x in results]),
-        "results": results,
         "errors": errors,
+        "results": results,
+        "updates_new": updates_new,
     }
