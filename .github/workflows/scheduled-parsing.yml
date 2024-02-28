@@ -2,7 +2,7 @@ name: scheduled-parsing
 run-name: Scheduled parsing initiated
 on: []
   # schedule:
-  #   - cron: '* */6 * * *'
+  #   - cron: */20 * * * *'
 jobs:
   data_parsing:
     runs-on: self-hosted
