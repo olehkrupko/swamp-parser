@@ -75,6 +75,7 @@ async def runner():
     if updates_new > 0:
         print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
     print('runner():', 'Returning...')
+    print()
     return {
         "errors": errors,
         "results": results,
