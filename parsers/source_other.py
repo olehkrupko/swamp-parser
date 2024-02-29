@@ -23,7 +23,7 @@ class OtherSource(Source):
         if data is None:
             return []
 
-        return map(
+        return list(map(
             lambda x: cls._parse_each(x),
             data.find_all('article', attrs={'class': 'post-card'}),
-        )
+        ))
