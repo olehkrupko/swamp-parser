@@ -215,37 +215,37 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
 
-    # # custom source_1 import
-    # elif os.environ.get("SOURCE_1_FROM") in href:
-    #     # prepare data
-    #     href = href.replace(
-    #         os.environ.get("SOURCE_1_FROM"),
-    #         os.environ.get("SOURCE_1_TO"),
-    #     )
+    # custom source_1 import
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_1_FROM"),
+            os.environ.get("SOURCE_1_TO"),
+        )
 
-    #     # receive data
-    #     response_str = await OtherSource.request(href=href)
+        # receive data
+        response_str = await OtherSource.request(href=href)
 
-    #     # process data
-    #     results = OtherSource.parse(response_str=response_str)
-    #     for each in results:
-    #         each["href"] = "/".join(os.environ.get("SOURCE_1_TO").split("/")[:3]) + each["href"]
+        # process data
+        results = OtherSource.parse(response_str=response_str)
+        for each in results:
+            each["href"] = "/".join(os.environ.get("SOURCE_1_TO").split("/")[:3]) + each["href"]
 
-    # # custom source_2 import
-    # elif os.environ.get("SOURCE_2_FROM") in href:
-    #     # prepare data
-    #     href = href.replace(
-    #         os.environ.get("SOURCE_2_FROM"),
-    #         os.environ.get("SOURCE_2_TO"),
-    #     )
+    # custom source_2 import
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_2_FROM"),
+            os.environ.get("SOURCE_2_TO"),
+        )
 
-    #     # receive data
-    #     response_str = await OtherSource.request(href=href)
+        # receive data
+        response_str = await OtherSource.request(href=href)
 
-    #     # process data
-    #     results = OtherSource.parse(response_str=response_str)
-    #     for each in results:
-    #         each["href"] = "/".join(os.environ.get("SOURCE_2_TO").split("/")[:3]) + each["href"]
+        # process data
+        results = OtherSource.parse(response_str=response_str)
+        for each in results:
+            each["href"] = "/".join(os.environ.get("SOURCE_2_TO").split("/")[:3]) + each["href"]
 
     # # custom lightnovelpub import
     # elif 'https://www.lightnovelpub.com/' in href:
