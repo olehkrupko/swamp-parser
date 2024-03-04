@@ -43,7 +43,10 @@ async def runned_async_schedule():
 
 @app.on_event("startup")
 def startup_function():
-    asyncio.create_task(runned_async_schedule())
+    asyncio.create_task(
+        runned_async_schedule(),
+        name="Parser worker",
+    )
 
 
 #########
