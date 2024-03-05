@@ -40,7 +40,7 @@ async def runner():
 
     # run coroutines
     coroutines = []
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         async with session.get(
             f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
         ) as response:
