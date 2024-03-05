@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import requests
 
 import aiohttp
 from sentry_sdk import capture_exception
@@ -41,16 +40,19 @@ async def runner():
 
     # run coroutines
     coroutines = []
-    response = requests.get(f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true")
-    feeds = response.json()
+    async with aiohttp.ClientSession(trust_env=True) as session:
+        async with session.get(
+            f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
+        ) as response:
+            feeds = await response.json()
 
-    for feed in feeds:
-        coroutines.append(
-            asyncio.Task(
-                task(feed),
-                name=f"parse_async({ feed['title'] })",
-            )
-        )
+            for feed in feeds:
+                coroutines.append(
+                    asyncio.Task(
+                        task(feed),
+                        name=f"parse_async({ feed['title'] })",
+                    )
+                )
 
     # Await completion
     results = await asyncio.gather(
