@@ -37,7 +37,10 @@ app = FastAPI(
 
 async def runned_async_schedule():
     while True:
-        await runner_async_func()
+        try:
+            await runner_async_func()
+        except Exception as e:
+            print(e)
         await asyncio.sleep(3*60)
 
 
