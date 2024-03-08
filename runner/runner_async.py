@@ -40,11 +40,15 @@ async def runner():
 
     # run coroutines
     coroutines = []
-    async with aiohttp.ClientSession(trust_env=True) as session:
-        async with session.get(
-            f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
-        ) as response:
-            feeds = await response.json()
+    try:
+        async with aiohttp.ClientSession(trust_env=True) as session:
+            async with session.get(
+                f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
+            ) as response:
+                feeds = await response.json()
+    except aiohttp.client_exceptions.ClientConnectorError as e:
+        feeds = []
+        print(e)
 
             for feed in feeds:
                 coroutines.append(
