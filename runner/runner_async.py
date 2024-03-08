@@ -50,13 +50,13 @@ async def runner():
         feeds = []
         print(e)
 
-            for feed in feeds:
-                coroutines.append(
-                    asyncio.Task(
-                        task(feed),
-                        name=f"parse_async({ feed['title'] })",
-                    )
-                )
+    for feed in feeds:
+        coroutines.append(
+            asyncio.Task(
+                task(feed),
+                name=f"parse_async({ feed['title'] })",
+            )
+        )
 
     # Await completion
     results = await asyncio.gather(
