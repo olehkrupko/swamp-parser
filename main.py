@@ -37,8 +37,8 @@ app = FastAPI(
 
 async def runned_async_schedule():
     while True:
-        await runner_async_func()
         await asyncio.sleep(3*60)
+        await runner_async_func()
 
 
 @app.on_event("startup")
