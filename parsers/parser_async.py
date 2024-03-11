@@ -8,7 +8,7 @@ import aiohttp
 import feedparser
 from sentry_sdk import capture_exception, capture_message
 
-from parsers.source_other import OtherSource
+from parsers.source_json_other import OtherJsonSource
 
 # import json
 # import os
@@ -224,12 +224,12 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherSource.request(href=href)
+        response_str = await OtherJsonSource.request(href=href)
 
         # process data
-        results = OtherSource.parse(response_str=response_str)
+        results = OtherJsonSource.parse(response_str=response_str)
         for each in results:
-            each["href"] = "/".join(os.environ.get("SOURCE_1_TO").split("/")[:3]) + each["href"]
+            each["href"] = href.replace("/api/v1", "") + "/post/" + each["href"]
 
     # custom source_2 import
     elif os.environ.get("SOURCE_2_FROM") in href:
@@ -240,12 +240,12 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherSource.request(href=href)
+        response_str = await OtherJsonSource.request(href=href)
 
         # process data
-        results = OtherSource.parse(response_str=response_str)
+        results = OtherJsonSource.parse(response_str=response_str)
         for each in results:
-            each["href"] = "/".join(os.environ.get("SOURCE_2_TO").split("/")[:3]) + each["href"]
+            each["href"] = href.replace("/api/v1", "") + "/post/" + each["href"]
 
     # # custom lightnovelpub import
     # elif 'https://www.lightnovelpub.com/' in href:
