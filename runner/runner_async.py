@@ -48,7 +48,7 @@ async def runner():
                 feeds = await response.json()
     except aiohttp.client_exceptions.ClientConnectorError as e:
         feeds = []
-        print(e)
+        print("\n", e, "\n")
 
     for feed in feeds:
         coroutines.append(
