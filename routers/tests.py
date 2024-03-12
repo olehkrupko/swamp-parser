@@ -2,7 +2,7 @@ import time
 
 from fastapi import APIRouter
 
-from responses.PrettyJSONResponse import PrettyJSONResponse
+from responses.PrettyJsonResponse import PrettyJsonResponse
 from runner.runner import runner as runner_func
 from runner.runner_async import runner as runner_async_func
 
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 # DEPRECATED
-@router.get("/", response_class=PrettyJSONResponse)
+@router.get("/", response_class=PrettyJsonResponse)
 async def test() -> dict:
     "Parse multiple feeds."
     t_start_total = time.perf_counter()

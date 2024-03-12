@@ -3,7 +3,7 @@ import typing
 from starlette.responses import Response
 
 
-class PrettyJSONResponse(Response):
+class PrettyJsonResponse(Response):
     media_type = "application/json"
 
     def render(self, content: typing.Any) -> bytes:
