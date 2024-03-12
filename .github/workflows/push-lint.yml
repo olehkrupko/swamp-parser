@@ -8,6 +8,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          path: ${{github.job}}
           ref: ${{github.ref}}
       - name: Set up Python 3.11
         uses: actions/setup-python@v2
@@ -29,6 +30,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          path: ${{github.job}}
           ref: ${{github.ref}}
       - name: Set up Python 3.11
         uses: actions/setup-python@v2
@@ -47,6 +49,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          path: ${{github.job}}
           ref: ${{github.ref}}
       - name: Set up Python 3.11
         uses: actions/setup-python@v2
