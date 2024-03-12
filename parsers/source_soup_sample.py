@@ -15,8 +15,6 @@ class SampleSoupSource(Source):
 
     @classmethod
     def parse(cls, response_str):
-        results = []
-
         request = BeautifulSoup(response_str, "html.parser")
 
         data = request.find('div', attrs={'class': 'card-list__items'})
