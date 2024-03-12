@@ -6,11 +6,14 @@ from parsers.source import Source
 
 
 class SampleSoupSource(Source):
-    def _parse_each(each):
+    datetime_format = "%Y-%m-%d %H:%M:%S"
+
+    @classmethod
+    def _parse_each(cls, each):
         return {
-            "name": each.find('header').text,
-            "href": each.find('a')['href'],
-            "datetime": datetime.strptime(each.find('time')['datetime'], '%Y-%m-%d %H:%M:%S'),
+            "name": each.find("header").text,
+            "href": each.find("a")["href"],
+            "datetime": cls.strptime(each.find("time")["datetime"]),
         }
 
     @classmethod
@@ -21,7 +24,9 @@ class SampleSoupSource(Source):
         if data is None:
             return []
 
-        return list(map(
-            lambda x: cls._parse_each(x),
-            data.find_all('article', attrs={'class': 'post-card'}),
-        ))
+        return list(
+            map(
+                lambda x: cls._parse_each(x),
+                data.find_all('article', attrs={'class': 'post-card'}),
+            )
+        )
