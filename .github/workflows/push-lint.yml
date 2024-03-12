@@ -9,12 +9,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: ${{github.job}}
+      - name: cd
+        shell: bash
+        run: cd lint-flake8-errors
       - name: ls
         shell: bash
         run: ls
-      - name: pwd
-        shell: bash
-        run: echo "$PWD"
       - name: Get branch name
         shell: bash
         run: echo $(git rev-parse --short "$GITHUB_SHA")
