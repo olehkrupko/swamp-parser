@@ -1,8 +1,6 @@
 import json
 from datetime import datetime
 
-from bs4 import BeautifulSoup
-
 from parsers.source import Source
 
 
