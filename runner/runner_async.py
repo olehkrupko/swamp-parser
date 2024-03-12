@@ -1,5 +1,4 @@
 import asyncio
-import json
 import os
 
 import aiohttp
@@ -40,19 +39,26 @@ async def runner():
 
     # run coroutines
     coroutines = []
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
-        ) as response:
-            feeds = await response.json()
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
+            ) as response:
+                feeds = await response.json()
+    except aiohttp.client_exceptions.ClientConnectorError as e:
+        # seems to be triggered by swamp-api not being up on startup
+        # is not expected to happen in the future
+        capture_exception(e)
+        feeds = []
+        print("\n", e, "\n")
 
-            for feed in feeds:
-                coroutines.append(
-                    asyncio.Task(
-                        task(feed),
-                        name=f"parse_async({ feed['title'] })",
-                    )
-                )
+    for feed in feeds:
+        coroutines.append(
+            asyncio.Task(
+                task(feed),
+                name=f"parse_async({ feed['title'] })",
+            )
+        )
 
     # Await completion
     results = await asyncio.gather(
@@ -70,11 +76,12 @@ async def runner():
 
     # print and return results
     if errors:
-        print('runner():', 'errors:', errors)
-    print('runner():', f"{updates_new=}, {len(errors)=}")
+        print(f"runner(): {errors=}")
+    print(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
-        print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
-    print('runner():', 'Returning...')
+        updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
+        print(f"runner(): updates_new>0={updates_new__gt_zero}")
+    print("runner(): Returning...")
     print()
     return {
         "errors": errors,

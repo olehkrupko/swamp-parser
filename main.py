@@ -37,13 +37,17 @@ app = FastAPI(
 
 async def runned_async_schedule():
     while True:
+        # waiting before run to allow other services some time to start
+        await asyncio.sleep(3 * 60)
         await runner_async_func()
-        await asyncio.sleep(3*60)
 
 
 @app.on_event("startup")
 def startup_function():
-    asyncio.create_task(runned_async_schedule())
+    asyncio.create_task(
+        runned_async_schedule(),
+        name="Worker: parser loop",
+    )
 
 
 #########

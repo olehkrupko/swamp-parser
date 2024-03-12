@@ -1,4 +1,3 @@
-import asyncio
 import os
 import random
 import string
@@ -9,12 +8,13 @@ import aiohttp
 import feedparser
 from sentry_sdk import capture_exception, capture_message
 
+from parsers.source_json_other import OtherJsonSource
+
 # import json
 # import os
 # import ssl
 # import requests
 # import urllib
-# from bs4 import BeautifulSoup, SoupStrainer
 
 
 async def parse_href(href: str, **kwargs: dict):
@@ -40,8 +40,11 @@ async def parse_href(href: str, **kwargs: dict):
 
     # rss-bridge instagram import converter
     elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = (
-            "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        RSS_BRIDGE_ARGS = "&".join(
+            "action=display",
+            "bridge=InstagramBridge",
+            "context=Username",
+            "media_type=all",
         )
 
         timeout = 31 * 24 * 60 * 60  # 31 days
@@ -107,8 +110,10 @@ async def parse_href(href: str, **kwargs: dict):
 
     # custom tiktok import
     elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = (
-            "action=display&bridge=TikTokBridge&context=By+user"
+        RSS_BRIDGE_ARGS = "&".join(
+            "action=display",
+            "bridge=TikTokBridge",
+            "context=By+user",
         )
 
         timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
@@ -130,7 +135,7 @@ async def parse_href(href: str, **kwargs: dict):
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
             capture_message(f"{ href } - { results[0]['name'] }")
             results = []
-        
+
         # reversing order to sort data from old to new
         results.reverse()
         for index, each in enumerate(results):
@@ -215,15 +220,37 @@ async def parse_href(href: str, **kwargs: dict):
             processed=True,
         )
 
-    # custom onlyfans import
-    elif "onlyfans.com" in href:
-        # TODO
-        return []
+    # custom source_1 import
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_1_FROM"),
+            os.environ.get("SOURCE_1_TO"),
+        )
 
-    # custom patreon import
-    elif "patreon.com" in href:
-        # TODO
-        return []
+        # receive data
+        response_str = await OtherJsonSource.request(href=href)
+
+        # process data
+        results = OtherJsonSource.parse(response_str=response_str)
+        for each in results:
+            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
+
+    # custom source_2 import
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_2_FROM"),
+            os.environ.get("SOURCE_2_TO"),
+        )
+
+        # receive data
+        response_str = await OtherJsonSource.request(href=href)
+
+        # process data
+        results = OtherJsonSource.parse(response_str=response_str)
+        for each in results:
+            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
 
     # # custom lightnovelpub import
     # elif 'https://www.lightnovelpub.com/' in href:
@@ -255,9 +282,9 @@ async def parse_href(href: str, **kwargs: dict):
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
                 # )
-                rss_str = await response.read()
+                response_str = await response.read()
 
-        request = feedparser.parse(rss_str)
+        request = feedparser.parse(response_str)
 
         for each in request["items"]:
             if not each:
