@@ -31,7 +31,7 @@ URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
     description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
-    version="0.1",
+    version="2.3",  # Issue 10: fast-api routes
 )
 
 
