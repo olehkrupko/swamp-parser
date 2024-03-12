@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from bs4 import BeautifulSoup
 
 from parsers.source import Source
@@ -20,13 +18,13 @@ class SampleSoupSource(Source):
     def parse(cls, response_str):
         request = BeautifulSoup(response_str, "html.parser")
 
-        data = request.find('div', attrs={'class': 'card-list__items'})
+        data = request.find("div", attrs={"class": "card-list__items"})
         if data is None:
             return []
 
         return list(
             map(
                 lambda x: cls._parse_each(x),
-                data.find_all('article', attrs={'class': 'post-card'}),
+                data.find_all("article", attrs={"class": "post-card"}),
             )
         )

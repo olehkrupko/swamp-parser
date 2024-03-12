@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Source:
-    datetime_format = ''
+    datetime_format = ""
 
     @classmethod
     def strptime(cls, datetime_string):
