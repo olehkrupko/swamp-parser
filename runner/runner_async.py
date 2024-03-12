@@ -47,6 +47,9 @@ async def runner():
             ) as response:
                 feeds = await response.json()
     except aiohttp.client_exceptions.ClientConnectorError as e:
+        # seems to be triggered by swamp-api not being up on startup
+        # is not expected to happen in the future
+        capture_exception(e)
         feeds = []
         print("\n", e, "\n")
 
