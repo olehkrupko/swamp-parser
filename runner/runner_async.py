@@ -80,7 +80,7 @@ async def runner():
         print(f"runner(): {errors=}")
     print(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
-        print(f"runner(): updates_new>0={list(filter(lambda x: x["updates_new"] > 0, results))}")
+        print(f"runner(): updates_new>0={list(filter(lambda x: x['updates_new'] > 0, results))}")
     print(f"runner(): Returning...")
     print()
     return {

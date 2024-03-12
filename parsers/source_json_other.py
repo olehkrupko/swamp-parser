@@ -9,7 +9,7 @@ class OtherJsonSource(Source):
         return {
             "name": each["title"],  # longer alternative: each["content"]
             "href": each["id"],
-            "datetime": datetime.strptime(each["published"], '%Y-%m-%dT%H:%M:%S'),
+            "datetime": datetime.strptime(each["published"], "%Y-%m-%dT%H:%M:%S"),
         }
 
     @classmethod

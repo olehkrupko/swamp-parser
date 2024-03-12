@@ -40,8 +40,11 @@ async def parse_href(href: str, **kwargs: dict):
 
     # rss-bridge instagram import converter
     elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = (
-            "action=display&bridge=InstagramBridge&context=Username&media_type=all"
+        RSS_BRIDGE_ARGS = "&".join(
+            "action=display",
+            "bridge=InstagramBridge",
+            "context=Username",
+            "media_type=all",
         )
 
         timeout = 31 * 24 * 60 * 60  # 31 days
@@ -107,8 +110,10 @@ async def parse_href(href: str, **kwargs: dict):
 
     # custom tiktok import
     elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = (
-            "action=display&bridge=TikTokBridge&context=By+user"
+        RSS_BRIDGE_ARGS = "&".join(
+            "action=display",
+            "bridge=TikTokBridge",
+            "context=By+user",
         )
 
         timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
@@ -130,7 +135,7 @@ async def parse_href(href: str, **kwargs: dict):
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
             capture_message(f"{ href } - { results[0]['name'] }")
             results = []
-        
+
         # reversing order to sort data from old to new
         results.reverse()
         for index, each in enumerate(results):
