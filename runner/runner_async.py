@@ -41,7 +41,7 @@ async def runner():
     # run coroutines
     coroutines = []
     try:
-        async with aiohttp.ClientSession(trust_env=True) as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(
                 f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
             ) as response:
@@ -74,11 +74,11 @@ async def runner():
 
     # print and return results
     if errors:
-        print('runner():', 'errors:', errors)
-    print('runner():', f"{len(feeds)=}, {updates_new=}, {len(errors)=}")
+        print(f"runner(): {errors=}")
+    print(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
-        print('runner():', 'updates_new>0:', list(filter(lambda x: x["updates_new"] > 0, results)))
-    print('runner():', 'Returning...')
+        print(f"runner(): updates_new>0={list(filter(lambda x: x["updates_new"] > 0, results))}")
+    print(f"runner(): Returning...")
     print()
     return {
         "errors": errors,
