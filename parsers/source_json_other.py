@@ -8,10 +8,14 @@ class OtherJsonSource(Source):
 
     @classmethod
     def _parse_each(cls, each):
+        datetime_string = each["published"]
+        if not datetime_string:
+            datetime_string = each["added"]
+
         return {
             "name": each["title"],  # longer alternative: each["content"]
             "href": each["id"],
-            "datetime": cls.strptime(each["published"]),
+            "datetime": cls.strptime(datetime_string),
         }
 
     @classmethod
