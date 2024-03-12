@@ -5,6 +5,9 @@ jobs:
   lint-flake8-errors:
     runs-on: self-hosted
     steps:
+      - name: Get branch name
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
