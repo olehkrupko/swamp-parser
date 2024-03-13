@@ -50,7 +50,7 @@ async def runner():
         # is not expected to happen in the future
         capture_exception(e)
         feeds = []
-        print("\n", e, "\n")
+        print(f"ERROR: {e}")
 
     for feed in feeds:
         coroutines.append(
