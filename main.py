@@ -34,6 +34,6 @@ app.include_router(tests.router)
 @app.on_event("startup")
 def startup_function():
     asyncio.create_task(
-        ParserLoopWorker.worker(),
+        ParserLoopWorker.start(),
         name=ParserLoopWorker.name,
     )
