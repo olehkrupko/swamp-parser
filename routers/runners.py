@@ -17,7 +17,7 @@ def runner() -> dict:
     return runner_func()
 
 
-@router.get("/async", response_class=PrettyJsonResponse)
+@router.get("/async/", response_class=PrettyJsonResponse)
 async def runner_async() -> dict:
     "Parse multiple feeds. Asynchronously."
     return await runner_async_func()
