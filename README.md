@@ -11,17 +11,10 @@ Parse all feeds that require update using asyncio.
 
 ## Available routes
 
-### /parse/
-Parse one URL.
-
-### /parse/async/
-Parse one URL asynchronously.
-
-### /runner/
-Run non-async runner.
-
-### /runner/async/
-Run async runner.
-
-### /tests/
-Test-compare async and non-async runners.
+| **URL**        | **Description**                           |
+| ---            | ---                                       |
+| /parse/        | Parse one URL.                            |
+| /parse/async/  | Parse one URL asynchronously.             |
+| /runner/       | Run non-async runner.                     |
+| /runner/async/ | Run async runner.                         |
+| /tests/        | Test-compare async and non-async runners. |
