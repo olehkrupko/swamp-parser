@@ -11,6 +11,7 @@ router = APIRouter(
     prefix="/tests",
 )
 
+
 # DEPRECATED
 @router.get("/", response_class=PrettyJsonResponse)
 async def test() -> dict:
