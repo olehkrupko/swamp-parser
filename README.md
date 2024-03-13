@@ -4,12 +4,12 @@ This is parsing back-end part of Swamp project which makes actual work of parsin
 
 Made using FastAPI.
 
-## Available workers
+## Workers
 
 ### Worker: parser loop
 asyncio coroutine initiated as task on FastAPI startup. It waits 3m, parses all feeds (provided by [swamp-api](https://github.com/olehkrupko/swamp-api)) that require update and repeats forever.
 
-## Available routes
+## Routes
 
 | **URL**        | **Description**                           |
 | ---            | ---                                       |
