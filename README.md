@@ -7,7 +7,7 @@ Made using FastAPI.
 ## Available workers
 
 ### Worker: parser loop
-Parse all feeds that require update using asyncio.
+asyncio coroutine run as task on FastAPI startup event. Wait 3m, parse all feeds that require update provided by `swamp-api` and repeat forever.
 
 ## Available routes
 
