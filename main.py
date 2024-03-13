@@ -20,27 +20,15 @@ sentry_sdk.init(
 )
 
 
-DEFAULT_RESPONSES = {
-    404: {"description": "Not found"},
-}
 URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
     description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
     version="2.3",  # Issue 10: fast-api routes
 )
-app.include_router(
-    parsers.router,
-    responses=DEFAULT_RESPONSES,
-)
-app.include_router(
-    runners.router,
-    responses=DEFAULT_RESPONSES,
-)
-app.include_router(
-    tests.router,
-    responses=DEFAULT_RESPONSES,
-)
+app.include_router(parsers.router)
+app.include_router(runners.router)
+app.include_router(tests.router)
 
 
 @app.on_event("startup")
