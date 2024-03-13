@@ -4,8 +4,6 @@ This is parsing back-end part of Swamp project which makes actual work of parsin
 
 Made using FastAPI.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Available workers
 
 ### Worker: parser loop
