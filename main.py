@@ -5,7 +5,7 @@ import sentry_sdk
 from fastapi import FastAPI
 
 from routers import parsers, runners, tests
-from runner.runner_async import runner as runner_async_func
+from workers.worker_parser_loop import ParserLoopWorker
 
 
 sentry_sdk.init(
@@ -43,16 +43,9 @@ app.include_router(
 )
 
 
-async def runned_async_schedule():
-    while True:
-        # waiting before run to allow other services some time to start
-        await asyncio.sleep(3 * 60)
-        await runner_async_func()
-
-
 @app.on_event("startup")
 def startup_function():
     asyncio.create_task(
-        runned_async_schedule(),
-        name="Worker: parser loop",
+        ParserLoopWorker.worker(),
+        name=ParserLoopWorker.name,
     )
