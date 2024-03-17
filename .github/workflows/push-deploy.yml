@@ -6,7 +6,7 @@ on:
       - 'main'
       - '17-refactoring-move-runner-to-workers'
 jobs:
-  deploy:
+  checkout:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
