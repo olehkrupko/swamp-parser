@@ -43,9 +43,10 @@ async def parse_href(href: str, **kwargs: dict):
         RSS_BRIDGE_ARGS = "&".join(
             (
                 "action=display",
-                "bridge=InstagramBridge",
+                # "bridge=InstagramBridge",
+                "bridge=PicnobBridge",
                 "context=Username",
-                "media_type=all",
+                # "media_type=all",
             )
         )
 
