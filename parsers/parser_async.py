@@ -6,6 +6,7 @@ from sentry_sdk import capture_message
 
 from parsers.source_json_other import OtherJsonSource
 from parsers.source_rss import RssSource
+from parsers.source_rss_proxigram import ProxigramRssSource
 
 # import json
 # import os
@@ -35,36 +36,39 @@ async def parse_href(href: str, **kwargs: dict):
     if False:
         return "NOPE"
 
-    # rss-bridge instagram import converter
-    elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = "&".join(
-            (
-                "action=display",
-                # "bridge=InstagramBridge",
-                "bridge=PicnobBridge",
-                "context=Username",
-                # "media_type=all",
-            )
-        )
+    elif "instagram.com" in href:
+        results = await ProxigramRssSource(href=href).run()
 
-        timeout = 31 * 24 * 60 * 60  # 31 days
-        username = href[26:-1]
+    # # rss-bridge instagram import converter
+    # elif "instagram.com" in href and not kwargs.get("processed"):
+    #     RSS_BRIDGE_ARGS = "&".join(
+    #         (
+    #             "action=display",
+    #             # "bridge=InstagramBridge",
+    #             "bridge=PicnobBridge",
+    #             "context=Username",
+    #             # "media_type=all",
+    #         )
+    #     )
 
-        href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
-            os.environ.get("RSS_BRIDGE_URL"),
-            RSS_BRIDGE_ARGS,
-            username,
-            timeout,
-        )
+    #     timeout = 31 * 24 * 60 * 60  # 31 days
+    #     username = href[26:-1]
 
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-        # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            # capture_message(f"{ href } - { results[0]['name'] }")
-            return []
+    #     href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
+    #         os.environ.get("RSS_BRIDGE_URL"),
+    #         RSS_BRIDGE_ARGS,
+    #         username,
+    #         timeout,
+    #     )
+
+    #     results = await parse_href(
+    #         href=href,
+    #         processed=True,
+    #     )
+    #     # safeguard against failed attempts
+    #     if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+    #         # capture_message(f"{ href } - { results[0]['name'] }")
+    #         return []
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:

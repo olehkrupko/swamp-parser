@@ -6,6 +6,13 @@ from parsers.source import Source
 
 
 class RssSource(Source):
+    @staticmethod
+    def each_name(each):
+        if each.get("title_detail"):
+            return each["title_detail"]["value"]
+
+        return ""
+
     def parse(self, response_str: str):
         request = feedparser.parse(response_str)
 
@@ -43,15 +50,10 @@ class RssSource(Source):
                     tzinfos=tzinfos,
                 )
 
-            if each.get("title_detail"):
-                result_name = each["title_detail"]["value"]
-            else:
-                result_name = ""
-
             # APPEND RESULT
             results.append(
                 {
-                    "name": result_name,
+                    "name": self.each_name(each),
                     "href": result_href,
                     "datetime": result_datetime,
                 }
