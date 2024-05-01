@@ -5,7 +5,7 @@ from parsers.source import Source
 
 class JsonSource(Source):
     @classmethod
-    def _parse_each(cls, each):
+    def parse_each(cls, each):
         raise NotImplementedError("Expected to be implemented in child classes")
 
     @classmethod
@@ -14,7 +14,7 @@ class JsonSource(Source):
 
         return list(
             map(
-                lambda x: cls._parse_each(x),
+                lambda x: cls.parse_each(x),
                 response_data,
             )
         )

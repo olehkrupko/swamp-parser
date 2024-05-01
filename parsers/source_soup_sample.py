@@ -7,7 +7,7 @@ class SampleSoupSource(Source):
     datetime_format = "%Y-%m-%d %H:%M:%S"
 
     @classmethod
-    def _parse_each(cls, each):
+    def parse_each(cls, each):
         return {
             "name": each.find("header").text,
             "href": each.find("a")["href"],
@@ -24,7 +24,7 @@ class SampleSoupSource(Source):
 
         return list(
             map(
-                lambda x: cls._parse_each(x),
+                lambda x: cls.parse_each(x),
                 data.find_all("article", attrs={"class": "post-card"}),
             )
         )

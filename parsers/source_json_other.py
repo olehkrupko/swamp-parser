@@ -5,7 +5,7 @@ class OtherJsonSource(JsonSource):
     datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     @classmethod
-    def _parse_each(cls, each):
+    def parse_each(cls, each):
         datetime_string = each["published"]
         if not datetime_string:
             datetime_string = each["added"]

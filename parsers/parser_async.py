@@ -1,14 +1,11 @@
 import os
 import random
 import string
-from datetime import datetime
-from dateutil import parser, tz  # adding custom timezones
 
-import aiohttp
-import feedparser
-from sentry_sdk import capture_exception, capture_message
+from sentry_sdk import capture_message
 
 from parsers.source_json_other import OtherJsonSource
+from parsers.source_rss import RssSource
 
 # import json
 # import os
@@ -224,64 +221,6 @@ async def parse_href(href: str, **kwargs: dict):
 
     # default RSS import
     else:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                href,
-                headers=headers,
-                verify_ssl=False,
-            ) as response:
-                # ssl._create_default_https_context = getattr(
-                #     ssl, "_create_unverified_context"
-                # )
-                response_str = await response.read()
-
-        request = feedparser.parse(response_str)
-
-        for each in request["items"]:
-            if not each:
-                message = f"Feed {href=} is empty, skipping"
-                capture_exception(message)
-                continue
-            try:
-                result_href = each["links"][0]["href"]
-            except KeyError:
-                capture_exception(f"Data missing URL, skipping item {href=} {each=}")
-                continue
-
-            # DATE RESULT: parsing dates
-            if "published" in each:
-                result_datetime = each["published"]
-            elif "delayed" in each:
-                result_datetime = each["delayed"]
-            elif "updated" in each:
-                result_datetime = each["updated"]
-            else:
-                capture_exception("result_datetime broke for feed")
-
-            tzinfos = {
-                "PDT": tz.gettz("America/Los_Angeles"),
-                "PST": tz.gettz("America/Juneau"),
-            }
-            if result_datetime.isdigit():
-                result_datetime = datetime.utcfromtimestamp(int(result_datetime))
-            elif not isinstance(result_datetime, datetime):
-                result_datetime = parser.parse(
-                    result_datetime,
-                    tzinfos=tzinfos,
-                )
-
-            if each.get("title_detail"):
-                result_name = each["title_detail"]["value"]
-            else:
-                result_name = ""
-
-            # APPEND RESULT
-            results.append(
-                {
-                    "name": result_name,
-                    "href": result_href,
-                    "datetime": result_datetime,
-                }
-            )
+        results = await RssSource(href=href).run()
 
     return results
