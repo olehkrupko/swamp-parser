@@ -192,25 +192,6 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             processed=True,
         )
 
-    # # custom lightnovelpub import
-    # elif 'https://www.lightnovelpub.com/' in href:
-    #     request = requests.get(href, headers=headers, proxies=proxyDict)
-    #     request = BeautifulSoup(request.text, "html.parser")
-
-    #     data = request.find('ul', attrs={'class': 'chapter-list'})
-    #     if data is None:
-    #         return []
-
-    #     for each in data.find_all('li'):
-    #         results.append({
-    #             'name':     each.find('a')['title'],
-    #             'href':     'https://www.lightnovelpub.com' \
-    #                   + each.find('a')['href'],
-    #             'datetime': datetime.strptime(
-    #    each.find('time')['datetime'], '%Y-%m-%d %H:%M'),
-    #             'feed_id':  self.id,
-    #         })
-
     # default RSS import
     else:
         try:

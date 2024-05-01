@@ -8,24 +8,28 @@ import parsers.parser_async as parser_async
 
 
 async def task(feed):
-    async with connection_semaphore:
-        updates = []
-        for each in await parser_async.parse_href(feed["href"]):
-            each["datetime"] = each["datetime"].isoformat()
-            updates.append(each)
+    try:
+        async with connection_semaphore:
+            updates = []
+            for each in await parser_async.parse_href(feed["href"]):
+                each["datetime"] = each["datetime"].isoformat()
+                updates.append(each)
 
-    async with push_semaphore:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
-                json=updates,
-            ) as response:
-                updates = await response.json()
+        async with push_semaphore:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{ os.environ['SWAMP_API'] }/feeds/{ feed['_id'] }/",
+                    json=updates,
+                ) as response:
+                    updates = await response.json()
 
-                return {
-                    "title": feed["title"],
-                    "updates_new": len(updates),
-                }
+                    return {
+                        "title": feed["title"],
+                        "updates_new": len(updates),
+                    }
+    except Exception as e:
+        # Inject feed URLs to parsing errors
+        raise type(e)(f"{feed['href']}: {str(e)}")
 
 
 async def runner():

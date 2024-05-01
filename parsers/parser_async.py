@@ -176,41 +176,6 @@ async def parse_href(href: str, **kwargs: dict):
             href=href,
         )
 
-    # custom RSS readmanga converter
-    elif "http://readmanga.live/" in href and href.find("/rss/") == -1:
-        # 22 = len('http://readmanga.live/')
-        name = href[22:]
-        href = "https://readmanga.live/rss/manga?name=" + name
-
-        results = await parse_href(
-            href=href,
-        )
-
-        for each in results:
-            split = each["href"].split("/")
-            split[-3] = name
-            each["href"] = "/".join(split)
-
-    # custom RSS mintmanga converter
-    elif (
-        "mintmanga.com" in href
-        and "mintmanga.com/rss/manga" not in href
-        and not kwargs.get("processed")
-    ):
-        # 21 = len('http://mintmanga.com/')
-        name = href[21:]
-        href = "https://mintmanga.com/rss/manga?name=" + name
-
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-
-        for each in results:
-            split = each["href"].split("/")
-            split[-3] = name
-            each["href"] = "/".join(split)
-
     # custom RSS deviantart converter
     elif "deviantart.com" in href and not kwargs.get("processed"):
         # 27 = len('https://www.deviantart.com/')
@@ -255,25 +220,6 @@ async def parse_href(href: str, **kwargs: dict):
         results = OtherJsonSource.parse(response_str=response_str)
         for each in results:
             each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
-
-    # # custom lightnovelpub import
-    # elif 'https://www.lightnovelpub.com/' in href:
-    #     request = requests.get(href, headers=headers)
-    #     request = BeautifulSoup(request.text, "html.parser")
-
-    #     data = request.find('ul', attrs={'class': 'chapter-list'})
-    #     if data is None:
-    #         return []
-
-    #     for each in data.find_all('li'):
-    #         results.append({
-    #             'name':     each.find('a')['title'],
-    #             'href':     'https://www.lightnovelpub.com' \
-    #                   + each.find('a')['href'],
-    #             'datetime': datetime.strptime(
-    #    each.find('time')['datetime'], '%Y-%m-%d %H:%M'),
-    #             'feed_id':  self.id,
-    #         })
 
     # default RSS import
     else:

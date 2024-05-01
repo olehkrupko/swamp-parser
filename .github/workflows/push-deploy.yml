@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - 'main'
+      - '17-refactoring-move-runner-to-workers'
 jobs:
-  deploy:
+  checkout:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: ${{github.job}}
