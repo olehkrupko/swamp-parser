@@ -1,6 +1,4 @@
 import os
-import random
-import string
 
 from sentry_sdk import capture_message
 
@@ -20,13 +18,6 @@ async def parse_href(href: str, **kwargs: dict):
     #  PREPARING REQUIRED VARIABLES
     ###############################
     results = []
-
-    # avoiding blocks
-    referer_domain = "".join(random.choices(string.ascii_letters, k=16))
-    headers = {
-        # 'user-agent': feed.UserAgent_random().strip(),
-        "referer": f"https://www.{ referer_domain }.com/?q={ href }"
-    }
 
     #########################
     # STARTING DATA INGESTION

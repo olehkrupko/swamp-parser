@@ -25,7 +25,9 @@ class RssSource(Source):
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                self.capture_exception(f"Data missing URL, skipping item {self.href=} {each=}")
+                self.capture_exception(
+                    f"Data missing URL, skipping item {self.href=} {each=}"
+                )
                 continue
 
             # DATE RESULT: parsing dates

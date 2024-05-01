@@ -1,4 +1,6 @@
 import aiohttp
+import random
+import string
 from datetime import datetime
 
 from sentry_sdk import capture_exception as sentry_capture_exception
@@ -24,7 +26,14 @@ class Source:
     # def parse_each(cls, each):
     #     raise NotImplementedError("Expected to be implemented in child classes")
 
-    async def request(self, href, headers: dict={}):
+    async def request(self, href):
+        # avoiding blocks
+        referer_domain = "".join(random.choices(string.ascii_letters, k=16))
+        headers = {
+            # 'user-agent': feed.UserAgent_random().strip(),
+            "referer": f"https://www.{ referer_domain }.com/?q={ href }"
+        }
+
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 href,
@@ -37,15 +46,15 @@ class Source:
                 return await response.read()
 
     def __init__(
-            self,
-            href: str,
-        ):
-            # prepare URL
-            if hasattr(self, "prepare_href"):
-                href = self.prepare_href(href)
+        self,
+        href: str,
+    ):
+        # prepare URL
+        if hasattr(self, "prepare_href"):
+            href = self.prepare_href(href)
 
-            self.href = href
-    
+        self.href = href
+
     async def run(self):
         # receive data
         response_str = await self.request(href=self.href)
@@ -53,10 +62,7 @@ class Source:
         # process data
         results = self.parse(response_str=response_str)
         if hasattr(self, "parse_each"):
-            results = [
-                self.parse_each(x)
-                for x in results
-            ]
+            results = [self.parse_each(x) for x in results]
 
         return results
 
