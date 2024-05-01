@@ -1,9 +1,7 @@
-import json
-
-from parsers.source import Source
+from parsers.source_json import JsonSource
 
 
-class OtherJsonSource(Source):
+class OtherJsonSource(JsonSource):
     datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     @classmethod
@@ -17,14 +15,3 @@ class OtherJsonSource(Source):
             "href": each["id"],
             "datetime": cls.strptime(datetime_string),
         }
-
-    @classmethod
-    def parse(cls, response_str):
-        response_data = json.loads(response_str)
-
-        return list(
-            map(
-                lambda x: cls._parse_each(x),
-                response_data,
-            )
-        )
