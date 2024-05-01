@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'main'
-      - '17-refactoring-move-runner-to-workers'
+      - '8-instagram-make-it-work'
 jobs:
   checkout:
     runs-on: self-hosted
