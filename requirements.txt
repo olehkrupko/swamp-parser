@@ -6,3 +6,4 @@ beautifulsoup4==4.12.3
 aiohttp==3.9.4
 requests==2.31.0
 sentry-sdk[fastapi]==1.36.0
+redis==5.0.4
