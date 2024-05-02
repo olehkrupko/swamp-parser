@@ -23,6 +23,7 @@ class ProxigramRssSource(RssSource):
 
     @staticmethod
     def parse_each(each):
+        print(f">>>> { each= }")
         each["href"] = each["href"].replace(
             os.environ["SOURCE_PROXIGRAM_HOST"],
             "https://www.instagram.com",
