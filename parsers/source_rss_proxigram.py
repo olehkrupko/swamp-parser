@@ -24,7 +24,7 @@ class ProxigramRssSource(RssSource):
     @staticmethod
     def parse_each(each):
         each["href"] = each["href"].replace(
-            "http://127.0.0.1:30020",
+            os.environ["SOURCE_PROXIGRAM_HOST"],
             "https://www.instagram.com",
         )
 
