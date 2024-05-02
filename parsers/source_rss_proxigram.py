@@ -3,6 +3,8 @@ import os
 
 from parsers.source_rss import RssSource
 
+from services import Cache
+
 
 class ProxigramRssSource(RssSource):
     @staticmethod
@@ -24,12 +26,18 @@ class ProxigramRssSource(RssSource):
         proxigram_semaphore = asyncio.Semaphore(1)
 
         async with proxigram_semaphore:
+            if os.environ["ALLOW_CACHE"] == "true":
+                value = await Cache.get()
+                if value is not None:
+                    return value
+
             return await super().request(href)
 
     async def parse(self, response_str: str):
         results = await super().parse(response_str=response_str)
 
         attempt = 1
+        # we constantly receive empty data
         while not results and attempt < 10:
             asyncio.sleep(3)
             print(f"ProxigramRssSource.parse() {attempt=} {results=}")
@@ -41,6 +49,10 @@ class ProxigramRssSource(RssSource):
             results = await super().parse(response_str=response_str)
 
             attempt += 1
+
+        if results and os.environ["ALLOW_CACHE"] == "true":
+            # we are caching if data received wasn't empty
+            await Cache.set(value=response_str)
 
         return results
 
