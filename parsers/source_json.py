@@ -9,7 +9,7 @@ class JsonSource(Source):
         raise NotImplementedError("Expected to be implemented in child classes")
 
     @classmethod
-    def parse(cls, response_str):
+    async def parse(cls, response_str):
         response_data = json.loads(response_str)
 
         return list(

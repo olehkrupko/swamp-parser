@@ -22,6 +22,10 @@ class Source:
     #         os.environ.get("SOURCE_1_TO"),
     #     )
 
+    @classmethod
+    async def parse(cls, each):
+        raise NotImplementedError("Expected to be implemented in child classes")
+
     # @classmethod
     # def parse_each(cls, each):
     #     raise NotImplementedError("Expected to be implemented in child classes")
@@ -60,7 +64,7 @@ class Source:
         response_str = await self.request(href=self.href)
 
         # process data
-        results = self.parse(response_str=response_str)
+        results = await self.parse(response_str=response_str)
         if hasattr(self, "parse_each"):
             results = [self.parse_each(x) for x in results]
 

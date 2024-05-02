@@ -13,7 +13,7 @@ class RssSource(Source):
 
         return ""
 
-    def parse(self, response_str: str):
+    async def parse(self, response_str: str):
         request = feedparser.parse(response_str)
 
         results = []

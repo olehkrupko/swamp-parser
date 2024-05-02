@@ -195,7 +195,7 @@ async def parse_href(href: str, **kwargs: dict):
         response_str = await OtherJsonSource.request(href=href)
 
         # process data
-        results = OtherJsonSource.parse(response_str=response_str)
+        results = await OtherJsonSource.parse(response_str=response_str)
         for each in results:
             each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
 
@@ -211,7 +211,7 @@ async def parse_href(href: str, **kwargs: dict):
         response_str = await OtherJsonSource.request(href=href)
 
         # process data
-        results = OtherJsonSource.parse(response_str=response_str)
+        results = await OtherJsonSource.parse(response_str=response_str)
         for each in results:
             each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
 
