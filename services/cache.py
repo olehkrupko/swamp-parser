@@ -7,7 +7,7 @@ import redis.asyncio as redis
 class Cache:
     def url(self):
         return f"swamp-parser:request:{self.href}"
-    
+
     def timeout():
         return datetime.now() + timedelta(hours=12)
 
