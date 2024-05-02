@@ -38,7 +38,7 @@ async def runner():
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
     )
-    # semaphore 1 for ingestion of items one by one, so feeds don't really mix wit each other
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix with each other
     push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
