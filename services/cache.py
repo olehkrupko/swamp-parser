@@ -9,7 +9,7 @@ class Cache:
         return f"swamp-parser:request:{self.href}"
 
     def timeout():
-        return datetime.now() + timedelta(hours=12)
+        return datetime.now() + timedelta(days=7)
 
     async def get(self):
         r = await redis.from_url(os.environ["REDIS"])
