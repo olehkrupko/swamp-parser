@@ -21,6 +21,7 @@ class Source:
             cls.datetime_format,
         )
 
+    @staticmethod
     def prepare_href(href: str) -> str:
         # return href.replace(from, to)
         return href
