@@ -3,12 +3,13 @@ import os
 
 from parsers.source_rss import RssSource
 
+from schemas.update import Update
 from services.cache import Cache
 
 
 class ProxigramRssSource(RssSource):
     @staticmethod
-    def prepare_href(href):
+    def prepare_href(href: str) -> str:
         href = href.replace(
             "https://www.instagram.com",
             os.environ.get("SOURCE_PROXIGRAM_HOST"),
@@ -20,7 +21,7 @@ class ProxigramRssSource(RssSource):
 
         return href
 
-    async def request(self, href):
+    async def request(self, href: str) -> str:
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
         proxigram_semaphore = asyncio.Semaphore(1)
@@ -33,7 +34,7 @@ class ProxigramRssSource(RssSource):
 
             return await super().request(href)
 
-    async def parse(self, response_str: str):
+    async def parse(self, response_str: str) -> list[Update]:
         results = await super().parse(response_str=response_str)
 
         attempt = 1
@@ -57,7 +58,7 @@ class ProxigramRssSource(RssSource):
         return results
 
     @staticmethod
-    def each_name(each):
+    def each_name(each) -> str:
         return each["summary"]
 
     @staticmethod

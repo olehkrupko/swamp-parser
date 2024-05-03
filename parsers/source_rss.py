@@ -3,17 +3,18 @@ from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
 
 from parsers.source import Source
+from schemas.update import Update
 
 
 class RssSource(Source):
     @staticmethod
-    def each_name(each):
+    def each_name(each) -> str:
         if each.get("title_detail"):
             return each["title_detail"]["value"]
 
         return ""
 
-    async def parse(self, response_str: str):
+    async def parse(self, response_str: str) -> list[Update]:
         request = feedparser.parse(response_str)
 
         results = []
