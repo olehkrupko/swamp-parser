@@ -20,4 +20,4 @@ class OtherJsonSource(JsonSource):
                     "href": each["id"],
                     "datetime": cls.strptime(datetime_string),
                 }
-            ) 
+            )
