@@ -5,19 +5,23 @@ import redis.asyncio as redis
 
 
 class Cache:
+    @staticmethod
     def url(self):
         return f"swamp-parser:request:{self.href}"
 
+    @staticmethod
     def timeout():
         return datetime.now() + timedelta(days=7)
 
-    async def get(self):
+    @classmethod
+    async def get(cls):
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            return await pipe.get(self.cache_url())
+            return await pipe.get(cls.cache_url())
 
-    async def set(self, value: str):
+    @classmethod
+    async def set(cls, value: str):
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            await pipe.set(self.cache_url(), value)
-            pipe.expireat(self.cache_url(), self.cache_timeout())
+            await pipe.set(cls.cache_url(), value)
+            pipe.expireat(cls.cache_url(), cls.cache_timeout())
