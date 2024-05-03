@@ -1,5 +1,6 @@
 import asyncio
 import os
+from contextlib import asynccontextmanager
 
 import sentry_sdk
 from fastapi import FastAPI
@@ -20,20 +21,25 @@ sentry_sdk.init(
 )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # run on startup
+    asyncio.create_task(
+        ParserLoopWorker.start(),
+        name=ParserLoopWorker.name,
+    )
+
+    yield
+    # run on shutdown
+
+
 URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
     description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
     version="2.3",  # Issue 10: fast-api routes
+    lifespan=lifespan,
 )
 app.include_router(parsers.router)
 app.include_router(runners.router)
 app.include_router(tests.router)
-
-
-@app.on_event("startup")
-def startup_function():
-    asyncio.create_task(
-        ParserLoopWorker.start(),
-        name=ParserLoopWorker.name,
-    )
