@@ -8,11 +8,7 @@ class SampleSoupSource(Source):
 
     @classmethod
     def parse_each(cls, each):
-        return {
-            "name": each.find("header").text,
-            "href": each.find("a")["href"],
-            "datetime": cls.strptime(each.find("time")["datetime"]),
-        }
+        return 
 
     @classmethod
     async def parse(cls, response_str):
@@ -22,9 +18,12 @@ class SampleSoupSource(Source):
         if data is None:
             return []
 
-        return list(
-            map(
-                lambda x: cls.parse_each(x),
-                data.find_all("article", attrs={"class": "post-card"}),
-            )
-        )
+        return [
+            {
+                "name": each.find("header").text,
+                "href": each.find("a")["href"],
+                "datetime": cls.strptime(each.find("time")["datetime"]),
+            }
+            for each
+            in data.find_all("article", attrs={"class": "post-card"})
+        ]
