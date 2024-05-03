@@ -8,7 +8,7 @@ class SampleSoupSource(Source):
 
     @classmethod
     def parse_each(cls, each):
-        return 
+        return
 
     @classmethod
     async def parse(cls, response_str):
@@ -24,6 +24,5 @@ class SampleSoupSource(Source):
                 "href": each.find("a")["href"],
                 "datetime": cls.strptime(each.find("time")["datetime"]),
             }
-            for each
-            in data.find_all("article", attrs={"class": "post-card"})
+            for each in data.find_all("article", attrs={"class": "post-card"})
         ]
