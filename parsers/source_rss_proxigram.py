@@ -1,10 +1,14 @@
 import asyncio
+import logging
 import os
 
 from parsers.source_rss import RssSource
 
 from schemas.update import Update
 from services.cache import Cache
+
+
+logger = logging.getLogger(__name__)
 
 
 class ProxigramRssSource(RssSource):
@@ -50,7 +54,7 @@ class ProxigramRssSource(RssSource):
         # we constantly receive empty data
         while not results and attempt < 10:
             asyncio.sleep(3)
-            print(f"ProxigramRssSource.parse() {attempt=} {results=}")
+            logger.warning(f"ProxigramRssSource.parse() {attempt=} {results=}")
 
             # receive data
             response_str = await self.request(href=self.href)
