@@ -31,16 +31,16 @@ class ProxigramRssSource(RssSource):
         return href
 
     async def request(self) -> str:
+        if os.environ["ALLOW_CACHE"] == "true":
+            value = await Cache.get(href=self.href)
+            if value is not None:
+                return value
+
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
         proxigram_semaphore = asyncio.Semaphore(1)
 
         async with proxigram_semaphore:
-            if os.environ["ALLOW_CACHE"] == "true":
-                value = await Cache.get(href=self.href)
-                if value is not None:
-                    return value
-
             return await super().request()
 
     async def parse(self, response_str: str) -> list[Update]:
