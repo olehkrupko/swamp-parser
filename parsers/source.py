@@ -29,10 +29,6 @@ class Source:
     async def parse(cls, each):
         raise NotImplementedError("Expected to be implemented in child classes")
 
-    # @classmethod
-    # def parse_each(cls, each):
-    #     raise NotImplementedError("Expected to be implemented in child classes")
-
     async def request(self, href: str) -> str:
         # avoiding blocks
         referer_domain = "".join(random.choices(string.ascii_letters, k=16))
@@ -67,8 +63,6 @@ class Source:
 
         # process data
         results = await self.parse(response_str=response_str)
-        if hasattr(self, "parse_each"):
-            results = [self.parse_each(x) for x in results]
 
         return results
 

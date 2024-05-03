@@ -9,6 +9,15 @@ from services.cache import Cache
 
 class ProxigramRssSource(RssSource):
     @staticmethod
+    def _fix_each(each: Update) -> Update:
+        each["href"] = each["href"].replace(
+            "http://127.0.0.1:30019",
+            "https://www.instagram.com",
+        )
+
+        return each
+
+    @staticmethod
     def prepare_href(href: str) -> str:
         href = href.replace(
             "https://www.instagram.com",
@@ -55,18 +64,8 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(value=response_str)
 
-        return results
+        return [x._fix_each() for x in results]
 
     @staticmethod
     def each_name(each) -> str:
         return each["summary"]
-
-    @staticmethod
-    def parse_each(each):
-        print(f">>>> { each= }")
-        each["href"] = each["href"].replace(
-            "http://127.0.0.1:30019",
-            "https://www.instagram.com",
-        )
-
-        return each
