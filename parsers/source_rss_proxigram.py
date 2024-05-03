@@ -3,7 +3,7 @@ import os
 
 from parsers.source_rss import RssSource
 
-from services import Cache
+from services.cache import Cache
 
 
 class ProxigramRssSource(RssSource):
