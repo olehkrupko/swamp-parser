@@ -7,10 +7,13 @@ from sentry_sdk import capture_exception as sentry_capture_exception
 
 
 class Source:
-    datetime_format = ""
+    datetime_format = None
 
     @classmethod
     def strptime(cls, datetime_string: str):
+        if cls.datetime_format is None:
+            raise AttributeError("You need to assign cls.datetime_format != None")
+
         return datetime.strptime(
             datetime_string,
             cls.datetime_format,
