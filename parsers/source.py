@@ -30,17 +30,17 @@ class Source:
     async def parse(cls, each):
         raise NotImplementedError("Expected to be implemented in child classes")
 
-    async def request(self, href: str) -> str:
+    async def request(self) -> str:
         # avoiding blocks
         referer_domain = "".join(random.choices(string.ascii_letters, k=16))
         headers = {
             # 'user-agent': feed.UserAgent_random().strip(),
-            "referer": f"https://www.{ referer_domain }.com/?q={ href }"
+            "referer": f"https://www.{ referer_domain }.com/?q={ self.href }"
         }
 
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                href,
+                self.href,
                 headers=headers,
                 verify_ssl=False,
             ) as response:
@@ -60,7 +60,7 @@ class Source:
 
     async def run(self) -> list[Update]:
         # receive data
-        response_str = await self.request(href=self.href)
+        response_str = await self.request()
 
         # process data
         results = await self.parse(response_str=response_str)
