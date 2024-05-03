@@ -17,11 +17,15 @@ class Cache:
     async def get(cls, href: str) -> str:
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            return await pipe.get(cls.key(href))
+            values = await pipe.get(cls.key(href)).execute()
+            # result is a list
+            return values[0]
 
     @classmethod
     async def set(cls, href: str, value: str):
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            await pipe.set(cls.key(href), value)
-            pipe.expireat(cls.key(href), cls.cache_timeout())
+            await (
+                pipe.set(cls.key(href), str(value))
+                    .expireat(cls.key(href), cls.timeout())
+            ).execute()
