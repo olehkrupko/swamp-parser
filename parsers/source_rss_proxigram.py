@@ -68,7 +68,7 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
-        return [x._fix_each() for x in results]
+        return [self._fix_each(x) for x in results]
 
     @staticmethod
     def each_name(each) -> str:
