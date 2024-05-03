@@ -19,11 +19,9 @@ class Source:
             cls.datetime_format,
         )
 
-    # def prepare_href(href):
-    #     return href.replace(
-    #         os.environ.get("SOURCE_1_FROM"),
-    #         os.environ.get("SOURCE_1_TO"),
-    #     )
+    def prepare_href(href: str) -> str:
+        # return href.replace(from, to)
+        return href
 
     @classmethod
     async def parse(cls, each):
@@ -57,8 +55,7 @@ class Source:
         href: str,
     ):
         # prepare URL
-        if hasattr(self, "prepare_href"):
-            href = self.prepare_href(href)
+        href = self.prepare_href(href)
 
         self.href = href
 
