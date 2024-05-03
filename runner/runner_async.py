@@ -1,10 +1,14 @@
 import asyncio
+import logging
 import os
 
 import aiohttp
 from sentry_sdk import capture_exception
 
 import parsers.parser_async as parser_async
+
+
+logger = logging.getLogger(__name__)
 
 
 async def task(feed):
@@ -33,7 +37,7 @@ async def task(feed):
 
 
 async def runner():
-    print("runner(): Starting...")
+    logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
@@ -54,7 +58,7 @@ async def runner():
         # is not expected to happen in the future
         capture_exception(e)
         feeds = []
-        print(f"ERROR: {e}")
+        logger.warning(f"ERROR: {e}")
 
     for feed in feeds:
         coroutines.append(
@@ -80,13 +84,13 @@ async def runner():
 
     # print and return results
     if errors:
-        print(f"runner(): {errors=}")
-    print(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
+        logger.warning(f"runner(): {errors=}")
+    logger.warning(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
         updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
-        print(f"runner(): updates_new>0={updates_new__gt_zero}")
-    print("runner(): Returning...")
-    print()
+        logger.warning(f"runner(): updates_new>0={updates_new__gt_zero}")
+    logger.warning("runner(): Returning...")
+    logger.warning("")
     return {
         "errors": errors,
         "results": results,
