@@ -24,6 +24,12 @@ sentry_sdk.init(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # run on startup
+    global connection_semaphore, push_semaphore
+    connection_semaphore = asyncio.Semaphore(
+        int(os.environ.get("AIOHTTP_SEMAPHORE")),
+    )
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix with each other
+    push_semaphore = asyncio.Semaphore(1)
     asyncio.create_task(
         ParserLoopWorker.start(),
         name=ParserLoopWorker.name,
