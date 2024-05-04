@@ -27,4 +27,4 @@ async def run_async() -> dict:
 @router.get("/ingest/", response_class=PrettyJsonResponse)
 async def run_by_id(feed_id: int) -> dict:
     "Parse one feed by URL and send it to DB"
-    return await runner(feed_ids=[feed_id])
+    return await runner_async_func(feed_ids=[feed_id])
