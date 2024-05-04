@@ -9,8 +9,6 @@ jobs:
   checkout:
     runs-on: self-hosted
     steps:
-      - name: Cleanup
-        run: rmdir '/tmp/github-worker/swamp-parser/swamp-parser/checkout'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
