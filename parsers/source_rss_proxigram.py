@@ -47,6 +47,7 @@ class ProxigramRssSource(RssSource):
         if os.environ["ALLOW_CACHE"] == "true":
             value = await Cache.get(href=self.href)
             if value is not None:
+                logger.warning(f"Successful cache retrieval for {self.href}")
                 return value
 
         global proxigram_semaphore
