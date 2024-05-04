@@ -15,7 +15,7 @@ class Cache:
 
     @classmethod
     async def get(cls, href: str) -> str:
-        r = await redis.from_url(os.environ["REDIS"])
+        r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             values = await pipe.get(cls.key_from_href(href)).execute()
             # result is a list
@@ -23,7 +23,7 @@ class Cache:
 
     @classmethod
     async def set(cls, href: str, value: str):
-        r = await redis.from_url(os.environ["REDIS"])
+        r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             await pipe.set(cls.key_from_href(href), str(value)).expireat(
                 cls.key_from_href(href), cls.timeout()
