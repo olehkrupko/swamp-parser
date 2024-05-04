@@ -37,6 +37,16 @@ async def task(feed: Feed):
         raise type(e)(f"{feed['href']}: {str(e)}")
 
 
+async def runner_one(feed_id: int):
+    global connection_semaphore, push_semaphore
+    connection_semaphore = asyncio.Semaphore(1)
+    push_semaphore = asyncio.Semaphore(1)
+
+    feed = await Feed.get_feed(feed_id)
+    results = await task(feed=feed)
+
+    return results
+
 async def runner():
     logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore

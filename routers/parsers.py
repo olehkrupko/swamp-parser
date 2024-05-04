@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from parsers import parser as parser_base
 from parsers import parser_async
 from responses.PrettyJsonResponse import PrettyJsonResponse
+from runner.runner_async import runner_one
 from schemas.update import Update
 
 
@@ -38,3 +39,12 @@ async def parse_async(
     )
 
     return results
+
+
+# curl -X GET "http://127.0.0.1:30015/parse/ingest/?feed_id=5734"
+@router.get("/ingest/", response_class=PrettyJsonResponse)
+async def parse_one(
+    feed_id: int,
+):
+    "Parse one feed by URL and send it to DB"
+    return await runner_one(feed_id=feed_id)
