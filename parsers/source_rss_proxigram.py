@@ -22,8 +22,10 @@ class ProxigramRssSource(RssSource):
         # lots of weird symbols, cleaning it up to proper string
         each["name"] = (
             html.unescape(each["name"])
-            .encode('latin1').decode('unicode-escape')
-            .encode('latin1').decode('utf8')
+            .encode("latin1")
+            .decode("unicode-escape")
+            .encode("latin1")
+            .decode("utf8")
         )
 
         return each

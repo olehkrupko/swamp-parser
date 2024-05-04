@@ -192,7 +192,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherJsonSource.request(href=href)
+        response_str = await OtherJsonSource.request()
 
         # process data
         results = await OtherJsonSource.parse(response_str=response_str)
@@ -208,7 +208,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherJsonSource.request(href=href)
+        response_str = await OtherJsonSource.request()
 
         # process data
         results = await OtherJsonSource.parse(response_str=response_str)
