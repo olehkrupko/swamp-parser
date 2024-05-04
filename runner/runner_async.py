@@ -57,8 +57,9 @@ async def runner():
     push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
+    feeds = await Feed.get_feeds()
     coroutines = []
-    for feed in await Feed.get_feeds():
+    for feed in feeds:
         coroutines.append(
             asyncio.Task(
                 task(feed),
