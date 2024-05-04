@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from parsers import parser as parser_base
 from parsers import parser_async
 from responses.PrettyJsonResponse import PrettyJsonResponse
-from runner.runner_async import runner
 from schemas.update import Update
 
 
