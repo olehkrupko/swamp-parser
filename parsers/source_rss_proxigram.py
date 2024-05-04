@@ -78,6 +78,8 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
+        if not results:
+            logger.warning(f"Still empty {response_str}")
         return [self._fix_each(x) for x in results]
 
     @staticmethod
