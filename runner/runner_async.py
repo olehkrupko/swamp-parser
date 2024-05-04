@@ -38,6 +38,10 @@ async def task(feed: Feed):
 
 
 async def runner_one(feed_id: int):
+    global connection_semaphore, push_semaphore
+    connection_semaphore = asyncio.Semaphore(1)
+    push_semaphore = asyncio.Semaphore(1)
+
     feed = await Feed.get_feed(feed_id)
     results = await task(feed=feed)
 
@@ -46,6 +50,13 @@ async def runner_one(feed_id: int):
 
 async def runner():
     logger.warning("runner(): Starting...")
+    global connection_semaphore, push_semaphore
+    connection_semaphore = asyncio.Semaphore(
+        int(os.environ.get("AIOHTTP_SEMAPHORE")),
+    )
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix with each other
+    push_semaphore = asyncio.Semaphore(1)
+
     # run coroutines
     feeds = await Feed.get_feeds()
     coroutines = []
