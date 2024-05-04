@@ -1,8 +1,8 @@
 import aiohttp
 import os
-from datetime import datetime
+# from datetime import datetime
 from pydantic import BaseModel
-from typing import Type, Self
+from typing import Self
 
 
 # unused

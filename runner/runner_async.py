@@ -47,6 +47,7 @@ async def runner_one(feed_id: int):
 
     return results
 
+
 async def runner():
     logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore

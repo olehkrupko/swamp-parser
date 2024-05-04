@@ -57,7 +57,7 @@ class ProxigramRssSource(RssSource):
             logger.warning(f"ProxigramRssSource.parse() {attempt=} {results=}")
 
             # receive data
-            response_str = await self.request(href=self.href)
+            response_str = await self.request()
 
             # process data
             results = await super().parse(response_str=response_str)
