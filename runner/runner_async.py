@@ -37,18 +37,7 @@ async def task(feed: Feed):
         raise type(e)(f"{feed['href']}: {str(e)}")
 
 
-async def runner_one(feed_id: int):
-    global connection_semaphore, push_semaphore
-    connection_semaphore = asyncio.Semaphore(1)
-    push_semaphore = asyncio.Semaphore(1)
-
-    feed = await Feed.get_feed(feed_id)
-    results = await task(feed=feed)
-
-    return results
-
-
-async def runner():
+async def runner(feed_ids: list[int] = None):
     logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
@@ -58,7 +47,11 @@ async def runner():
     push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
-    feeds = await Feed.get_feeds()
+    if feed_ids is None:
+        feeds = await Feed.get_feeds()
+    else:
+        feeds = [await Feed.get_feed(x) for x in feed_ids]
+
     coroutines = []
     for feed in feeds:
         coroutines.append(

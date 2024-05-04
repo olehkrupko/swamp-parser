@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from parsers import parser as parser_base
 from parsers import parser_async
 from responses.PrettyJsonResponse import PrettyJsonResponse
-from runner.runner_async import runner_one
+from runner.runner_async import runner
 from schemas.update import Update
 
 
@@ -47,4 +47,4 @@ async def parse_one(
     feed_id: int,
 ):
     "Parse one feed by URL and send it to DB"
-    return await runner_one(feed_id=feed_id)
+    return await runner(feed_ids=[feed_id])
