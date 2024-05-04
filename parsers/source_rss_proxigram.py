@@ -1,4 +1,5 @@
 import asyncio
+import html
 import logging
 import os
 
@@ -17,6 +18,12 @@ class ProxigramRssSource(RssSource):
         each["href"] = each["href"].replace(
             "http://127.0.0.1:30019",
             "https://www.instagram.com",
+        )
+        # lots of weird symbols, cleaning it up to proper string
+        each["name"] = (
+            html.unescape(each["name"])
+            .encode('latin1').decode('unicode-escape')
+            .encode('latin1').decode('utf8')
         )
 
         return each
