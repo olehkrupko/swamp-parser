@@ -6,7 +6,7 @@ import redis.asyncio as redis
 
 class Cache:
     @staticmethod
-    def key(href: str) -> str:
+    def key_from_href(href: str) -> str:
         return f"swamp-parser:request:{href}"
 
     @staticmethod
@@ -17,7 +17,7 @@ class Cache:
     async def get(cls, href: str) -> str:
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            values = await pipe.get(cls.key(href)).execute()
+            values = await pipe.get(cls.key_from_href(href)).execute()
             # result is a list
             return values[0]
 
@@ -25,6 +25,6 @@ class Cache:
     async def set(cls, href: str, value: str):
         r = await redis.from_url(os.environ["REDIS"])
         async with r.pipeline(transaction=True) as pipe:
-            await pipe.set(cls.key(href), str(value)).expireat(
-                cls.key(href), cls.timeout()
+            await pipe.set(cls.key_from_href(href), str(value)).expireat(
+                cls.key_from_href(href), cls.timeout()
             ).execute()
