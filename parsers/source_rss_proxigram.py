@@ -1,5 +1,4 @@
 import asyncio
-import html
 import logging
 import os
 
@@ -7,6 +6,8 @@ from parsers.source_rss import RssSource
 
 from schemas.update import Update
 from services.cache import Cache
+
+# import html
 
 
 logger = logging.getLogger(__name__)
