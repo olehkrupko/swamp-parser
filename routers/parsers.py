@@ -39,12 +39,3 @@ async def parse_async(
     )
 
     return results
-
-
-# curl -X GET "http://127.0.0.1:30015/parse/ingest/?feed_id=5734"
-@router.get("/ingest/", response_class=PrettyJsonResponse)
-async def parse_one(
-    feed_id: int,
-):
-    "Parse one feed by URL and send it to DB"
-    return await runner(feed_ids=[feed_id])

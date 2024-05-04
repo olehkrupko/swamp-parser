@@ -12,12 +12,19 @@ router = APIRouter(
 
 # DEPRECATED
 @router.get("/", response_class=PrettyJsonResponse)
-def runner() -> dict:
+def run() -> dict:
     "Parse all feeds."
     return runner_func()
 
 
 @router.get("/async/", response_class=PrettyJsonResponse)
-async def runner_async() -> dict:
+async def run_async() -> dict:
     "Parse multiple feeds. Asynchronously."
     return await runner_async_func()
+
+
+# curl -X GET "http://127.0.0.1:30015/parse/ingest/?feed_id=5734"
+@router.get("/ingest/", response_class=PrettyJsonResponse)
+async def run_by_id(feed_id: int) -> dict:
+    "Parse one feed by URL and send it to DB"
+    return await runner(feed_ids=[feed_id])
