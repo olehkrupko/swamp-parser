@@ -20,13 +20,13 @@ class ProxigramRssSource(RssSource):
             "https://www.instagram.com",
         )
         # lots of weird symbols, cleaning it up to proper string
-        each["name"] = (
-            html.unescape(each["name"])
-            .encode("latin1")
-            .decode("unicode-escape")
-            .encode("latin1")
-            .decode("utf8")
-        )
+        # each["name"] = (
+        #     html.unescape(each["name"])
+        #     # .encode("latin1")
+        #     # .decode("unicode-escape")
+        #     # .encode("latin1")
+        #     # .decode("utf8")
+        # )
 
         return each
 
