@@ -1,6 +1,7 @@
-import feedparser
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
+
+import feedparser
 
 from parsers.source import Source
 from schemas.update import Update
