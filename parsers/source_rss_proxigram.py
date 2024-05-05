@@ -85,12 +85,12 @@ class ProxigramRssSource(RssSource):
                     # default error, I guess
                     # possibly account is non-existant
                     # sometimes there are some other errors...
+                    attempt += 1
                     continue
                 else:
                     logger.warning(f"Still empty {empty}")
                     logger.warning(f"    {empty['feed']}")
-
-            attempt += 1
+                    attempt += 1
 
         if results and os.environ["ALLOW_CACHE"] == "true":
             logger.warning(f"ProxigramRssSource.parse() {attempt=} {len(results)=}")
