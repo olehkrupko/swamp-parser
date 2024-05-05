@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 
+import feedparser
 from parsers.source_rss import RssSource
 
 from schemas.update import Update
@@ -83,7 +84,10 @@ class ProxigramRssSource(RssSource):
             await Cache.set(href=self.href, value=response_str)
 
         if not results:
-            logger.warning(f"Still empty {response_str}")
+            empty = feedparser.parse(response_str)
+            logger.warning(f"Still empty {empty}")
+            logger.warning(f"    {empty['feed']}")
+            # logger.warning(f"Still empty {response_str}")
         return [self._fix_each(x) for x in results]
 
     @staticmethod
