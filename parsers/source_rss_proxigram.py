@@ -28,6 +28,9 @@ class ProxigramRssSource(RssSource):
         #     # .encode("latin1")
         #     # .decode("utf8")
         # )
+        if "<p>" in each["name"]:
+            print("Empty name, I guess:", each["name"], each["href"])
+            each["name"] = ""
 
         return each
 
