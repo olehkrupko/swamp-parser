@@ -78,7 +78,10 @@ class ProxigramRssSource(RssSource):
             results = await super().parse(response_str=response_str)
             if not results and attempt == 1:
                 empty = feedparser.parse(response_str)
-                if empty.ge("id", None):
+                if empty["feed"].get("id", None):
+                    # private account or no posts
+                    break
+                else:
                     logger.warning(f"Still empty {empty}")
                     logger.warning(f"    {empty['feed']}")
 
