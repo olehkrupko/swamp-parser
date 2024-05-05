@@ -192,12 +192,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherJsonSource.request()
-
-        # process data
-        results = await OtherJsonSource.parse(response_str=response_str)
-        for each in results:
-            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
+        results = await OtherJsonSource(href=href).run()
 
     # custom source_2 import
     elif os.environ.get("SOURCE_2_FROM") in href:
@@ -207,13 +202,7 @@ async def parse_href(href: str, **kwargs: dict):
             os.environ.get("SOURCE_2_TO"),
         )
 
-        # receive data
-        response_str = await OtherJsonSource.request()
-
-        # process data
-        results = await OtherJsonSource.parse(response_str=response_str)
-        for each in results:
-            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
+        results = await OtherJsonSource(href=href).run()
 
     # default RSS import
     else:
