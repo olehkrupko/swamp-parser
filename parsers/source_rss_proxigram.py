@@ -30,7 +30,7 @@ class ProxigramRssSource(RssSource):
         #     # .decode("utf8")
         # )
         if "<p>" in each["name"]:
-            logger.warning("Empty name, I guess:", each["name"], each["href"])
+            # logger.warning("Empty name, I guess:", each["name"], each["href"])
             each["name"] = ""
 
         return each
