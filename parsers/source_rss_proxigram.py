@@ -76,6 +76,11 @@ class ProxigramRssSource(RssSource):
 
             # process data
             results = await super().parse(response_str=response_str)
+            if not results and attempt == 1:
+                empty = feedparser.parse(response_str)
+                if empty["id"]:
+                    logger.warning(f"Still empty {empty}")
+                    logger.warning(f"    {empty['feed']}")
 
             attempt += 1
 
