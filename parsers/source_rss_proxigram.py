@@ -8,8 +8,6 @@ from parsers.source_rss import RssSource
 from schemas.update import Update
 from services.cache import Cache
 
-# import html
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +19,6 @@ class ProxigramRssSource(RssSource):
             "http://127.0.0.1:30019",
             "https://www.instagram.com",
         )
-        # lots of weird symbols, cleaning it up to proper string
-        # each["name"] = (
-        #     html.unescape(each["name"])
-        #     # .encode("latin1")
-        #     # .decode("unicode-escape")
-        #     # .encode("latin1")
-        #     # .decode("utf8")
-        # )
         if "<p>" in each["name"]:
             # logger.warning("Empty name, I guess:", each["name"], each["href"])
             each["name"] = ""
@@ -69,39 +59,27 @@ class ProxigramRssSource(RssSource):
         # we constantly receive empty data
         while not results and attempt < 10:
             await asyncio.sleep(3)
-            logger.warning(f"ProxigramRssSource.parse() {attempt=} {len(results)=}")
+            logger.warning(f"ProxigramRssSource.parse() {attempt=} {len(results)=} {self.href=}")
 
             # receive data
             response_str = await self.request()
 
             # process data
             results = await super().parse(response_str=response_str)
-            if not results and attempt == 1:
+            if not results:
                 empty = feedparser.parse(response_str)
                 if empty["feed"].get("id", None):
                     # private account or no posts
                     break
-                elif "500" in empty["feed"]["summary"] and "Internal Server Error." in empty["feed"]["summary"]: 
-                    # default error, I guess
-                    # possibly account is non-existant
-                    # sometimes there are some other errors...
-                    attempt += 1
-                    continue
-                else:
-                    logger.warning(f"Still empty {empty}")
-                    logger.warning(f"    {empty['feed']}")
-                    attempt += 1
+
+            attempt += 1
 
         if results and os.environ["ALLOW_CACHE"] == "true":
             logger.warning(f"ProxigramRssSource.parse() {attempt=} {len(results)=}")
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
-        if not results:
-            empty = feedparser.parse(response_str)
-            logger.warning(f"Still empty {empty}")
-            logger.warning(f"    {empty['feed']}")
-            # logger.warning(f"Still empty {response_str}")
+        logger.warning(f"ProxigramRssSource.parse() {attempt=} {len(results)=} {self.href=}")
         return [self._fix_each(x) for x in results]
 
     @staticmethod
