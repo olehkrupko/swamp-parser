@@ -81,6 +81,11 @@ class ProxigramRssSource(RssSource):
                 if empty["feed"].get("id", None):
                     # private account or no posts
                     break
+                elif "500" in empty["feed"]["summary"] and "Internal Server Error." in empty["feed"]["summary"]: 
+                    # default error, I guess
+                    # possibly account is non-existant
+                    # sometimes there are some other errors...
+                    continue
                 else:
                     logger.warning(f"Still empty {empty}")
                     logger.warning(f"    {empty['feed']}")
