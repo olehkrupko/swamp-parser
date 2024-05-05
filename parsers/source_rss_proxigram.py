@@ -67,7 +67,7 @@ class ProxigramRssSource(RssSource):
         attempt = 1
         # we constantly receive empty data
         while not results and attempt < 10:
-            asyncio.sleep(3)
+            await asyncio.sleep(3)
             logger.warning(f"ProxigramRssSource.parse() {attempt=} {results=}")
 
             # receive data
