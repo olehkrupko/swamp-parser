@@ -81,9 +81,6 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
-        logger.warning(
-            f"ProxigramRssSource.parse() {attempt=} {len(results)=} {self.href=}"
-        )
         return [self._fix_each(x) for x in results]
 
     @staticmethod
