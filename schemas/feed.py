@@ -40,6 +40,7 @@ class Feed(BaseModel):
                 f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
             ) as response:
                 return [cls.from_full(x) for x in await response.json()]
+        # TODO: remove later if everything is alright
         # except aiohttp.client_exceptions.ClientConnectorError as e:
         #     # seems to be triggered by swamp-api not being up on startup
         #     # is not expected to happen in the future
@@ -55,6 +56,7 @@ class Feed(BaseModel):
                 f"{ os.environ['SWAMP_API'] }/feeds/{ feed_id }"
             ) as response:
                 return cls.from_full(await response.json())
+        # TODO: remove later if everything is alright
         # except aiohttp.client_exceptions.ClientConnectorError as e:
         #     # seems to be triggered by swamp-api not being up on startup
         #     # is not expected to happen in the future

@@ -18,7 +18,7 @@ class Cache:
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             values = await pipe.get(cls.key_from_href(href)).execute()
-            # result is a list
+            # result is a list, but we need only one item
             return values[0]
 
     @classmethod

@@ -1,4 +1,3 @@
-import feedparser
 import random
 import ssl
 import string
@@ -6,6 +5,7 @@ import urllib
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
 
+import feedparser
 from sentry_sdk import capture_exception
 
 # import os
