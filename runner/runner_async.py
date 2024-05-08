@@ -38,7 +38,7 @@ async def task(feed: Feed):
 
 
 async def runner(feed_ids: list[int] = None):
-    logger.info("runner(): Starting...")
+    logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
@@ -77,13 +77,13 @@ async def runner(feed_ids: list[int] = None):
 
     # print and return results
     if errors:
-        logger.info(f"runner(): {errors=}")
-    logger.info(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
+        logger.warning(f"runner(): {errors=}")
+    logger.warning(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
         updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
-        logger.info(f"runner(): updates_new>0={updates_new__gt_zero}")
-    logger.info("runner(): Returning...")
-    logger.info("")
+        logger.warning(f"runner(): updates_new>0={updates_new__gt_zero}")
+    logger.warning("runner(): Returning...")
+    logger.warning("")
     return {
         "errors": errors,
         "results": results,
