@@ -38,7 +38,7 @@ async def task(feed: Feed):
 
 
 async def runner(feed_ids: list[int] = None):
-    logger.info("runner(): Starting...")
+    logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
