@@ -20,7 +20,7 @@ class ProxigramRssSource(RssSource):
             "https://www.instagram.com",
         )
         if "<p>" in each["name"]:
-            # logger.warning("Empty name, I guess:", each["name"], each["href"])
+            # logger.info("Empty name, I guess:", each["name"], each["href"])
             each["name"] = ""
 
         return each
@@ -59,7 +59,7 @@ class ProxigramRssSource(RssSource):
         # we constantly receive empty data
         while not results and attempt < 10:
             await asyncio.sleep(3)
-            logger.warning(
+            logger.info(
                 f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
             )
 
@@ -77,7 +77,7 @@ class ProxigramRssSource(RssSource):
             attempt += 1
 
         if results and os.environ["ALLOW_CACHE"] == "true":
-            logger.warning(
+            logger.info(
                 f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
             )
             # we are caching if data received wasn't empty
