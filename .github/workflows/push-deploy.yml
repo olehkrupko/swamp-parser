@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - '8-instagram-make-it-work'
 jobs:
   checkout:
     runs-on: self-hosted
