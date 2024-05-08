@@ -1,4 +1,3 @@
-import feedparser
 import random
 import ssl
 import string
@@ -6,6 +5,7 @@ import urllib
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
 
+import feedparser
 from sentry_sdk import capture_exception
 
 # import os
@@ -140,43 +140,6 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
             href=href,
             proxy=proxy,
         )
-
-    # custom RSS readmanga converter
-    elif "http://readmanga.live/" in href and href.find("/rss/") == -1:
-        # 22 = len('http://readmanga.live/')
-        name = href[22:]
-        href = "https://readmanga.live/rss/manga?name=" + name
-
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-        )
-
-        for each in results:
-            split = each["href"].split("/")
-            split[-3] = name
-            each["href"] = "/".join(split)
-
-    # custom RSS mintmanga converter
-    elif (
-        "mintmanga.com" in href
-        and "mintmanga.com/rss/manga" not in href
-        and not kwargs.get("processed")
-    ):
-        # 21 = len('http://mintmanga.com/')
-        name = href[21:]
-        href = "https://mintmanga.com/rss/manga?name=" + name
-
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-            processed=True,
-        )
-
-        for each in results:
-            split = each["href"].split("/")
-            split[-3] = name
-            each["href"] = "/".join(split)
 
     # custom RSS deviantart converter
     elif "deviantart.com" in href and not kwargs.get("processed"):

@@ -1,30 +1,24 @@
-import json
+from parsers.source_json import JsonSource
+from schemas.update import Update
 
-from parsers.source import Source
 
-
-class OtherJsonSource(Source):
+class OtherJsonSource(JsonSource):
     datetime_format = "%Y-%m-%dT%H:%M:%S"
 
-    @classmethod
-    def _parse_each(cls, each):
-        datetime_string = each["published"]
-        if not datetime_string:
-            datetime_string = each["added"]
+    async def parse(self, response_str: str) -> list[Update]:
+        results = []
 
-        return {
-            "name": each["title"],  # longer alternative: each["content"]
-            "href": each["id"],
-            "datetime": cls.strptime(datetime_string),
-        }
+        for each in await super().parse(response_str=response_str):
+            datetime_string = each["published"]
+            if not datetime_string:
+                datetime_string = each["added"]
 
-    @classmethod
-    def parse(cls, response_str):
-        response_data = json.loads(response_str)
-
-        return list(
-            map(
-                lambda x: cls._parse_each(x),
-                response_data,
+            results.append(
+                {
+                    "name": each["title"],  # longer alternative: each["content"]
+                    "href": f"{ self.href.replace('/api/v1', '') }/post/{ each['id'] }",
+                    "datetime": self.strptime(datetime_string),
+                }
             )
-        )
+
+        return results

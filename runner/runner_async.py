@@ -6,12 +6,13 @@ import aiohttp
 from sentry_sdk import capture_exception
 
 import parsers.parser_async as parser_async
+from schemas.feed import Feed
 
 
 logger = logging.getLogger(__name__)
 
 
-async def task(feed):
+async def task(feed: Feed):
     try:
         async with connection_semaphore:
             updates = []
@@ -36,30 +37,22 @@ async def task(feed):
         raise type(e)(f"{feed['href']}: {str(e)}")
 
 
-async def runner():
+async def runner(feed_ids: list[int] = None):
     logger.warning("runner(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
     )
-    # semaphore 1 for ingestion of items one by one, so feeds don't really mix wit each other
+    # semaphore 1 for ingestion of items one by one, so feeds don't really mix with each other
     push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
-    coroutines = []
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
-            ) as response:
-                feeds = await response.json()
-    except aiohttp.client_exceptions.ClientConnectorError as e:
-        # seems to be triggered by swamp-api not being up on startup
-        # is not expected to happen in the future
-        capture_exception(e)
-        feeds = []
-        logger.warning(f"ERROR: {e}")
+    if feed_ids is None:
+        feeds = await Feed.get_feeds()
+    else:
+        feeds = [await Feed.get_feed(x) for x in feed_ids]
 
+    coroutines = []
     for feed in feeds:
         coroutines.append(
             asyncio.Task(

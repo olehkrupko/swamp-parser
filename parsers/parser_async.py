@@ -1,14 +1,11 @@
 import os
-import random
-import string
-from datetime import datetime
-from dateutil import parser, tz  # adding custom timezones
 
-import aiohttp
-import feedparser
-from sentry_sdk import capture_exception, capture_message
+import random
+from sentry_sdk import capture_message
 
 from parsers.source_json_other import OtherJsonSource
+from parsers.source_rss import RssSource
+from parsers.source_rss_proxigram import ProxigramRssSource
 
 # import json
 # import os
@@ -23,13 +20,6 @@ async def parse_href(href: str, **kwargs: dict):
     ###############################
     results = []
 
-    # avoiding blocks
-    referer_domain = "".join(random.choices(string.ascii_letters, k=16))
-    headers = {
-        # 'user-agent': feed.UserAgent_random().strip(),
-        "referer": f"https://www.{ referer_domain }.com/?q={ href }"
-    }
-
     #########################
     # STARTING DATA INGESTION
     #########################
@@ -38,35 +28,39 @@ async def parse_href(href: str, **kwargs: dict):
     if False:
         return "NOPE"
 
-    # rss-bridge instagram import converter
-    elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = "&".join(
-            (
-                "action=display",
-                "bridge=InstagramBridge",
-                "context=Username",
-                "media_type=all",
-            )
-        )
+    elif "instagram.com" in href:
+        results = await ProxigramRssSource(href=href).run()
 
-        timeout = 31 * 24 * 60 * 60  # 31 days
-        username = href[26:-1]
+    # # rss-bridge instagram import converter
+    # elif "instagram.com" in href and not kwargs.get("processed"):
+    #     RSS_BRIDGE_ARGS = "&".join(
+    #         (
+    #             "action=display",
+    #             # "bridge=InstagramBridge",
+    #             "bridge=PicnobBridge",
+    #             "context=Username",
+    #             # "media_type=all",
+    #         )
+    #     )
 
-        href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
-            os.environ.get("RSS_BRIDGE_URL"),
-            RSS_BRIDGE_ARGS,
-            username,
-            timeout,
-        )
+    #     timeout = 31 * 24 * 60 * 60  # 31 days
+    #     username = href[26:-1]
 
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-        # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            # capture_message(f"{ href } - { results[0]['name'] }")
-            return []
+    #     href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
+    #         os.environ.get("RSS_BRIDGE_URL"),
+    #         RSS_BRIDGE_ARGS,
+    #         username,
+    #         timeout,
+    #     )
+
+    #     results = await parse_href(
+    #         href=href,
+    #         processed=True,
+    #     )
+    #     # safeguard against failed attempts
+    #     if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+    #         # capture_message(f"{ href } - { results[0]['name'] }")
+    #         return []
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:
@@ -198,12 +192,7 @@ async def parse_href(href: str, **kwargs: dict):
         )
 
         # receive data
-        response_str = await OtherJsonSource.request(href=href)
-
-        # process data
-        results = OtherJsonSource.parse(response_str=response_str)
-        for each in results:
-            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
+        results = await OtherJsonSource(href=href).run()
 
     # custom source_2 import
     elif os.environ.get("SOURCE_2_FROM") in href:
@@ -213,74 +202,10 @@ async def parse_href(href: str, **kwargs: dict):
             os.environ.get("SOURCE_2_TO"),
         )
 
-        # receive data
-        response_str = await OtherJsonSource.request(href=href)
-
-        # process data
-        results = OtherJsonSource.parse(response_str=response_str)
-        for each in results:
-            each["href"] = f"{ href.replace('/api/v1', '') }/post/{ each['href'] }"
+        results = await OtherJsonSource(href=href).run()
 
     # default RSS import
     else:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                href,
-                headers=headers,
-                verify_ssl=False,
-            ) as response:
-                # ssl._create_default_https_context = getattr(
-                #     ssl, "_create_unverified_context"
-                # )
-                response_str = await response.read()
-
-        request = feedparser.parse(response_str)
-
-        for each in request["items"]:
-            if not each:
-                message = f"Feed {href=} is empty, skipping"
-                capture_exception(message)
-                continue
-            try:
-                result_href = each["links"][0]["href"]
-            except KeyError:
-                capture_exception(f"Data missing URL, skipping item {href=} {each=}")
-                continue
-
-            # DATE RESULT: parsing dates
-            if "published" in each:
-                result_datetime = each["published"]
-            elif "delayed" in each:
-                result_datetime = each["delayed"]
-            elif "updated" in each:
-                result_datetime = each["updated"]
-            else:
-                capture_exception("result_datetime broke for feed")
-
-            tzinfos = {
-                "PDT": tz.gettz("America/Los_Angeles"),
-                "PST": tz.gettz("America/Juneau"),
-            }
-            if result_datetime.isdigit():
-                result_datetime = datetime.utcfromtimestamp(int(result_datetime))
-            elif not isinstance(result_datetime, datetime):
-                result_datetime = parser.parse(
-                    result_datetime,
-                    tzinfos=tzinfos,
-                )
-
-            if each.get("title_detail"):
-                result_name = each["title_detail"]["value"]
-            else:
-                result_name = ""
-
-            # APPEND RESULT
-            results.append(
-                {
-                    "name": result_name,
-                    "href": result_href,
-                    "datetime": result_datetime,
-                }
-            )
+        results = await RssSource(href=href).run()
 
     return results
