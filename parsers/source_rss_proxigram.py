@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from functools import reduce
 
 import feedparser
 from parsers.source_rss import RssSource
@@ -82,6 +83,20 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
+        # remove duplicates
+        # it seems to be caused by pinned posts
+        href_dict = {}
+        for each in results:
+            if each["href"] not in href_dict.keys():
+                href_dict[each["href"]] = [each]
+            else:
+                href_dict[each["href"]].append(each)
+        # remove newer duplicates
+        for key, value in href_dict.items():
+            href_dict[key] = reduce(lambda a, b: a if a["datetime"] < b["datetime"] else b, value)
+        # remove duplicates from results
+        results = list(filter(lambda x: (x in href_dict.values()), results))
+    
         logger.warning(
             f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
