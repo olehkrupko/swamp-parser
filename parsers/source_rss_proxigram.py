@@ -55,12 +55,13 @@ class ProxigramRssSource(RssSource):
     async def parse(self, response_str: str) -> list[Update]:
         results = await super().parse(response_str=response_str)
 
-        attempt = 1
+        attempt = 0
         # we constantly receive empty data
         while not results and attempt < 10:
+            attempt += 1
             await asyncio.sleep(3)
             # logger.warning(
-            #     f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
 
             # receive data
@@ -74,17 +75,15 @@ class ProxigramRssSource(RssSource):
                     # private account or no posts
                     break
 
-            attempt += 1
-
         if results and os.environ["ALLOW_CACHE"] == "true":
             # logger.warning(
-            #     f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
         logger.warning(
-            f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
         return [self._fix_each(x) for x in results]
 
