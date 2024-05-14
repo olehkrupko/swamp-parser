@@ -93,10 +93,12 @@ class ProxigramRssSource(RssSource):
                 href_dict[each["href"]].append(each)
         # remove newer duplicates
         for key, value in href_dict.items():
-            href_dict[key] = reduce(lambda a, b: a if a["datetime"] < b["datetime"] else b, value)
+            href_dict[key] = reduce(
+                lambda a, b: a if a["datetime"] < b["datetime"] else b, value
+            )
         # remove duplicates from results
         results = list(filter(lambda x: (x in href_dict.values()), results))
-    
+
         logger.warning(
             f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
