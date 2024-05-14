@@ -93,6 +93,7 @@ class ProxigramRssSource(RssSource):
                 href_dict[each["href"]].append(each)
         # remove newer duplicates
         for key, value in href_dict.items():
+            # we expect two posts with one href max, but reduce sounds cool
             href_dict[key] = reduce(
                 lambda a, b: a if a["datetime"] < b["datetime"] else b, value
             )
