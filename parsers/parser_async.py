@@ -104,45 +104,10 @@ async def parse_href(href: str, **kwargs: dict):
 
     #         each['href'] = '/'.join(href_split)
 
+
     # custom tiktok import
-    elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = "&".join(
-            (
-                "action=display",
-                "bridge=TikTokBridge",
-                "context=By+user",
-            )
-        )
-
-        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
-        username = href[24:]
-
-        href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
-            os.environ.get("RSS_BRIDGE_URL"),
-            RSS_BRIDGE_ARGS,
-            username,
-            timeout,
-        )
-
-        results.reverse()
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-        # safeguard against failed attempts' error messages stored as updates
-        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_message(f"{ href } - { results[0]['name'] }")
-            results = []
-
-        # reversing order to sort data from old to new
-        results.reverse()
-        for index, each in enumerate(results):
-            # parser returns each["name"] == "Video" by default
-            each["name"] = "" if each["name"] == "Video" else each["name"]
-            # and it uses current datetime as well
-            # seconds are added so we could properly order data by datetime
-            each["datetime"] = each["datetime"].replace(second=index)
-            # the only valid data there is a URL. But at least it works!
+    elif "https://www.tiktok.com/@" in href:
+        results = await TiktokRssSource(href=href).run()
 
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
