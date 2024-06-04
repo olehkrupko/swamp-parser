@@ -6,6 +6,7 @@ from sentry_sdk import capture_message
 from parsers.source_json_other import OtherJsonSource
 from parsers.source_rss import RssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
+from parsers.source_rss_tiktok import TiktokRssSource
 
 # import json
 # import os
@@ -14,22 +15,66 @@ from parsers.source_rss_proxigram import ProxigramRssSource
 # import urllib
 
 
-async def parse_href(href: str, **kwargs: dict):
-    ###############################
-    #  PREPARING REQUIRED VARIABLES
-    ###############################
-    results = []
-
-    #########################
-    # STARTING DATA INGESTION
-    #########################
-
-    # using it as first if for now
-    if False:
-        return "NOPE"
+def object_factory(href):
+    if not href:
+        raise ValueError(f"Provided {href=} is invalid")
+    elif 'https://twitter.com/' in href:
+        print("Parser not supported for now")
+        return None
 
     elif "instagram.com" in href:
-        results = await ProxigramRssSource(href=href).run()
+        return ProxigramRssSource(href=href)
+    elif "https://www.tiktok.com/@" in href:
+        return TiktokRssSource(href=href)
+    elif "https://www.youtube.com/channel/" in href:
+        # custom RSS YouTube converter
+
+        # 32 = len('https://www.youtube.com/channel/')
+        # 7 = len('/videos')
+        href_base = "https://www.youtube.com/feeds/videos.xml"
+        href = f"{href_base}?channel_id={href[32:-7]}"
+
+        return RssSource(href=href)
+    elif "deviantart.com" in href:
+        # custom RSS DeviantArt converter
+
+        # 27 = len('https://www.deviantart.com/')
+        # 9 = len('/gallery/')
+        href = href[27:-9]
+        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
+        href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
+
+        return RssSource(href=href)
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # custom source_1 import
+
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_1_FROM"),
+            os.environ.get("SOURCE_1_TO"),
+        )
+
+        # receive data
+        return OtherJsonSource(href=href)
+
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # custom source_2 import
+
+        # prepare data
+        href = href.replace(
+            os.environ.get("SOURCE_2_FROM"),
+            os.environ.get("SOURCE_2_TO"),
+        )
+
+        return OtherJsonSource(href=href)
+    else:
+        # default import used for RSS
+        # warning: weird stuff can be sent there
+        return RssSource(href=href)
+
+
+async def parse_href(href: str, **kwargs: dict):
+    return await object_factory(href=href).run()
 
     # # rss-bridge instagram import converter
     # elif "instagram.com" in href and not kwargs.get("processed"):
@@ -104,11 +149,6 @@ async def parse_href(href: str, **kwargs: dict):
 
     #         each['href'] = '/'.join(href_split)
 
-
-    # custom tiktok import
-    elif "https://www.tiktok.com/@" in href:
-        results = await TiktokRssSource(href=href).run()
-
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
     #     href_base = "https://proxitok.pabloferreiro.es"
@@ -123,54 +163,3 @@ async def parse_href(href: str, **kwargs: dict):
     #         each["href"] = each["href"].replace(
     #             "proxitok.pabloferreiro.es", "tiktok.com"
     #         )
-
-    # custom RSS YouTube converter
-    elif "https://www.youtube.com/channel/" in href:
-        # 32 = len('https://www.youtube.com/channel/')
-        # 7 = len('/videos')
-        href_base = "https://www.youtube.com/feeds/videos.xml"
-        href = f"{href_base}?channel_id={href[32:-7]}"
-
-        results = await parse_href(
-            href=href,
-        )
-
-    # custom RSS deviantart converter
-    elif "deviantart.com" in href and not kwargs.get("processed"):
-        # 27 = len('https://www.deviantart.com/')
-        # 9 = len('/gallery/')
-        href = href[27:-9]
-        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
-        href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
-
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-
-    # custom source_1 import
-    elif os.environ.get("SOURCE_1_FROM") in href:
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_1_FROM"),
-            os.environ.get("SOURCE_1_TO"),
-        )
-
-        # receive data
-        results = await OtherJsonSource(href=href).run()
-
-    # custom source_2 import
-    elif os.environ.get("SOURCE_2_FROM") in href:
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_2_FROM"),
-            os.environ.get("SOURCE_2_TO"),
-        )
-
-        results = await OtherJsonSource(href=href).run()
-
-    # default RSS import
-    else:
-        results = await RssSource(href=href).run()
-
-    return results
