@@ -5,6 +5,7 @@ import os
 import feedparser
 from parsers.source_rss import RssSource
 
+from schemas.feed import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
 
@@ -24,6 +25,20 @@ class ProxigramRssSource(RssSource):
             each["name"] = ""
 
         return each
+
+    async def explain(self) -> ExplainedFeed:
+        response_str = await self.request()
+        data = feedparser.parse(response_str)
+
+        return {
+            "title": data["feed"]["title"],
+            "href": self.href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
 
     @staticmethod
     def prepare_href(href: str) -> str:
