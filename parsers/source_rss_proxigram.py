@@ -40,12 +40,6 @@ class ProxigramRssSource(RssSource):
         return href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
-            value = await Cache.get(href=self.href)
-            if value is not None:
-                # logger.warning(f"Successful cache retrieval for {self.href}")
-                return value
-
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
         proxigram_semaphore = asyncio.Semaphore(1)
@@ -53,7 +47,21 @@ class ProxigramRssSource(RssSource):
         async with proxigram_semaphore:
             return await super().request()
 
-    async def parse(self, response_str: str) -> list[Update]:
+    @staticmethod
+    def each_name(each) -> str:
+        return each["summary"]
+
+    async def run(self) -> list[Update]:
+        # receive data
+        if os.environ["ALLOW_CACHE"] == "true":
+            value = await Cache.get(href=self.href)
+            if value is not None:
+                # logger.warning(f"Successful cache retrieval for {self.href}")
+                return value
+        else:
+            response_str = await self.request()
+
+        # process data
         results = await super().parse(response_str=response_str)
 
         attempt = 0
@@ -105,6 +113,4 @@ class ProxigramRssSource(RssSource):
         )
         return [self._fix_each(x) for x in results]
 
-    @staticmethod
-    def each_name(each) -> str:
-        return each["summary"]
+        return results
