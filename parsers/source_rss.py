@@ -23,7 +23,7 @@ class RssSource(Source):
         return {
             "title": data["feed"]["title"],
             "href": self.href,
-            "href_user": None,
+            "href_user": "",
             "private": False,
             "frequency": "hours",
             "notes": "",
