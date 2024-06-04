@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from functools import reduce
@@ -8,8 +7,8 @@ import random
 from parsers.source_rss import RssSource
 from sentry_sdk import capture_message
 
+from schemas.feed import ExplainedFeed
 from schemas.update import Update
-from services.cache import Cache
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +37,20 @@ class TiktokRssSource(RssSource):
 
         return href
 
+    async def explain(self) -> ExplainedFeed:
+        response_str = await self.request()
+        data = feedparser.parse(response_str)
+
+        return {
+            "title": data["feed"]["title"],
+            "href": self.href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
+    
     async def parse(self, response_str: str) -> list[Update]:
         results = super().parse(response_str=response_str)
 
