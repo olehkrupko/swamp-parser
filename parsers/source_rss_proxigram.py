@@ -51,6 +51,26 @@ class ProxigramRssSource(RssSource):
     def each_name(each) -> str:
         return each["summary"]
 
+    def cleanup(self, items: list) -> list:
+        # remove duplicates
+        # it seems to be caused by pinned posts
+        href_dict = {}
+        for each in results:
+            if each["href"] not in href_dict.keys():
+                href_dict[each["href"]] = [each]
+            else:
+                href_dict[each["href"]].append(each)
+        # remove newer duplicates
+        for key, value in href_dict.items():
+            # we expect two posts with one href max, but reduce sounds cool
+            href_dict[key] = reduce(
+                lambda a, b: a if a["datetime"] < b["datetime"] else b, value
+            )
+        # remove duplicates from results
+        results = list(filter(lambda x: (x in href_dict.values()), results))
+
+        return [self._fix_each(x) for x in results]
+
     async def run(self) -> list[Update]:
         # receive data
         if os.environ["ALLOW_CACHE"] == "true":
@@ -91,26 +111,8 @@ class ProxigramRssSource(RssSource):
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
-        # remove duplicates
-        # it seems to be caused by pinned posts
-        href_dict = {}
-        for each in results:
-            if each["href"] not in href_dict.keys():
-                href_dict[each["href"]] = [each]
-            else:
-                href_dict[each["href"]].append(each)
-        # remove newer duplicates
-        for key, value in href_dict.items():
-            # we expect two posts with one href max, but reduce sounds cool
-            href_dict[key] = reduce(
-                lambda a, b: a if a["datetime"] < b["datetime"] else b, value
-            )
-        # remove duplicates from results
-        results = list(filter(lambda x: (x in href_dict.values()), results))
-
+        results = self.cleanup(results)
         logger.warning(
             f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
-        return [self._fix_each(x) for x in results]
-
         return results
