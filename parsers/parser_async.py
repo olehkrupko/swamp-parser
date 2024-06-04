@@ -1,8 +1,5 @@
 import os
 
-import random
-from sentry_sdk import capture_message
-
 from parsers.source_json_other import OtherJsonSource
 from parsers.source_rss import RssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
@@ -71,6 +68,10 @@ def object_factory(href):
         # default import used for RSS
         # warning: weird stuff can be sent there
         return RssSource(href=href)
+
+
+async def explain_feed(href: str):
+    return await object_factory(href=href).explain()
 
 
 async def parse_href(href: str, **kwargs: dict):
