@@ -67,3 +67,5 @@ class TiktokRssSource(RssSource):
             # seconds are added so we could properly order data by datetime
             each["datetime"] = each["datetime"].replace(second=index)
             # the only valid data there is a URL. But at least it works!
+
+        return results
