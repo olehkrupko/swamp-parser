@@ -1,6 +1,7 @@
 import os
 
 from parsers.source_json_other import OtherJsonSource
+from parsers.source_disabled import DisabledSource
 from parsers.source_rss import RssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
 from parsers.source_rss_tiktok import TiktokRssSource
@@ -16,8 +17,8 @@ def object_factory(href):
     if not href:
         raise ValueError(f"Provided {href=} is invalid")
     elif "https://twitter.com/" in href:
-        print("Parser not supported for now")
-        return None
+        # print("Parser not supported for now")
+        return DisabledSource(href=href)
 
     elif "instagram.com" in href:
         return ProxigramRssSource(href=href)
