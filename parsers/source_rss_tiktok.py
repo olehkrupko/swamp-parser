@@ -51,7 +51,7 @@ class TiktokRssSource(RssSource):
         }
 
     async def parse(self, response_str: str) -> list[Update]:
-        results = super().parse(response_str=response_str)
+        results = await super().parse(response_str=response_str)
 
         # safeguard against failed attempts' error messages stored as updates
         if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
