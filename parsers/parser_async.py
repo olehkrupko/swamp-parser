@@ -15,7 +15,7 @@ from parsers.source_rss_tiktok import TiktokRssSource
 def object_factory(href):
     if not href:
         raise ValueError(f"Provided {href=} is invalid")
-    elif 'https://twitter.com/' in href:
+    elif "https://twitter.com/" in href:
         print("Parser not supported for now")
         return None
 

@@ -50,7 +50,7 @@ class TiktokRssSource(RssSource):
             "notes": "",
             "json": {},
         }
-    
+
     async def parse(self, response_str: str) -> list[Update]:
         results = super().parse(response_str=response_str)
 
