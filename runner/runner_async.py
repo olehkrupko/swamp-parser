@@ -47,10 +47,17 @@ async def runner(feed_ids: list[int] = None):
     push_semaphore = asyncio.Semaphore(1)
 
     # run coroutines
-    if feed_ids is None:
-        feeds = await Feed.get_feeds()
-    else:
-        feeds = [await Feed.get_feed(x) for x in feed_ids]
+    try:
+        if feed_ids is None:
+            feeds = await Feed.get_feeds()
+        else:
+            feeds = [await Feed.get_feed(x) for x in feed_ids]
+    except aiohttp.client_exceptions.ClientConnectorError as e:
+        # triggered by swamp-api not being up on startup
+        # skipping this error so it can work properly next time instead of failing
+        capture_exception(e)
+        logger.error(f"ERROR: {e}")
+        feeds = []
 
     coroutines = []
     for feed in feeds:

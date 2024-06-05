@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from functools import reduce
 
 import feedparser
 from parsers.source_rss import RssSource
@@ -39,12 +40,6 @@ class ProxigramRssSource(RssSource):
         return href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
-            value = await Cache.get(href=self.href)
-            if value is not None:
-                # logger.warning(f"Successful cache retrieval for {self.href}")
-                return value
-
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
         proxigram_semaphore = asyncio.Semaphore(1)
@@ -52,15 +47,50 @@ class ProxigramRssSource(RssSource):
         async with proxigram_semaphore:
             return await super().request()
 
-    async def parse(self, response_str: str) -> list[Update]:
+    @staticmethod
+    def each_name(each) -> str:
+        return each["summary"]
+
+    def cleanup(self, results: list) -> list:
+        # remove duplicates
+        # it seems to be caused by pinned posts
+        href_dict = {}
+        for each in results:
+            if each["href"] not in href_dict.keys():
+                href_dict[each["href"]] = [each]
+            else:
+                href_dict[each["href"]].append(each)
+        # remove newer duplicates
+        for key, value in href_dict.items():
+            # we expect two posts with one href max, but reduce sounds cool
+            href_dict[key] = reduce(
+                lambda a, b: a if a["datetime"] < b["datetime"] else b, value
+            )
+        # remove duplicates from results
+        results = list(filter(lambda x: (x in href_dict.values()), results))
+
+        return [self._fix_each(x) for x in results]
+
+    async def run(self) -> list[Update]:
+        # receive data
+        if os.environ["ALLOW_CACHE"] == "true":
+            value = await Cache.get(href=self.href)
+            if value is not None:
+                # logger.warning(f"Successful cache retrieval for {self.href}")
+                return value
+        else:
+            response_str = await self.request()
+
+        # process data
         results = await super().parse(response_str=response_str)
 
-        attempt = 1
+        attempt = 0
         # we constantly receive empty data
         while not results and attempt < 10:
+            attempt += 1
             await asyncio.sleep(3)
             # logger.warning(
-            #     f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
 
             # receive data
@@ -74,20 +104,15 @@ class ProxigramRssSource(RssSource):
                     # private account or no posts
                     break
 
-            attempt += 1
-
         if results and os.environ["ALLOW_CACHE"] == "true":
             # logger.warning(
-            #     f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
             # we are caching if data received wasn't empty
             await Cache.set(href=self.href, value=response_str)
 
+        results = self.cleanup(results)
         logger.warning(
-            f"---- ProxigramRssSource.parse({self.href=}, {attempt=}) -> {len(results)=}"
+            f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
-        return [self._fix_each(x) for x in results]
-
-    @staticmethod
-    def each_name(each) -> str:
-        return each["summary"]
+        return results
