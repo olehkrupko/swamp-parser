@@ -1,6 +1,5 @@
 import logging
 import os
-from functools import reduce
 
 import feedparser
 import random
