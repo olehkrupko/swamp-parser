@@ -23,7 +23,7 @@ async def run_async() -> dict:
     return await runner_async_func()
 
 
-# curl -X GET "http://127.0.0.1:30015/parse/ingest/?feed_id=5734"
+# curl -X GET "http://127.0.0.1:30015/runner/ingest/?feed_id=5734"
 @router.get("/ingest/", response_class=PrettyJsonResponse)
 async def run_by_id(feed_id: int) -> dict:
     "Parse one feed by URL and send it to DB"
