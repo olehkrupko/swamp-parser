@@ -1,7 +1,9 @@
 import os
 
-from parsers.source_json_other import OtherJsonSource
 from parsers.source_disabled import DisabledSource
+from parsers.source_json_other_1 import OneOtherJsonSource
+from parsers.source_json_other_2 import TwoOtherJsonSource
+from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from parsers.source_rss import RssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
 from parsers.source_rss_tiktok import TiktokRssSource
@@ -45,26 +47,16 @@ def object_factory(href):
         return RssSource(href=href)
     elif os.environ.get("SOURCE_1_FROM") in href:
         # custom source_1 import
-
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_1_FROM"),
-            os.environ.get("SOURCE_1_TO"),
-        )
-
-        # receive data
-        return OtherJsonSource(href=href)
-
+        return OneOtherJsonSource(href=href)
     elif os.environ.get("SOURCE_2_FROM") in href:
         # custom source_2 import
-
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_2_FROM"),
-            os.environ.get("SOURCE_2_TO"),
-        )
-
-        return OtherJsonSource(href=href)
+        return TwoOtherJsonSource(href=href)
+    elif TwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return TwoOtherJsonSource(href=href)
+    elif PrepareTwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return PrepareTwoOtherJsonSource(href=href)
     else:
         # default import used for RSS
         # warning: weird stuff can be sent there
