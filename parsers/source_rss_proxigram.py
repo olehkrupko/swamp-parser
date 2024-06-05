@@ -51,7 +51,7 @@ class ProxigramRssSource(RssSource):
     def each_name(each) -> str:
         return each["summary"]
 
-    def cleanup(self, items: list) -> list:
+    def cleanup(self, results: list) -> list:
         # remove duplicates
         # it seems to be caused by pinned posts
         href_dict = {}
