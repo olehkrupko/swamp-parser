@@ -6,8 +6,8 @@ from typing import Self
 
 class ExplainedFeed(BaseModel):
     title: str
-    href: str
-    href_user: str | None
+    href: str | None
+    href_user: str
     private: bool
     frequency: str
     notes: str
