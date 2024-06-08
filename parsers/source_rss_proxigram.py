@@ -32,7 +32,7 @@ class ProxigramRssSource(RssSource):
         data = feedparser.parse(response_str)
 
         return {
-            "title": data["feed"]["title"],
+            "title": data["feed"]["title"] + " - Instagram",
             "href": self.href,
             "href_user": "",
             "private": True,
@@ -43,6 +43,9 @@ class ProxigramRssSource(RssSource):
 
     @staticmethod
     def prepare_href(href: str) -> str:
+        if "?" in href:
+            href = href.split("?")[0]
+
         href = href.replace(
             "https://www.instagram.com",
             os.environ.get("SOURCE_PROXIGRAM_HOST"),
