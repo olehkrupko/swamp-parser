@@ -25,6 +25,8 @@ class TiktokRssSource(RssSource):
         )
 
         timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
+        if "?" in href:
+            href = href.split("?")[0]
         username = href[24:]
 
         href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
@@ -41,8 +43,8 @@ class TiktokRssSource(RssSource):
         data = feedparser.parse(response_str)
 
         return {
-            "title": data["feed"]["title"],
-            "href": self.href,
+            "title": data["feed"]["title"].lstrip("@"),
+            "href": None,
             "href_user": "",
             "private": True,
             "frequency": "days",
