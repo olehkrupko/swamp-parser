@@ -7,6 +7,7 @@ from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from parsers.source_rss import RssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
 from parsers.source_rss_tiktok import TiktokRssSource
+from parsers.source_rss_youtube import YoutubeRssSource
 
 # import json
 # import os
@@ -28,14 +29,7 @@ def object_factory(href):
     elif "https://www.tiktok.com/@" in href:
         return TiktokRssSource(href=href)
     elif "https://www.youtube.com/channel/" in href:
-        # custom RSS YouTube converter
-
-        # 32 = len('https://www.youtube.com/channel/')
-        # 7 = len('/videos')
-        href_base = "https://www.youtube.com/feeds/videos.xml"
-        href = f"{href_base}?channel_id={href[32:-7]}"
-
-        return RssSource(href=href)
+        return YoutubeRssSource(href=href)
     elif "deviantart.com" in href:
         # custom RSS DeviantArt converter
 
