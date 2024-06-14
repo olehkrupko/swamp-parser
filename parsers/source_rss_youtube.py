@@ -18,11 +18,16 @@ class YoutubeRssSource(RssSource):
     def match(href: str):
         if "https://www.youtube.com/channel/" in href:
             return True
+        elif "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
+            return True
 
         return False
 
     @staticmethod
     def prepare_href(href: str) -> str:
+        if "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
+            return href
+
         HREF_BASE = "https://www.youtube.com/feeds/videos.xml"
 
         channel_id = href.replace("https://www.youtube.com/channel/", "")
