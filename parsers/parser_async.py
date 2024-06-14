@@ -28,7 +28,7 @@ def object_factory(href):
         return ProxigramRssSource(href=href)
     elif "https://www.tiktok.com/@" in href:
         return TiktokRssSource(href=href)
-    elif "https://www.youtube.com/channel/" in href:
+    elif YoutubeRssSource.match(href):
         return YoutubeRssSource(href=href)
     elif "deviantart.com" in href:
         # custom RSS DeviantArt converter

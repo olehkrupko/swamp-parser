@@ -15,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 class YoutubeRssSource(RssSource):
     @staticmethod
+    def match(href: str):
+        if "https://www.youtube.com/channel/" in href:
+            return True
+
+        return False
+
+    @staticmethod
     def prepare_href(href: str) -> str:
         HREF_BASE = "https://www.youtube.com/feeds/videos.xml"
 
