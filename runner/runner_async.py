@@ -34,7 +34,9 @@ async def task(feed: Feed):
                     }
     except Exception as e:
         # Inject feed URLs to parsing errors
-        raise type(e)(f"{feed['href']}: {str(e)}")
+        print(e.args)
+        e.args = (feed["href"], *e.args)
+        raise e
 
 
 async def runner(feed_ids: list[int] = None):
