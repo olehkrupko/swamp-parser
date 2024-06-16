@@ -20,6 +20,7 @@ class YoutubeRssSource(RssSource):
 
     @staticmethod
     def prepare_href(href: str) -> str:
+        # https://www.youtube.com/feeds/videos.xml?playlist_id=XXXX
         if "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
             return href
 
