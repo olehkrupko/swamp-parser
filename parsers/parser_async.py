@@ -5,6 +5,7 @@ from parsers.source_json_other_1 import OneOtherJsonSource
 from parsers.source_json_other_2 import TwoOtherJsonSource
 from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from parsers.source_rss import RssSource
+from parsers.source_rss_artstation import ArtstationRssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
 from parsers.source_rss_tiktok import TiktokRssSource
 from parsers.source_rss_youtube import YoutubeRssSource
@@ -29,6 +30,9 @@ def object_factory(href):
         return TiktokRssSource(href=href)
     elif YoutubeRssSource.match(href):
         return YoutubeRssSource(href=href)
+    elif ArtstationRssSource.match(href):
+        return DisabledSource(href=href)
+        return ArtstationRssSource(href=href)
     elif "deviantart.com" in href:
         # custom RSS DeviantArt converter
 
