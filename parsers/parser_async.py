@@ -24,7 +24,6 @@ def object_factory(href):
         return DisabledSource(href=href)
 
     elif "instagram.com" in href:
-        return DisabledSource(href=href)
         return ProxigramRssSource(href=href)
     elif "https://www.tiktok.com/@" in href:
         return TiktokRssSource(href=href)
