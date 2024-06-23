@@ -6,6 +6,7 @@ from functools import reduce
 import feedparser
 from parsers.source_rss import RssSource
 
+from schemas.feed import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
 
@@ -26,8 +27,25 @@ class ProxigramRssSource(RssSource):
 
         return each
 
+    async def explain(self) -> ExplainedFeed:
+        response_str = await self.request()
+        data = feedparser.parse(response_str)
+
+        return {
+            "title": data["feed"]["title"] + " - Instagram",
+            "href": self.href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
+
     @staticmethod
     def prepare_href(href: str) -> str:
+        if "?" in href:
+            href = href.split("?")[0]
+
         href = href.replace(
             "https://www.instagram.com",
             os.environ.get("SOURCE_PROXIGRAM_HOST"),
@@ -78,8 +96,8 @@ class ProxigramRssSource(RssSource):
             if value is not None:
                 # logger.warning(f"Successful cache retrieval for {self.href}")
                 return value
-        else:
-            response_str = await self.request()
+
+        response_str = await self.request()
 
         # process data
         results = await super().parse(response_str=response_str)

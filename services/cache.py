@@ -11,7 +11,7 @@ class Cache:
 
     @staticmethod
     def timeout() -> datetime:
-        return datetime.now() + timedelta(days=7)
+        return datetime.now() + timedelta(days=14)
 
     @classmethod
     async def get(cls, href: str) -> str:
