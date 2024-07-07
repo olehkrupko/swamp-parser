@@ -21,9 +21,12 @@ class ProxigramRssSource(RssSource):
             "http://127.0.0.1:30019",
             "https://www.instagram.com",
         )
+
         if "<p>" in each["name"]:
             # logger.warning("Empty name, I guess:", each["name"], each["href"])
             each["name"] = ""
+        else:
+            each["name"] = each["name"].replace("&amp", "&")
 
         return each
 
