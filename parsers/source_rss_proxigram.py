@@ -116,6 +116,7 @@ class ProxigramRssSource(RssSource):
 
             # receive data
             response_str = await self.request()
+            logger.warning(f">>>> request {type(response_str)} {response_str}")
 
             # process data
             results = await super().parse(response_str=response_str)
@@ -136,5 +137,5 @@ class ProxigramRssSource(RssSource):
         logger.warning(
             f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
-        logger.warning(f">>>> {type(results)} {results}")
+        logger.warning(f">>>> return {type(results)} {results}")
         return results
