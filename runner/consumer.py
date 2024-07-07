@@ -12,6 +12,7 @@ from schemas.feed import Feed
 logger = logging.getLogger(__name__)
 
 
+# not actually consumer pattern as there is no resource to share
 async def task(feed: Feed):
     try:
         async with connection_semaphore:
@@ -40,8 +41,8 @@ async def task(feed: Feed):
         raise e
 
 
-async def runner(feed_ids: list[int] = None):
-    logger.warning("runner(): Starting...")
+async def start(feed_ids: list[int] = None):
+    logger.warning("consumer.start(): Starting...")
     global connection_semaphore, push_semaphore
     connection_semaphore = asyncio.Semaphore(
         int(os.environ.get("AIOHTTP_SEMAPHORE")),
@@ -87,12 +88,12 @@ async def runner(feed_ids: list[int] = None):
 
     # print and return results
     if errors:
-        logger.warning(f"runner(): {errors=}")
-    logger.warning(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
+        logger.warning(f"consumer.start(): {errors=}")
+    logger.warning(f"consumer.start(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
         updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
-        logger.warning(f"runner(): updates_new>0={updates_new__gt_zero}")
-    logger.warning("runner(): Returning...")
+        logger.warning(f"consumer.start(): updates_new>0={updates_new__gt_zero}")
+    logger.warning("consumer.start(): Returning...")
     logger.warning("")
     return {
         "errors": errors,
