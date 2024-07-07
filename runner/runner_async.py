@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import traceback
 
 import aiohttp
 from sentry_sdk import capture_exception
@@ -35,7 +34,8 @@ async def task(feed: Feed):
                     }
     except Exception as e:
         # Inject feed URLs to parsing errors
-        traceback.print_exc()
+        # import traceback
+        # traceback.print_exc()  # prints error as usual
         e.args = (feed["href"], *e.args)
         raise e
 
