@@ -22,9 +22,8 @@ def object_factory(href):
     if not href:
         raise ValueError(f"Provided {href=} is invalid")
     elif "https://twitter.com/" in href:
-        # print("Parser not supported for now")
+        # print("TODO: Parser not supported for now")
         return DisabledSource(href=href)
-
     elif "instagram.com" in href:
         return ProxigramRssSource(href=href)
     elif "https://www.tiktok.com/@" in href:
