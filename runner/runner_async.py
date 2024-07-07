@@ -73,7 +73,7 @@ async def runner(feed_ids: list[int] = None):
     # Await completion
     results = await asyncio.gather(
         *coroutines,
-        return_exceptions=True,
+        return_exceptions=False,
     )
 
     # prepare results
