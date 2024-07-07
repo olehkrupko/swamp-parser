@@ -98,6 +98,7 @@ class ProxigramRssSource(RssSource):
             value = await Cache.get(href=self.href)
             if value is not None:
                 # logger.warning(f"Successful cache retrieval for {self.href}")
+                logger.warning(f">>>> cached {type(value)} {value}")
                 return value
 
         response_str = await self.request()
