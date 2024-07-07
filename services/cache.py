@@ -25,6 +25,10 @@ class Cache:
     async def set(cls, href: str, value: str, timeout: dict, type: str = "request"):
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
-            await pipe.set(cls.key_from_href(type=type, href=href), str(value)).expireat(
-                cls.key_from_href(type=type, href=href), cls.timeout(timeout=timeout)
+            await pipe.set(
+                cls.key_from_href(type=type, href=href),
+                str(value),
+            ).expireat(
+                cls.key_from_href(type=type, href=href),
+                cls.timeout(timeout=timeout),
             ).execute()
