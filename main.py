@@ -40,6 +40,5 @@ app = FastAPI(
     version="2.3",  # Issue 10: fast-api routes
     lifespan=lifespan,
 )
-app.include_router(explain.router)
 app.include_router(parsers.router)
 app.include_router(ingesters.router)  # not expected to be used
