@@ -10,8 +10,8 @@ class Cache:
         return f"swamp-parser:{type}:{href}"
 
     @staticmethod
-    def timeout() -> datetime:
-        return datetime.now() + timedelta(days=14)
+    def timeout(timeout: dict) -> datetime:
+        return datetime.now() + timedelta(**timeout)
 
     @classmethod
     async def get(cls, href: str, type: str = "request") -> str:
@@ -22,9 +22,9 @@ class Cache:
             return values[0]
 
     @classmethod
-    async def set(cls, href: str, value: str, type: str = "request"):
+    async def set(cls, href: str, value: str, timeout: dict, type: str = "request"):
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             await pipe.set(cls.key_from_href(type=type, href=href), str(value)).expireat(
-                cls.key_from_href(type=type, href=href), cls.timeout()
+                cls.key_from_href(type=type, href=href), cls.timeout(timeout=timeout)
             ).execute()
