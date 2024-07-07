@@ -87,8 +87,6 @@ async def runner(feed_ids: list[int] = None):
     # print and return results
     if errors:
         logger.warning(f"runner(): {errors=}")
-        for err in errors:
-            logger.warning(err)
     logger.warning(f"runner(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
     if updates_new > 0:
         updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
