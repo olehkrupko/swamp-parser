@@ -8,7 +8,7 @@ from schemas.feed import ExplainedFeed
 logger = logging.getLogger(__name__)
 
 
-class YoutubeRssSource(RssSource):
+class DeviantartRssSource(RssSource):
     @staticmethod
     def match(href: str):
         if "deviantart.com" in href:
