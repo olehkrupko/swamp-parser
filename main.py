@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import sentry_sdk
 from fastapi import FastAPI
 
-from routers import parsers, runners, tests
+from routers import parsers, runners, tests, explain
 from workers.worker_parser_loop import ParserLoopWorker
 
 
@@ -40,6 +40,7 @@ app = FastAPI(
     version="2.3",  # Issue 10: fast-api routes
     lifespan=lifespan,
 )
+app.include_router(explain.router)
 app.include_router(parsers.router)
 app.include_router(runners.router)
 app.include_router(tests.router)

@@ -69,3 +69,6 @@ class Source:
 
     def capture_exception(msg: str):
         sentry_capture_exception(msg)
+
+    async def explain(self) -> None:
+        raise NotImplementedError

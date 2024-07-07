@@ -5,6 +5,7 @@ import feedparser
 
 from parsers.source import Source
 from schemas.update import Update
+from schemas.feed import ExplainedFeed
 
 
 class RssSource(Source):
@@ -14,6 +15,20 @@ class RssSource(Source):
             return each["title_detail"]["value"]
 
         return ""
+
+    async def explain(self) -> ExplainedFeed:
+        response_str = await self.request()
+        data = feedparser.parse(response_str)
+
+        return {
+            "title": data["feed"]["title"],
+            "href": self.href,
+            "href_user": "",
+            "private": False,
+            "frequency": "hours",
+            "notes": "",
+            "json": {},
+        }
 
     async def parse(self, response_str: str) -> list[Update]:
         request = feedparser.parse(response_str)

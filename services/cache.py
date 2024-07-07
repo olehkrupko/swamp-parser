@@ -6,25 +6,29 @@ import redis.asyncio as redis
 
 class Cache:
     @staticmethod
-    def key_from_href(href: str) -> str:
-        return f"swamp-parser:request:{href}"
+    def key_from_href(type: str, href: str) -> str:
+        return f"swamp-parser:{type}:{href}"
 
     @staticmethod
-    def timeout() -> datetime:
-        return datetime.now() + timedelta(days=7)
+    def timeout(timeout: dict) -> datetime:
+        return datetime.now() + timedelta(**timeout)
 
     @classmethod
-    async def get(cls, href: str) -> str:
+    async def get(cls, href: str, type: str = "request") -> str:
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
-            values = await pipe.get(cls.key_from_href(href)).execute()
+            values = await pipe.get(cls.key_from_href(type=type, href=href)).execute()
             # result is a list, but we need only one item
             return values[0]
 
     @classmethod
-    async def set(cls, href: str, value: str):
+    async def set(cls, href: str, value: str, timeout: dict, type: str = "request"):
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
-            await pipe.set(cls.key_from_href(href), str(value)).expireat(
-                cls.key_from_href(href), cls.timeout()
+            await pipe.set(
+                cls.key_from_href(type=type, href=href),
+                str(value),
+            ).expireat(
+                cls.key_from_href(type=type, href=href),
+                cls.timeout(timeout=timeout),
             ).execute()

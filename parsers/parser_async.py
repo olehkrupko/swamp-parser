@@ -1,11 +1,15 @@
 import os
 
-import random
-from sentry_sdk import capture_message
-
-from parsers.source_json_other import OtherJsonSource
+from parsers.source_disabled import DisabledSource
+from parsers.source_json_other_1 import OneOtherJsonSource
+from parsers.source_json_other_2 import TwoOtherJsonSource
+from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from parsers.source_rss import RssSource
+from parsers.source_rss_artstation import ArtstationRssSource
+from parsers.source_rss_deviantart import DeviantartRssSource
 from parsers.source_rss_proxigram import ProxigramRssSource
+from parsers.source_rss_tiktok import TiktokRssSource
+from parsers.source_rss_youtube import YoutubeRssSource
 
 # import json
 # import os
@@ -14,22 +18,47 @@ from parsers.source_rss_proxigram import ProxigramRssSource
 # import urllib
 
 
-async def parse_href(href: str, **kwargs: dict):
-    ###############################
-    #  PREPARING REQUIRED VARIABLES
-    ###############################
-    results = []
-
-    #########################
-    # STARTING DATA INGESTION
-    #########################
-
-    # using it as first if for now
-    if False:
-        return "NOPE"
-
+def object_factory(href):
+    if not href:
+        raise ValueError(f"Provided {href=} is invalid")
+    elif "https://twitter.com/" in href:
+        # print("TODO: Parser not supported for now")
+        return DisabledSource(href=href)
     elif "instagram.com" in href:
-        results = await ProxigramRssSource(href=href).run()
+        return ProxigramRssSource(href=href)
+    elif "https://www.tiktok.com/@" in href:
+        return TiktokRssSource(href=href)
+    elif YoutubeRssSource.match(href):
+        return YoutubeRssSource(href=href)
+    elif ArtstationRssSource.match(href):
+        return DisabledSource(href=href)
+        return ArtstationRssSource(href=href)
+    elif DeviantartRssSource.match(href):
+        return DeviantartRssSource(href=href)
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # custom source_1 import
+        return OneOtherJsonSource(href=href)
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # custom source_2 import
+        return TwoOtherJsonSource(href=href)
+    elif TwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return TwoOtherJsonSource(href=href)
+    elif PrepareTwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return PrepareTwoOtherJsonSource(href=href)
+    else:
+        # default import used for RSS
+        # warning: weird stuff can be sent there
+        return RssSource(href=href)
+
+
+async def explain_feed(href: str):
+    return await object_factory(href=href).explain()
+
+
+async def parse_href(href: str, **kwargs: dict):
+    return await object_factory(href=href).run()
 
     # # rss-bridge instagram import converter
     # elif "instagram.com" in href and not kwargs.get("processed"):
@@ -104,46 +133,6 @@ async def parse_href(href: str, **kwargs: dict):
 
     #         each['href'] = '/'.join(href_split)
 
-    # custom tiktok import
-    elif "https://www.tiktok.com/@" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_ARGS = "&".join(
-            (
-                "action=display",
-                "bridge=TikTokBridge",
-                "context=By+user",
-            )
-        )
-
-        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
-        username = href[24:]
-
-        href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
-            os.environ.get("RSS_BRIDGE_URL"),
-            RSS_BRIDGE_ARGS,
-            username,
-            timeout,
-        )
-
-        results.reverse()
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-        # safeguard against failed attempts' error messages stored as updates
-        if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
-            capture_message(f"{ href } - { results[0]['name'] }")
-            results = []
-
-        # reversing order to sort data from old to new
-        results.reverse()
-        for index, each in enumerate(results):
-            # parser returns each["name"] == "Video" by default
-            each["name"] = "" if each["name"] == "Video" else each["name"]
-            # and it uses current datetime as well
-            # seconds are added so we could properly order data by datetime
-            each["datetime"] = each["datetime"].replace(second=index)
-            # the only valid data there is a URL. But at least it works!
-
     # # custom tiktok import
     # elif "https://www.tiktok.com/@" in href:
     #     href_base = "https://proxitok.pabloferreiro.es"
@@ -158,54 +147,3 @@ async def parse_href(href: str, **kwargs: dict):
     #         each["href"] = each["href"].replace(
     #             "proxitok.pabloferreiro.es", "tiktok.com"
     #         )
-
-    # custom RSS YouTube converter
-    elif "https://www.youtube.com/channel/" in href:
-        # 32 = len('https://www.youtube.com/channel/')
-        # 7 = len('/videos')
-        href_base = "https://www.youtube.com/feeds/videos.xml"
-        href = f"{href_base}?channel_id={href[32:-7]}"
-
-        results = await parse_href(
-            href=href,
-        )
-
-    # custom RSS deviantart converter
-    elif "deviantart.com" in href and not kwargs.get("processed"):
-        # 27 = len('https://www.deviantart.com/')
-        # 9 = len('/gallery/')
-        href = href[27:-9]
-        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
-        href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
-
-        results = await parse_href(
-            href=href,
-            processed=True,
-        )
-
-    # custom source_1 import
-    elif os.environ.get("SOURCE_1_FROM") in href:
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_1_FROM"),
-            os.environ.get("SOURCE_1_TO"),
-        )
-
-        # receive data
-        results = await OtherJsonSource(href=href).run()
-
-    # custom source_2 import
-    elif os.environ.get("SOURCE_2_FROM") in href:
-        # prepare data
-        href = href.replace(
-            os.environ.get("SOURCE_2_FROM"),
-            os.environ.get("SOURCE_2_TO"),
-        )
-
-        results = await OtherJsonSource(href=href).run()
-
-    # default RSS import
-    else:
-        results = await RssSource(href=href).run()
-
-    return results

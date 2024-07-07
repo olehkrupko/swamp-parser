@@ -6,6 +6,7 @@ from functools import reduce
 import feedparser
 from parsers.source_rss import RssSource
 
+from schemas.feed import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
 
@@ -20,14 +21,34 @@ class ProxigramRssSource(RssSource):
             "http://127.0.0.1:30019",
             "https://www.instagram.com",
         )
+
         if "<p>" in each["name"]:
             # logger.warning("Empty name, I guess:", each["name"], each["href"])
             each["name"] = ""
+        else:
+            each["name"] = each["name"].replace("&amp", "&")
 
         return each
 
+    async def explain(self) -> ExplainedFeed:
+        response_str = await self.request()
+        data = feedparser.parse(response_str)
+
+        return {
+            "title": data["feed"]["title"] + " - Instagram",
+            "href": self.href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
+
     @staticmethod
     def prepare_href(href: str) -> str:
+        if "?" in href:
+            href = href.split("?")[0]
+
         href = href.replace(
             "https://www.instagram.com",
             os.environ.get("SOURCE_PROXIGRAM_HOST"),
@@ -74,12 +95,12 @@ class ProxigramRssSource(RssSource):
     async def run(self) -> list[Update]:
         # receive data
         if os.environ["ALLOW_CACHE"] == "true":
-            value = await Cache.get(href=self.href)
+            value = await Cache.get(href=self.href, type="processed")
             if value is not None:
                 # logger.warning(f"Successful cache retrieval for {self.href}")
                 return value
-        else:
-            response_str = await self.request()
+
+        response_str = await self.request()
 
         # process data
         results = await super().parse(response_str=response_str)
@@ -109,7 +130,12 @@ class ProxigramRssSource(RssSource):
             #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
             # we are caching if data received wasn't empty
-            await Cache.set(href=self.href, value=response_str)
+            await Cache.set(
+                href=self.href,
+                type="processed",
+                timeout={"days": 7},
+                value=results,
+            )
 
         results = self.cleanup(results)
         logger.warning(

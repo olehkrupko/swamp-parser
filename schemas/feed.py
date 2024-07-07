@@ -3,20 +3,15 @@ import os
 from pydantic import BaseModel
 from typing import Self
 
-# from datetime import datetime
 
-# unused
-# class FullFeed(BaseModel):
-#     _id: int
-#     _created: datetime
-#     _delayed: datetime
-#     title: str
-#     href: str
-#     href_user: str
-#     private: bool
-#     frequency: str
-#     notes: str
-#     json: dict
+class ExplainedFeed(BaseModel):
+    title: str
+    href: str | None
+    href_user: str
+    private: bool
+    frequency: str
+    notes: str
+    json: dict
 
 
 # feed with unnecessary fields cut off
