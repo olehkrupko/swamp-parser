@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from parsers import parser
+from runner import object_factory
 from responses.PrettyJsonResponse import PrettyJsonResponse
 from schemas.feed import ExplainedFeed
 from schemas.update import Update

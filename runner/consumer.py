@@ -5,7 +5,7 @@ import os
 import aiohttp
 from sentry_sdk import capture_exception
 
-from parsers import parser
+from runner import object_factory
 from schemas.feed import Feed
 
 
