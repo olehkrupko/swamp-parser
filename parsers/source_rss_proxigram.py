@@ -136,5 +136,5 @@ class ProxigramRssSource(RssSource):
         logger.warning(
             f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
         )
-        logger.warning(f">>>> {results}")
+        logger.warning(f">>>> {type(results)} {results}")
         return results
