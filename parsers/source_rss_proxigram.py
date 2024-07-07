@@ -74,6 +74,8 @@ class ProxigramRssSource(RssSource):
         # it seems to be caused by pinned posts
         href_dict = {}
         for each in results:
+            print(">>>>", type(each), each)
+            print(">>>>", type(each["href"]), each["href"])
             if each["href"] not in href_dict.keys():
                 href_dict[each["href"]] = [each]
             else:
