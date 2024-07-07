@@ -130,7 +130,12 @@ class ProxigramRssSource(RssSource):
             #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
             # we are caching if data received wasn't empty
-            await Cache.set(href=self.href, type="processed", timeout={"days": 7}, value=results)
+            await Cache.set(
+                href=self.href,
+                type="processed",
+                timeout={"days": 7},
+                value=results,
+            )
 
         results = self.cleanup(results)
         logger.warning(
