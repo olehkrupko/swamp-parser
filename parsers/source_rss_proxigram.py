@@ -95,7 +95,7 @@ class ProxigramRssSource(RssSource):
     async def run(self) -> list[Update]:
         # receive data
         if os.environ["ALLOW_CACHE"] == "true":
-            value = await Cache.get(href=self.href)
+            value = await Cache.get(href=self.href, type="processed")
             if value is not None:
                 # logger.warning(f"Successful cache retrieval for {self.href}")
                 return value
@@ -130,7 +130,7 @@ class ProxigramRssSource(RssSource):
             #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
             # )
             # we are caching if data received wasn't empty
-            await Cache.set(href=self.href, value=results)
+            await Cache.set(href=self.href, type="processed", value=results)
 
         results = self.cleanup(results)
         logger.warning(
