@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - '25-feeds-generate-details-from-url'
 jobs:
   checkout:
     runs-on: self-hosted
