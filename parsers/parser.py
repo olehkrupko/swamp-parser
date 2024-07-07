@@ -1,75 +1,95 @@
-import random
-import ssl
-import string
-import urllib
-from datetime import datetime
-from dateutil import parser, tz  # adding custom timezones
+import os
 
-import feedparser
-from sentry_sdk import capture_exception
+from parsers.source_disabled import DisabledSource
+from parsers.source_json_other_1 import OneOtherJsonSource
+from parsers.source_json_other_2 import TwoOtherJsonSource
+from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
+from parsers.source_rss import RssSource
+from parsers.source_rss_artstation import ArtstationRssSource
+from parsers.source_rss_deviantart import DeviantartRssSource
+from parsers.source_rss_proxigram import ProxigramRssSource
+from parsers.source_rss_tiktok import TiktokRssSource
+from parsers.source_rss_youtube import YoutubeRssSource
 
-# import os
 # import json
+# import os
+# import ssl
 # import requests
-# from bs4 import BeautifulSoup, SoupStrainer
+# import urllib
 
 
-def parse_href(href: str, proxy: bool = True, **kwargs: dict):
-    ###############################
-    #  PREPARING REQUIRED VARIABLES
-    ###############################
+def object_factory(href):
+    if not href:
+        raise ValueError(f"Provided {href=} is invalid")
+    elif "https://twitter.com/" in href:
+        # print("TODO: Parser not supported for now")
+        return DisabledSource(href=href)
+    elif "instagram.com" in href:
+        return ProxigramRssSource(href=href)
+    elif "https://www.tiktok.com/@" in href:
+        return TiktokRssSource(href=href)
+    elif YoutubeRssSource.match(href):
+        return YoutubeRssSource(href=href)
+    elif ArtstationRssSource.match(href):
+        return DisabledSource(href=href)
+        return ArtstationRssSource(href=href)
+    elif DeviantartRssSource.match(href):
+        return DeviantartRssSource(href=href)
+    elif os.environ.get("SOURCE_1_FROM") in href:
+        # custom source_1 import
+        return OneOtherJsonSource(href=href)
+    elif os.environ.get("SOURCE_2_FROM") in href:
+        # custom source_2 import
+        return TwoOtherJsonSource(href=href)
+    elif TwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return TwoOtherJsonSource(href=href)
+    elif PrepareTwoOtherJsonSource.match(href):
+        # custom source_2 import
+        return PrepareTwoOtherJsonSource(href=href)
+    else:
+        # default import used for RSS
+        # warning: weird stuff can be sent there
+        return RssSource(href=href)
 
-    results = []
 
-    # avoiding blocks
-    referer_domain = "".join(random.choices(string.ascii_letters, k=16))
-    headers = {
-        # 'user-agent': feed.UserAgent_random().strip(),
-        "referer": f"https://www.{ referer_domain }.com/?q={ href }"
-    }
-    proxyDict = {}
-    if proxy and isinstance(proxy, str):
-        proxyDict["http"] = "http://" + proxy
-        proxyDict["https"] = "https://" + proxy
+async def explain_feed(href: str):
+    return await object_factory(href=href).explain()
 
-    #########################
-    # STARTING DATA INGESTION
-    #########################
 
-    # using it as first if for now
-    if False:
-        return "NOPE"
+async def parse_href(href: str, **kwargs: dict):
+    return await object_factory(href=href).run()
 
-    # rss-bridge instagram import converter
-    elif "instagram.com" in href and not kwargs.get("processed"):
-        RSS_BRIDGE_URL = "http://192.168.0.155:31000"
-        RSS_BRIDGE_ARGS = "&".join(
-            (
-                "action=display",
-                "bridge=InstagramBridge",
-                "context=Username",
-                "media_type=all",
-            )
-        )
+    # # rss-bridge instagram import converter
+    # elif "instagram.com" in href and not kwargs.get("processed"):
+    #     RSS_BRIDGE_ARGS = "&".join(
+    #         (
+    #             "action=display",
+    #             # "bridge=InstagramBridge",
+    #             "bridge=PicnobBridge",
+    #             "context=Username",
+    #             # "media_type=all",
+    #         )
+    #     )
 
-        timeout = 24 * 60 * 60  # 24 hours
-        username = href[26:-1]
+    #     timeout = 31 * 24 * 60 * 60  # 31 days
+    #     username = href[26:-1]
 
-        href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
-            RSS_BRIDGE_URL,
-            RSS_BRIDGE_ARGS,
-            username,
-            timeout,
-        )
+    #     href = "{0}/?{1}&u={2}&_cache_timeout={3}&format=Atom".format(
+    #         os.environ.get("RSS_BRIDGE_URL"),
+    #         RSS_BRIDGE_ARGS,
+    #         username,
+    #         timeout,
+    #     )
 
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-            processed=True,
-        )
-        # safeguard against failed attempts
-        if len(results) == 1 and "Bridge returned error 401" in results[0]["name"]:
-            results = []
+    #     results = await parse_href(
+    #         href=href,
+    #         processed=True,
+    #     )
+    #     # safeguard against failed attempts
+    #     if len(results) == 1 and "Bridge returned error" in results[0]["name"]:
+    #         # capture_message(f"{ href } - { results[0]['name'] }")
+    #         return []
 
     # # custom twitter import converter
     # elif 'https://twitter.com/' in self.href:
@@ -99,123 +119,31 @@ def parse_href(href: str, proxy: bool = True, **kwargs: dict):
     #     self.href = f"{ server }/{ self.href[20:] }/rss"
 
     #     try:
-    #         results = self.parse_href(proxy)
+    #         results = self.parse_href()
     #     except:
     #         return []
 
     #     base_domain = 'twitter.com'
     #     for each in results:
     #         each['href'] = each['href'].replace('#m', '')
-    #         each['href'] = each['href'].replace('http://','https://')
+    #         each['href'] = each['href'].replace('http://', 'https://')
 
     #         href_split = each['href'].split('/')
     #         href_split[2] = base_domain
 
     #         each['href'] = '/'.join(href_split)
 
-    # custom tiktok import
-    elif "https://www.tiktok.com/@" in href:
-        href_base = "https://proxitok.pabloferreiro.es"
-        href = f"{href_base}/@{ href.split('@')[-1] }/rss"
+    # # custom tiktok import
+    # elif "https://www.tiktok.com/@" in href:
+    #     href_base = "https://proxitok.pabloferreiro.es"
+    #     href = f"{href_base}/@{ href.split('@')[-1] }/rss"
 
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-        )
+    #     results = await parse_href(
+    #         href=href,
+    #     )
 
-        results.reverse()
-        for each in results:
-            each["href"] = each["href"].replace(
-                "proxitok.pabloferreiro.es", "tiktok.com"
-            )
-
-    # custom RSS YouTube converter
-    elif "https://www.youtube.com/channel/" in href:
-        # 32 = len('https://www.youtube.com/channel/')
-        # 7 = len('/videos')
-        href_base = "https://www.youtube.com/feeds/videos.xml"
-        href = f"{href_base}?channel_id={href[32:-7]}"
-
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-        )
-
-    # custom RSS deviantart converter
-    elif "deviantart.com" in href and not kwargs.get("processed"):
-        # 27 = len('https://www.deviantart.com/')
-        # 9 = len('/gallery/')
-        href = href[27:-9]
-        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
-        href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
-
-        results = parse_href(
-            href=href,
-            proxy=proxy,
-            processed=True,
-        )
-
-    # default RSS import
-    else:
-        try:
-            request = feedparser.parse(href, request_headers=headers)
-        except urllib.error.URLError:
-            proxyDict = urllib.request.ProxyHandler(proxyDict)
-
-            ssl._create_default_https_context = getattr(
-                ssl, "_create_unverified_context"
-            )
-            request = feedparser.parse(
-                href,
-                request_headers=headers,
-                handlers=[proxyDict],
-            )
-
-        for each in request["items"]:
-            if not each:
-                message = f"Feed {href=} is empty, skipping"
-                capture_exception(message)
-                continue
-            try:
-                result_href = each["links"][0]["href"]
-            except KeyError:
-                capture_exception(f"Data missing URL, skipping item {href=} {each=}")
-                continue
-
-            # DATE RESULT: parsing dates
-            if "published" in each:
-                result_datetime = each["published"]
-            elif "delayed" in each:
-                result_datetime = each["delayed"]
-            elif "updated" in each:
-                result_datetime = each["updated"]
-            else:
-                capture_exception("result_datetime broke for feed")
-
-            tzinfos = {
-                "PDT": tz.gettz("America/Los_Angeles"),
-                "PST": tz.gettz("America/Juneau"),
-            }
-            if result_datetime.isdigit():
-                result_datetime = datetime.utcfromtimestamp(int(result_datetime))
-            elif not isinstance(result_datetime, datetime):
-                result_datetime = parser.parse(
-                    result_datetime,
-                    tzinfos=tzinfos,
-                )
-
-            if each.get("title_detail"):
-                result_name = each["title_detail"]["value"]
-            else:
-                result_name = ""
-
-            # APPEND RESULT
-            results.append(
-                {
-                    "name": result_name,
-                    "href": result_href,
-                    "datetime": result_datetime,
-                }
-            )
-
-    return results
+    #     results.reverse()
+    #     for each in results:
+    #         each["href"] = each["href"].replace(
+    #             "proxitok.pabloferreiro.es", "tiktok.com"
+    #         )
