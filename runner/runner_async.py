@@ -18,7 +18,6 @@ async def task(feed: Feed):
         async with connection_semaphore:
             updates = []
             for each in await parser_async.parse_href(feed["href"]):
-                logger.warning(f">>>> { type(each) } { each }")
                 each["datetime"] = each["datetime"].isoformat()
                 updates.append(each)
 
