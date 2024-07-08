@@ -43,7 +43,8 @@ class Consumer:
             e.args = (feed["href"], *e.args)
             raise e
 
-    async def __init__(self, feed_ids: list[int] = None):
+    @classmethod
+    async def runner(cls, feed_ids: list[int] = None):
         logger.warning("Consumer.__init__(): Starting...")
         global connection_semaphore, push_semaphore
         connection_semaphore = asyncio.Semaphore(
