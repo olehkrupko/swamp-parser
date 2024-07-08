@@ -70,7 +70,7 @@ class Consumer:
         for feed in feeds:
             coroutines.append(
                 asyncio.Task(
-                    task(feed),
+                    cls.task(feed),
                     name=f"parse_async({ feed['title'] })",
                 )
             )
@@ -92,7 +92,9 @@ class Consumer:
         # print and return results
         if errors:
             logger.warning(f"Consumer.__init__(): {errors=}")
-        logger.warning(f"Consumer.__init__(): {len(feeds)=}, {updates_new=}, {len(errors)=}")
+        logger.warning(
+            f"Consumer.__init__(): {len(feeds)=}, {updates_new=}, {len(errors)=}"
+        )
         if updates_new > 0:
             updates_new__gt_zero = list(filter(lambda x: x["updates_new"] > 0, results))
             logger.warning(f"Consumer.__init__(): updates_new>0={updates_new__gt_zero}")
