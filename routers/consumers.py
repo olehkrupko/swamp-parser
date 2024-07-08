@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from responses.PrettyJsonResponse import PrettyJsonResponse
-from runner.consumer import Consumer
+from runners.consumer import Consumer
 
 
 # not expected to be used

@@ -3,7 +3,7 @@ import logging
 
 from sentry_sdk import capture_exception
 
-from runner.consumer import start
+from runners.consumer import start
 
 
 logger = logging.getLogger(__name__)
