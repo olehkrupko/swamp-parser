@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from parsers import parser as parser_base
-from parsers import parser_async
+from runners import parsers
 from responses.PrettyJsonResponse import PrettyJsonResponse
+from schemas.feed import ExplainedFeed
 from schemas.update import Update
 
 
@@ -11,30 +11,27 @@ router = APIRouter(
 )
 
 
-# DEPRECATED
-# python3
-# import requests
-# requests.get("http://127.0.0.1:30015/parse?href=https://texty.org.ua/articles/feed.xml").text
-@router.get("/", response_class=PrettyJsonResponse)
-def parse(
+# curl -X GET "http://127.0.0.1:30015/parse/updates?href=https://texty.org.ua/articles/feed.xml"
+@router.get("/updates", response_class=PrettyJsonResponse)
+async def parse_updates(
     href: str,
 ) -> list[Update]:
-    "Parse one feed by URL."
-    return parser_base.parse_href(
-        href=href,
-    )
-
-
-# python3
-# import requests
-# requests.get("http://127.0.0.1:30015/parse/async?href=https://texty.org.ua/articles/feed.xml").text
-@router.get("/async/", response_class=PrettyJsonResponse)
-async def parse_async(
-    href: str,
-) -> list[Update]:
-    "Parse one feed by URL. Asynchronously."
-    results = await parser_async.parse_href(
+    "Parse updates from one feed by URL."
+    results = await parsers.updates(
         href=href,
     )
 
     return results
+
+
+# curl -X GET "http://127.0.0.1:30015/parse/explained?href=https://texty.org.ua/articles/feed.xml"
+@router.get("/explained", response_class=PrettyJsonResponse)
+async def parse_explained(
+    href: str,
+) -> ExplainedFeed:
+    "Parse details about one feed."
+    result = await parsers.explain(
+        href=href,
+    )
+
+    return result

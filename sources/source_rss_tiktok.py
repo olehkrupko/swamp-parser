@@ -3,11 +3,11 @@ import os
 
 import feedparser
 import random
-from parsers.source_rss import RssSource
 from sentry_sdk import capture_message
 
 from schemas.feed import ExplainedFeed
 from schemas.update import Update
+from sources.source_rss import RssSource
 
 
 logger = logging.getLogger(__name__)

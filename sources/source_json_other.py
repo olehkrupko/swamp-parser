@@ -1,5 +1,5 @@
-from parsers.source_json import JsonSource
 from schemas.update import Update
+from sources.source_json import JsonSource
 
 
 class OtherJsonSource(JsonSource):

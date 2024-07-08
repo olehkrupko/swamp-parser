@@ -1,7 +1,7 @@
 import json
 
-from parsers.source import Source
 from schemas.update import Update
+from sources.source import Source
 
 
 class JsonSource(Source):
