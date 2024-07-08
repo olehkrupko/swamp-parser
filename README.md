@@ -11,10 +11,9 @@ asyncio coroutine initiated as task on FastAPI startup. It waits 3m, parses all 
 
 ## Routes
 
-| **URL**        | **Description**                           |
-| ---            | ---                                       |
-| /parse/        | Parse one URL.                            |
-| /parse/async/  | Parse one URL asynchronously.             |
-| /runner/       | Run non-async runner.                     |
-| /runner/async/ | Run async runner.                         |
-| /tests/        | Test-compare async and non-async runners. |
+| **URL**           |**Description**                           |
+| ---               | ---                                      |
+| /ingest/          | Ingest all feeds that requires an update.|
+| /ingest/{feed_id} | Ingest one feed by URL.                  |
+| /parse/updates    | Parse updates from one feed by URL.      |
+| /parse/explained  | Parse details about one feed.            |

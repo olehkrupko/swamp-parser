@@ -16,7 +16,7 @@ router = APIRouter(
 async def parse_updates(
     href: str,
 ) -> list[Update]:
-    "Parse one feed by URL."
+    "Parse updates from one feed by URL."
     results = await parsers.updates(
         href=href,
     )
@@ -29,7 +29,7 @@ async def parse_updates(
 async def parse_explained(
     href: str,
 ) -> ExplainedFeed:
-    "Get deatails about one feed."
+    "Parse details about one feed."
     result = await parsers.explain(
         href=href,
     )
