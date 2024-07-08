@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import sentry_sdk
 from fastapi import FastAPI
 
-from routers import consumers, parsers, explain
+from routers import consumers, parsers
 from workers.worker_parser_loop import ParserLoopWorker
 
 

@@ -24,7 +24,7 @@ async def parse_updates(
     return results
 
 
-# curl -X GET "http://127.0.0.1:30015/parse/explained?href=https://www.pravda.com.ua/rss/view_mainnews/"
+# curl -X GET "http://127.0.0.1:30015/parse/explained?href=https://texty.org.ua/articles/feed.xml"
 @router.get("/explained", response_class=PrettyJsonResponse)
 async def parse_explained(
     href: str,
