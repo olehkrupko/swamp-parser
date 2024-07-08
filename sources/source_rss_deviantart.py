@@ -1,8 +1,7 @@
 import logging
 
-from parsers.source_rss import RssSource
-
 from schemas.feed import ExplainedFeed
+from sources.source_rss import RssSource
 
 
 logger = logging.getLogger(__name__)

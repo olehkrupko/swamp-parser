@@ -4,11 +4,11 @@ import os
 from functools import reduce
 
 import feedparser
-from parsers.source_rss import RssSource
 
 from schemas.feed import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
+from sources.source_rss import RssSource
 
 
 logger = logging.getLogger(__name__)

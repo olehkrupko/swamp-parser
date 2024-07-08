@@ -1,15 +1,15 @@
 import os
 
-from parsers.source_disabled import DisabledSource
-from parsers.source_json_other_1 import OneOtherJsonSource
-from parsers.source_json_other_2 import TwoOtherJsonSource
-from parsers.source_json_other_2_prepare import PrepareTwoOtherJsonSource
-from parsers.source_rss import RssSource
-from parsers.source_rss_artstation import ArtstationRssSource
-from parsers.source_rss_deviantart import DeviantartRssSource
-from parsers.source_rss_proxigram import ProxigramRssSource
-from parsers.source_rss_tiktok import TiktokRssSource
-from parsers.source_rss_youtube import YoutubeRssSource
+from sources.source_disabled import DisabledSource
+from sources.source_json_other_1 import OneOtherJsonSource
+from sources.source_json_other_2 import TwoOtherJsonSource
+from sources.source_json_other_2_prepare import PrepareTwoOtherJsonSource
+from sources.source_rss import RssSource
+from sources.source_rss_artstation import ArtstationRssSource
+from sources.source_rss_deviantart import DeviantartRssSource
+from sources.source_rss_proxigram import ProxigramRssSource
+from sources.source_rss_tiktok import TiktokRssSource
+from sources.source_rss_youtube import YoutubeRssSource
 
 
 class ObjectFactory:

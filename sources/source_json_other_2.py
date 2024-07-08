@@ -1,6 +1,6 @@
 import os
 
-from parsers.source_json_other import OtherJsonSource
+from sources.source_json_other import OtherJsonSource
 
 
 class TwoOtherJsonSource(OtherJsonSource):

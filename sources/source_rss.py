@@ -3,9 +3,9 @@ from dateutil import parser, tz  # adding custom timezones
 
 import feedparser
 
-from parsers.source import Source
-from schemas.update import Update
 from schemas.feed import ExplainedFeed
+from sources.source import Source
+from schemas.update import Update
 
 
 class RssSource(Source):

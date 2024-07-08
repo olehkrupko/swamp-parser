@@ -1,4 +1,4 @@
-from parsers.source import Source
+from sources.source import Source
 
 
 class DisabledSource(Source):

@@ -1,6 +1,6 @@
 import logging
 
-from parsers.source_rss import RssSource
+from sources.source_rss import RssSource
 
 
 logger = logging.getLogger(__name__)
