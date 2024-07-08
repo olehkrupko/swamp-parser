@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from runners import object_factory
+from runners import parsers
 from responses.PrettyJsonResponse import PrettyJsonResponse
 from schemas.feed import ExplainedFeed
 from schemas.update import Update
@@ -17,7 +17,7 @@ async def parse_updates(
     href: str,
 ) -> list[Update]:
     "Parse one feed by URL."
-    results = await parser.parse_href(
+    results = await parsers.updates(
         href=href,
     )
 
@@ -30,7 +30,7 @@ async def parse_explained(
     href: str,
 ) -> ExplainedFeed:
     "Get deatails about one feed."
-    result = await parser.explain_feed(
+    result = await parsers.explain(
         href=href,
     )
 

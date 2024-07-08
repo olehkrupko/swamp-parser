@@ -5,7 +5,7 @@ import os
 import aiohttp
 from sentry_sdk import capture_exception
 
-from runners import object_factory
+from runners import parsers
 from schemas.feed import Feed
 
 
@@ -20,7 +20,7 @@ class Consumer:
         try:
             async with connection_semaphore:
                 updates = []
-                for each in await parser.parse_href(feed["href"]):
+                for each in await parsers.updates(feed["href"]):
                     each["datetime"] = each["datetime"].isoformat()
                     updates.append(each)
 
