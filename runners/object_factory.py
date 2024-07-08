@@ -13,7 +13,8 @@ from sources.source_rss_youtube import YoutubeRssSource
 
 
 class ObjectFactory:
-    def create_object(self, href: str):
+    @staticmethod
+    def create_object(href: str):
         """Create an object based on the href."""
         if not href:
             raise ValueError(f"Provided {href=} is invalid")
