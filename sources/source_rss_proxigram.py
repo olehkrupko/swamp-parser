@@ -16,35 +16,6 @@ logger = logging.getLogger(__name__)
 
 class ProxigramRssSource(RssSource):
     @staticmethod
-    def _fix_each(each: Update) -> Update:
-        each["href"] = each["href"].replace(
-            "http://127.0.0.1:30019",
-            "https://www.instagram.com",
-        )
-
-        if "<p>" in each["name"]:
-            # logger.warning("Empty name, I guess:", each["name"], each["href"])
-            each["name"] = ""
-        else:
-            each["name"] = each["name"].replace("&amp", "&")
-
-        return each
-
-    async def explain(self) -> ExplainedFeed:
-        response_str = await self.request()
-        data = feedparser.parse(response_str)
-
-        return {
-            "title": data["feed"]["title"] + " - Instagram",
-            "href": self.href,
-            "href_user": "",
-            "private": True,
-            "frequency": "days",
-            "notes": "",
-            "json": {},
-        }
-
-    @staticmethod
     def prepare_href(href: str) -> str:
         if "?" in href:
             href = href.split("?")[0]
@@ -61,18 +32,65 @@ class ProxigramRssSource(RssSource):
         return href
 
     async def request(self) -> str:
+        if os.environ["ALLOW_CACHE"] == "true":
+            cached_value = await Cache.get(
+                type="request",
+                href=self.href,
+            )
+            if cached_value is not None:
+                logger.debug(f"Successful cache retrieval for {self.href=}")
+                return cached_value
+
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
         proxigram_semaphore = asyncio.Semaphore(1)
 
-        async with proxigram_semaphore:
-            return await super().request()
+        # we constantly receive empty data, so we are verifying it
+        for attempt in range(1, 11):
+            async with proxigram_semaphore:
+                response_str = await super().request()
 
-    @staticmethod
-    def each_name(each) -> str:
-        return each["summary"]
+            results = super().parse(
+                response_str=response_str,
+            )
+            logger.debug(f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}")
+            if results:
+                logger.info(f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}")
+                if os.environ["ALLOW_CACHE"] == "true":
+                    await Cache.set(
+                        type="request",
+                        href=self.href,
+                        timeout={"days": 7},
+                        value=results,
+                    )
+                return response_str
 
-    def cleanup(self, results: list) -> list:
+            await asyncio.sleep(3)
+
+    async def parse(self, response_str: str) -> list[Update]:
+        results = []
+        for each in await super().parse(response_str=response_str):
+            each["href"] = each["href"].replace(
+                "http://127.0.0.1:30019",
+                "https://www.instagram.com",
+            )
+
+            if "<p>" in each["name"]:
+                # logger.warning("Empty name, I guess:", each["name"], each["href"])
+                each["name"] = ""
+            else:
+                each["name"] = each["name"].replace("&amp", "&")
+
+            results.append(each)
+
+        return results
+
+    async def run(self) -> list[Update]:
+        response_str = await self.request()
+
+        # process data
+        results = await super().parse(response_str=response_str)
+
         # remove duplicates
         # it seems to be caused by pinned posts
         href_dict = {}
@@ -92,53 +110,21 @@ class ProxigramRssSource(RssSource):
 
         return [self._fix_each(x) for x in results]
 
-    async def run(self) -> list[Update]:
-        # receive data
-        if os.environ["ALLOW_CACHE"] == "true":
-            value = await Cache.get(href=self.href, type="processed")
-            if value is not None:
-                # logger.warning(f"Successful cache retrieval for {self.href}")
-                return value
-
-        response_str = await self.request()
-
-        # process data
-        results = await super().parse(response_str=response_str)
-
-        attempt = 0
-        # we constantly receive empty data
-        while not results and attempt < 10:
-            attempt += 1
-            await asyncio.sleep(3)
-            # logger.warning(
-            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
-            # )
-
-            # receive data
-            response_str = await self.request()
-
-            # process data
-            results = await super().parse(response_str=response_str)
-            if not results:
-                empty = feedparser.parse(response_str)
-                if empty["feed"].get("id", None):
-                    # private account or no posts
-                    break
-
-        if results and os.environ["ALLOW_CACHE"] == "true":
-            # logger.warning(
-            #     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
-            # )
-            # we are caching if data received wasn't empty
-            await Cache.set(
-                href=self.href,
-                type="processed",
-                timeout={"days": 7},
-                value=results,
-            )
-
-        results = self.cleanup(results)
-        logger.warning(
-            f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
+    async def explain(self) -> ExplainedFeed:
+        data = feedparser.parse(
+            response_str=await self.request(),
         )
-        return results
+
+        return {
+            "title": data["feed"]["title"] + " - Instagram",
+            "href": self.href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
+
+    @staticmethod
+    def each_name(each) -> str:
+        return each["summary"]
