@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'main'
+      - '37-refactoring-todo-comments'
 jobs:
   checkout:
     runs-on: self-hosted
