@@ -24,7 +24,7 @@ class OneOtherJsonSource(OtherJsonSource):
 
                 return {
                     "title": data["name"],
-                    "href": None,  # TODO: replace None
+                    "href": self.href_original,
                     "href_user": "",
                     "private": True,
                     "frequency": "days",

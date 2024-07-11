@@ -30,10 +30,8 @@ class Source:
         self,
         href: str,
     ):
-        # prepare URL
-        href = self.prepare_href(href)
-
-        self.href = href
+        self.href = self.prepare_href(href)
+        self.href_original = href
 
     async def request(self) -> str:
         # avoiding blocks

@@ -45,7 +45,7 @@ class TiktokRssSource(RssSource):
 
         return {
             "title": data["feed"]["title"].lstrip("@"),
-            "href": None,  # TODO: replace None
+            "href": self.href_original,
             "href_user": "",
             "private": True,
             "frequency": "days",
