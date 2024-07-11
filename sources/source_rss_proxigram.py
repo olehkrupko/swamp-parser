@@ -50,7 +50,7 @@ class ProxigramRssSource(RssSource):
             async with proxigram_semaphore:
                 response_str = await super().request()
 
-            results = super().parse(
+            results = await super().parse(
                 response_str=response_str,
             )
             logger.debug(f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}")
