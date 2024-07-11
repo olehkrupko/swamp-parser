@@ -67,6 +67,8 @@ class ProxigramRssSource(RssSource):
 
             await asyncio.sleep(3)
 
+        return ""
+
     async def parse(self, response_str: str) -> list[Update]:
         results = []
         for each in await super().parse(response_str=response_str):
