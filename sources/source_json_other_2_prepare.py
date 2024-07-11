@@ -2,7 +2,7 @@ import aiohttp
 import json
 import os
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 from sources.source_json_other import OtherJsonSource
 

@@ -1,17 +1,5 @@
-import aiohttp
-import os
 from pydantic import BaseModel
 from typing import Self
-
-
-class ExplainedFeed(BaseModel):
-    title: str
-    href: str | None
-    href_user: str
-    private: bool
-    frequency: str
-    notes: str
-    json: dict
 
 
 # feed with unnecessary fields cut off

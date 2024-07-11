@@ -3,7 +3,7 @@ from dateutil import parser, tz  # adding custom timezones
 
 import feedparser
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from sources.source import Source
 from schemas.update import Update
 

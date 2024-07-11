@@ -5,7 +5,7 @@ import feedparser
 import random
 from sentry_sdk import capture_message
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 from sources.source_rss import RssSource
 

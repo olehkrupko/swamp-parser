@@ -1,6 +1,6 @@
 import logging
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from sources.source_rss import RssSource
 
 

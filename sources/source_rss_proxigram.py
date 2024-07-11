@@ -5,7 +5,7 @@ from functools import reduce
 
 import feedparser
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
 from sources.source_rss import RssSource
