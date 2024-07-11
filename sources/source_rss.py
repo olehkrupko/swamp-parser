@@ -9,13 +9,6 @@ from schemas.update import Update
 
 
 class RssSource(Source):
-    @staticmethod
-    def each_name(each) -> str:
-        if each.get("title_detail"):
-            return each["title_detail"]["value"]
-
-        return ""
-
     async def explain(self) -> ExplainedFeed:
         response_str = await self.request()
         data = feedparser.parse(response_str)
@@ -47,6 +40,13 @@ class RssSource(Source):
                 )
                 continue
 
+            if name_field:
+                name = each[name_field]
+            elif each.get("title_detail"):
+                name = each["title_detail"]["value"]
+            else:
+                return ""
+
             # DATE RESULT: parsing dates
             if "published" in each:
                 result_datetime = each["published"]
@@ -72,7 +72,7 @@ class RssSource(Source):
             # APPEND RESULT
             results.append(
                 {
-                    "name": self.each_name(each),
+                    "name": name,
                     "href": result_href,
                     "datetime": result_datetime,
                 }

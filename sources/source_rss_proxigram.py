@@ -124,7 +124,3 @@ class ProxigramRssSource(RssSource):
             "notes": "",
             "json": {},
         }
-
-    @staticmethod
-    def each_name(each) -> str:
-        return each["summary"]
