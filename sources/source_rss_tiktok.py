@@ -38,21 +38,6 @@ class TiktokRssSource(RssSource):
 
         return href
 
-    async def explain(self) -> ExplainedFeed:
-        data = feedparser.parse(
-            response_str=await self.request(),
-        )
-
-        return {
-            "title": data["feed"]["title"].lstrip("@"),
-            "href": self.href_original,
-            "href_user": "",
-            "private": True,
-            "frequency": "days",
-            "notes": "",
-            "json": {},
-        }
-
     async def parse(self, response_str: str) -> list[Update]:
         results = await super().parse(response_str=response_str)
 
@@ -72,3 +57,17 @@ class TiktokRssSource(RssSource):
             # the only valid data there is a URL. But at least it works!
 
         return results
+
+    async def explain(self) -> ExplainedFeed:
+        href = self.href_original.split("?")[0]
+        username = href.split("@")[-1]
+
+        return {
+            "title": username + " - TikTok",
+            "href": href,
+            "href_user": "",
+            "private": True,
+            "frequency": "days",
+            "notes": "",
+            "json": {},
+        }
