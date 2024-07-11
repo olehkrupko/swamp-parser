@@ -113,13 +113,28 @@ class ProxigramRssSource(RssSource):
         return [self._fix_each(x) for x in results]
 
     async def explain(self) -> ExplainedFeed:
-        data = feedparser.parse(
-            response_str=await self.request(),
-        )
+        # response_str=await self.request()
+        # if response_str:
+        #     data = feedparser.parse(
+        #         response_str=await self.request(),
+        #     )
+
+        #     return {
+        #         "title": data["feed"]["title"] + " - Instagram",
+        #         "href": self.href,
+        #         "href_user": "",
+        #         "private": True,
+        #         "frequency": "days",
+        #         "notes": "",
+        #         "json": {},
+        #     }
+        # else:
+        href = self.href_original.split("?")[0]
+        username = href.split("/")[-1]
 
         return {
-            "title": data["feed"]["title"] + " - Instagram",
-            "href": self.href,
+            "title": username + " - Instagram",
+            "href": href,
             "href_user": "",
             "private": True,
             "frequency": "days",
