@@ -14,7 +14,7 @@ class Cache:
         return datetime.now() + timedelta(**timeout)
 
     @classmethod
-    async def get(cls, href: str, type: str = "request") -> str:
+    async def get(cls, type: str, href: str) -> str:
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             values = await pipe.get(cls.key_from_href(type=type, href=href)).execute()
@@ -22,7 +22,7 @@ class Cache:
             return values[0]
 
     @classmethod
-    async def set(cls, href: str, value: str, timeout: dict, type: str = "request"):
+    async def set(cls, type: str, href: str, value: str, timeout: dict):
         r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             await pipe.set(
