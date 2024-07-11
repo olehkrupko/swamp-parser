@@ -39,8 +39,9 @@ class TiktokRssSource(RssSource):
         return href
 
     async def explain(self) -> ExplainedFeed:
-        response_str = await self.request()
-        data = feedparser.parse(response_str)
+        data = feedparser.parse(
+            response_str=await self.request(),
+        )
 
         return {
             "title": data["feed"]["title"].lstrip("@"),

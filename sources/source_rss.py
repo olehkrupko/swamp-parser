@@ -9,21 +9,7 @@ from schemas.update import Update
 
 
 class RssSource(Source):
-    async def explain(self) -> ExplainedFeed:
-        response_str = await self.request()
-        data = feedparser.parse(response_str)
-
-        return {
-            "title": data["feed"]["title"],
-            "href": self.href,
-            "href_user": "",
-            "private": False,
-            "frequency": "hours",
-            "notes": "",
-            "json": {},
-        }
-
-    async def parse(self, response_str: str) -> list[Update]:
+    async def parse(self, response_str: str, name_field: str = None) -> list[Update]:
         request = feedparser.parse(response_str)
 
         results = []
@@ -79,3 +65,18 @@ class RssSource(Source):
             )
 
         return results
+
+    async def explain(self) -> ExplainedFeed:
+        data = feedparser.parse(
+            response_str=await self.request()
+        )
+
+        return {
+            "title": data["feed"]["title"],
+            "href": self.href,
+            "href_user": "",
+            "private": False,
+            "frequency": "hours",
+            "notes": "",
+            "json": {},
+        }
