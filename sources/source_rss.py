@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
 
@@ -6,6 +7,9 @@ import feedparser
 from schemas.feed_explained import ExplainedFeed
 from sources.source import Source
 from schemas.update import Update
+
+
+logger = logging.getLogger(__name__)
 
 
 class RssSource(Source):
@@ -68,7 +72,7 @@ class RssSource(Source):
 
     async def explain(self) -> ExplainedFeed:
         data = feedparser.parse(
-            response_str=await self.request()
+            await self.request(),
         )
 
         return {
