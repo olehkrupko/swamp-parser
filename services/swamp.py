@@ -5,7 +5,11 @@ from schemas.feed import Feed
 
 
 class Swamp:
-    # methods for swamp-api usage
+    """
+    Swamp class for swamp-api
+
+    Contains methods used to send requests to swamp-api
+    """
 
     @staticmethod
     async def get_feeds() -> list[Feed]:
