@@ -7,6 +7,7 @@ from sentry_sdk import capture_exception
 
 from runners import parsers
 from schemas.feed import Feed
+from services.swamp import Swamp
 
 
 logger = logging.getLogger(__name__)
@@ -56,9 +57,9 @@ class Consumer:
         # run coroutines
         try:
             if feed_ids is None:
-                feeds = await Feed.get_feeds()
+                feeds = await Swamp.get_feeds()
             else:
-                feeds = [await Feed.get_feed(x) for x in feed_ids]
+                feeds = [await Swamp.get_feed(x) for x in feed_ids]
         except aiohttp.client_exceptions.ClientConnectorError as e:
             # triggered by swamp-api not being up on startup
             # skipping this error so it can work properly next time instead of failing

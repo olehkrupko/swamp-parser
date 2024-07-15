@@ -1,6 +1,6 @@
 import logging
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from sources.source_rss import RssSource
 
 
@@ -15,19 +15,25 @@ class DeviantartRssSource(RssSource):
 
         return False
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        # 27 = len('https://www.deviantart.com/')
-        # 9 = len('/gallery/')
-        href = href[27:-9]
-        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
-        href = f"{href_base}&q=by%3A{ href }+sort%3Atime+meta%3Aall"
+    def __init__(self, href: str):
+        HREF_BASE = "https://backend.deviantart.com/rss.xml?type=deviation"
 
-        return href
+        username = href.split("deviantart.com/")[-1]
+        username = username.split("/")[0]
+
+        self.href = f"{ HREF_BASE }&q=by%3A{ username }+sort%3Atime+meta%3Aall"
+        self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
         feed = await super().explain()
 
+        feed["title"] = feed["title"].replace("DeviantArt: ", "")
         feed["title"] += " - DeviantArt"
+
+        feed["href"] = self.href_original
+        if "/gallery" not in feed["href"]:
+            feed["href"] += "/gallery"
+
+        feed["private"] = True
 
         return feed

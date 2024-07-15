@@ -1,36 +1,19 @@
+import logging
 from datetime import datetime
 from dateutil import parser, tz  # adding custom timezones
 
 import feedparser
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from sources.source import Source
 from schemas.update import Update
 
 
+logger = logging.getLogger(__name__)
+
+
 class RssSource(Source):
-    @staticmethod
-    def each_name(each) -> str:
-        if each.get("title_detail"):
-            return each["title_detail"]["value"]
-
-        return ""
-
-    async def explain(self) -> ExplainedFeed:
-        response_str = await self.request()
-        data = feedparser.parse(response_str)
-
-        return {
-            "title": data["feed"]["title"],
-            "href": self.href,
-            "href_user": "",
-            "private": False,
-            "frequency": "hours",
-            "notes": "",
-            "json": {},
-        }
-
-    async def parse(self, response_str: str) -> list[Update]:
+    async def parse(self, response_str: str, name_field: str = None) -> list[Update]:
         request = feedparser.parse(response_str)
 
         results = []
@@ -46,6 +29,13 @@ class RssSource(Source):
                     f"Data missing URL, skipping item {self.href=} {each=}"
                 )
                 continue
+
+            if name_field:
+                name = each[name_field]
+            elif each.get("title_detail"):
+                name = each["title_detail"]["value"]
+            else:
+                return ""
 
             # DATE RESULT: parsing dates
             if "published" in each:
@@ -72,10 +62,25 @@ class RssSource(Source):
             # APPEND RESULT
             results.append(
                 {
-                    "name": self.each_name(each),
+                    "name": name,
                     "href": result_href,
                     "datetime": result_datetime,
                 }
             )
 
         return results
+
+    async def explain(self) -> ExplainedFeed:
+        data = feedparser.parse(
+            await self.request(),
+        )
+
+        return {
+            "title": data["feed"]["title"],
+            "href": self.href,
+            "href_user": "",
+            "private": False,
+            "frequency": "hours",
+            "notes": "",
+            "json": {},
+        }

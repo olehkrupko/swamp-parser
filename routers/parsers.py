@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from runners import parsers
 from responses.PrettyJsonResponse import PrettyJsonResponse
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 
 

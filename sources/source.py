@@ -21,14 +21,9 @@ class Source:
             cls.datetime_format,
         )
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        # return href.replace(from, to)
-        return href
-
-    @classmethod
-    async def parse(cls, each):
-        raise NotImplementedError("Expected to be implemented in child classes")
+    def __init__(self, href: str):
+        self.href = href
+        self.href_original = href
 
     async def request(self) -> str:
         # avoiding blocks
@@ -49,14 +44,9 @@ class Source:
                 # )
                 return await response.read()
 
-    def __init__(
-        self,
-        href: str,
-    ):
-        # prepare URL
-        href = self.prepare_href(href)
-
-        self.href = href
+    @classmethod
+    async def parse(cls, each):
+        raise NotImplementedError("Expected to be implemented in child classes")
 
     async def run(self) -> list[Update]:
         # receive data

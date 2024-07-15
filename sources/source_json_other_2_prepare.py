@@ -2,7 +2,7 @@ import aiohttp
 import json
 import os
 
-from schemas.feed import ExplainedFeed
+from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 from sources.source_json_other import OtherJsonSource
 
@@ -15,9 +15,9 @@ class PrepareTwoOtherJsonSource(OtherJsonSource):
 
         return False
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        return href
+    def __init__(self, href: str):
+        self.href = href
+        self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
         href = os.environ.get("SOURCE_2_TO").split("/api/v1", 1)[0]

@@ -11,9 +11,9 @@ class TwoOtherJsonSource(OtherJsonSource):
 
         return False
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        return href.replace(
+    def __init__(self, href: str):
+        self.href = href.replace(
             os.environ.get("SOURCE_2_FROM"),
             os.environ.get("SOURCE_2_TO"),
         )
+        self.href_original = href
