@@ -13,29 +13,29 @@ logger = logging.getLogger(__name__)
 
 
 class TiktokRssSource(RssSource):
-    @staticmethod
-    def prepare_href(href: str) -> str:
+    def __init__(self, href: str):
         RSS_BRIDGE_ARGS = "&".join(
             (
                 "action=display",
                 "bridge=TikTokBridge",
                 "context=By+user",
+                "format=Atom",
             )
         )
 
-        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
-        if "?" in href:
-            href = href.split("?")[0]
-        username = href[24:]
+        href = href.split("?")[0]
+        href = href.rstrip("/")
 
-        href = "{0}/?{1}&username={2}&_cache_timeout={3}&format=Atom".format(
+        timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
+        username = href.split("/")[-1]
+
+        self.href = "{0}/?{1}&username={2}&_cache_timeout={3}".format(
             os.environ.get("RSS_BRIDGE_URL"),
             RSS_BRIDGE_ARGS,
             username,
             timeout,
         )
-
-        return href
+        self.href_original = href
 
     async def parse(self, response_str: str) -> list[Update]:
         results = await super().parse(response_str=response_str)

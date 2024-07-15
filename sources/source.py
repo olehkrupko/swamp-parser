@@ -21,16 +21,8 @@ class Source:
             cls.datetime_format,
         )
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        # return href.replace(from, to)
-        return href
-
-    def __init__(
-        self,
-        href: str,
-    ):
-        self.href = self.prepare_href(href)
+    def __init__(self, href: str):
+        self.href = href
         self.href_original = href
 
     async def request(self) -> str:

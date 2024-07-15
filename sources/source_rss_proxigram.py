@@ -13,21 +13,18 @@ logger = logging.getLogger(__name__)
 
 
 class ProxigramRssSource(RssSource):
-    @staticmethod
-    def prepare_href(href: str) -> str:
+    def __init__(self, href: str):
         if "?" in href:
             href = href.split("?")[0]
+        href = href.rstrip("/")
 
-        href = href.replace(
-            "https://www.instagram.com",
-            os.environ.get("SOURCE_PROXIGRAM_HOST"),
+        username = href.replace("https://www.instagram.com/", "")
+
+        self.href = "{base}/{username}/rss".format(
+            base=os.environ.get("SOURCE_PROXIGRAM_HOST"),
+            username=username,
         )
-        if href[-1] == "/":
-            href += "rss"
-        else:
-            href += "/rss"
-
-        return href
+        self.href_original = href
 
     async def request(self) -> str:
         if os.environ["ALLOW_CACHE"] == "true":
@@ -132,12 +129,11 @@ class ProxigramRssSource(RssSource):
         #         "json": {},
         #     }
         # else:
-        href = self.href_original.split("?")[0]
-        username = href.split("/")[-1]
+        username = self.href_original.split("/")[-1]
 
         return {
             "title": username + " - Instagram",
-            "href": href,
+            "href": self.href_original,
             "href_user": "",
             "private": True,
             "frequency": "days",

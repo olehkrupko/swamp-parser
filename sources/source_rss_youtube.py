@@ -17,19 +17,17 @@ class YoutubeRssSource(RssSource):
 
         return False
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
-        # https://www.youtube.com/feeds/videos.xml?playlist_id=XXXX
-        if "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
-            return href
+    def __init__(self, href: str):
+        CHANNEL_BASE_URL = "https://www.youtube.com/feeds/videos.xml?channel_id="
+        if CHANNEL_BASE_URL in href:
+            channel_id = href.replace(CHANNEL_BASE_URL, "")
+        else:
+            channel_id = href.replace("https://www.youtube.com/channel/", "")
+            channel_id = channel_id.replace("/videos", "")
+            channel_id = channel_id.rstrip("/")
 
-        HREF_BASE = "https://www.youtube.com/feeds/videos.xml"
-
-        channel_id = href.replace("https://www.youtube.com/channel/", "")
-        channel_id = channel_id.replace("/videos", "")
-        channel_id = channel_id.strip("/")
-
-        return f"{HREF_BASE}?channel_id={channel_id}"
+        self.href = CHANNEL_BASE_URL + channel_id
+        self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
         channel_id = self.href.split("?channel_id=")[-1]

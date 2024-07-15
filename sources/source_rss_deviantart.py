@@ -15,14 +15,14 @@ class DeviantartRssSource(RssSource):
 
         return False
 
-    @staticmethod
-    def prepare_href(href: str) -> str:
+    def __init__(self, href: str):
+        HREF_BASE = "https://backend.deviantart.com/rss.xml?type=deviation"
+
         username = href.split("deviantart.com/")[-1]
         username = username.split("/")[0]
-        href_base = "https://backend.deviantart.com/rss.xml?type=deviation"
-        href = f"{ href_base }&q=by%3A{ username }+sort%3Atime+meta%3Aall"
 
-        return href
+        self.href = f"{ HREF_BASE }&q=by%3A{ username }+sort%3Atime+meta%3Aall"
+        self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
         feed = await super().explain()
