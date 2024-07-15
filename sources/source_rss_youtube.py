@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 class YoutubeRssSource(RssSource):
     @staticmethod
     def match(href: str):
-        if "https://www.youtube.com/channel/" in href:
+        if "https://www.youtube.com" in href and "@" in href:
+            raise ValueError("@ channel username not supported")
+        elif "https://www.youtube.com/channel/" in href:
             return True
         elif "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
             return True
