@@ -3,8 +3,6 @@ import logging
 import os
 from functools import reduce
 
-import feedparser
-
 from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
 from services.cache import Cache
@@ -53,9 +51,10 @@ class ProxigramRssSource(RssSource):
             results = await super().parse(
                 response_str=response_str,
             )
-            logger.debug(f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}")
             if results:
-                logger.info(f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}")
+                logger.info(
+                    f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
+                )
                 if os.environ["ALLOW_CACHE"] == "true":
                     await Cache.set(
                         type="request",
@@ -64,6 +63,10 @@ class ProxigramRssSource(RssSource):
                         value=results,
                     )
                 return response_str
+            else:
+                logger.debug(
+                    f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> no results"
+                )
 
             await asyncio.sleep(3)
 

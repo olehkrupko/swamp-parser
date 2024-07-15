@@ -1,7 +1,6 @@
 import logging
 import os
 
-import feedparser
 import random
 from sentry_sdk import capture_message
 
