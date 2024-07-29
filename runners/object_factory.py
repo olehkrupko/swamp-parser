@@ -7,6 +7,7 @@ from sources.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from sources.source_rss import RssSource
 from sources.source_rss_artstation import ArtstationRssSource
 from sources.source_rss_deviantart import DeviantartRssSource
+from sources.source_rss_other_3 import ThreeOtherRssSource
 from sources.source_rss_proxigram import ProxigramRssSource
 from sources.source_rss_tiktok import TiktokRssSource
 from sources.source_rss_youtube import YoutubeRssSource
@@ -43,6 +44,9 @@ class ObjectFactory:
         elif PrepareTwoOtherJsonSource.match(href):
             # custom source_2 import
             return PrepareTwoOtherJsonSource(href=href)
+        elif ThreeOtherRssSource.match(href):
+            # custom source_3 import
+            return ThreeOtherRssSource(href=href)
         else:
             # default import used for RSS
             # warning: weird stuff can be sent there
