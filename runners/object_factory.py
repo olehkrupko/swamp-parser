@@ -21,7 +21,7 @@ class ObjectFactory:
             raise ValueError(f"Provided {href=} is invalid")
         elif "https://twitter.com/" in href:
             return DisabledSource(href=href)
-        elif "instagram.com" in href:
+        elif ProxigramRssSource.match(href):
             return ProxigramRssSource(href=href)
         elif "https://www.tiktok.com/@" in href:
             return TiktokRssSource(href=href)

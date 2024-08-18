@@ -13,10 +13,23 @@ logger = logging.getLogger(__name__)
 
 
 class ProxigramRssSource(RssSource):
+    @staticmethod
+    def match(href: str):
+        if "https://www.instagram.com/" in href:
+            return True
+        elif "https://instagram.com/" in href:
+            return True
+
+        return False
+
     def __init__(self, href: str):
         if "?" in href:
             href = href.split("?")[0]
         href = href.rstrip("/")
+        href = href.replace(
+            "https://instagram.com/",
+            "https://www.instagram.com/",
+        )
 
         username = href.replace("https://www.instagram.com/", "")
 
