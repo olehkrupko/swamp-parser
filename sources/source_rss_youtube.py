@@ -26,6 +26,7 @@ class YoutubeRssSource(RssSource):
         else:
             channel_id = href.replace("https://www.youtube.com/channel/", "")
             channel_id = channel_id.replace("/videos", "")
+            channel_id = channel_id.replace("?app=desktop", "")
             channel_id = channel_id.rstrip("/")
 
         self.href = CHANNEL_BASE_URL + channel_id
