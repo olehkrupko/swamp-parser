@@ -13,6 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class TiktokRssSource(RssSource):
+    @staticmethod
+    def match(href: str):
+        if "https://www.tiktok.com/@" in href:
+            return True
+
+        return False
+
     def __init__(self, href: str):
         RSS_BRIDGE_ARGS = "&".join(
             (
