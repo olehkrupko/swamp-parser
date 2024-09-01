@@ -80,6 +80,14 @@ class ProxigramRssSource(RssSource):
 
             await asyncio.sleep(3)
 
+        # cache failure to avoid repeats
+        if os.environ["ALLOW_CACHE"] == "true":
+            await Cache.set(
+                type="request",
+                href=self.href,
+                timeout={"days": 7},
+                value="",
+            )
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
