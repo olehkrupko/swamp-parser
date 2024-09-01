@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import random
 from functools import reduce
 
 from schemas.feed_explained import ExplainedFeed
@@ -85,7 +86,7 @@ class ProxigramRssSource(RssSource):
             await Cache.set(
                 type="request",
                 href=self.href,
-                timeout={"days": 7},
+                timeout={"days": random.randint(7, 31)},
                 value="",
             )
         return ""
