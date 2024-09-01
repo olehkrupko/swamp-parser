@@ -1,3 +1,4 @@
+import logging
 import os
 
 from sources.source_disabled import DisabledSource
@@ -11,6 +12,9 @@ from sources.source_rss_other_3 import ThreeOtherRssSource
 from sources.source_rss_proxigram import ProxigramRssSource
 from sources.source_rss_tiktok import TiktokRssSource
 from sources.source_rss_youtube import YoutubeRssSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectFactory:

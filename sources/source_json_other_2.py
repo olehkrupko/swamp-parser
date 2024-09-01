@@ -1,6 +1,10 @@
+import logging
 import os
 
 from sources.source_json_other import OtherJsonSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class TwoOtherJsonSource(OtherJsonSource):
