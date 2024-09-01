@@ -2,7 +2,6 @@ import logging
 from fastapi import APIRouter
 
 from responses.PrettyJsonResponse import PrettyJsonResponse
-from schemas.update import Update
 
 
 router = APIRouter(
