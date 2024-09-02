@@ -86,7 +86,11 @@ class ProxigramRssSource(RssSource):
             await Cache.set(
                 type="request",
                 href=self.href,
-                timeout={"days": random.randint(7, 31)},
+                timeout={
+                    "minutes": random.randint(0, 59),
+                    "hours": random.randint(0, 23),
+                    "days": random.randint(7, 31),
+                },
                 value="",
             )
         return ""
