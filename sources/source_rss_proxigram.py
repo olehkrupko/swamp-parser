@@ -96,6 +96,9 @@ class ProxigramRssSource(RssSource):
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
+        if response_str == "":
+            return []
+
         results = []
         for each in await super().parse(response_str=response_str):
             each["href"] = each["href"].replace(
