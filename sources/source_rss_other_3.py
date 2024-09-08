@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 class ThreeOtherRssSource(RssSource):
     @staticmethod
     def match(href: str):
+        href = href.replace("https://rt.", "https://www.")
+
         if os.environ.get("SOURCE_3_FROM") in href:
             return True
 
@@ -26,13 +28,17 @@ class ThreeOtherRssSource(RssSource):
         )
 
         href = href.split("?")[0]
+        href = href.replace("/videos", "")
         href = href.rstrip("/")
+        href = href.replace("https://rt.", "https://www.")
 
         username = href.split("/")[-1]
+        type = href.split("/")[-2]
 
-        self.href = "{0}&{1}&q={2}&_cache_timeout={3}".format(
+        self.href = "{0}&{1}&type={2}&q={3}&_cache_timeout={4}".format(
             os.environ.get("SOURCE_3_TO"),
             RSS_BRIDGE_ARGS,
+            type,
             username,
             3600,  # 1 hour
         )
