@@ -26,6 +26,7 @@ class ObjectFactory:
         elif "https://twitter.com/" in href:
             return DisabledSource(href=href)
         elif ProxigramRssSource.match(href):
+            return DisabledSource(href=href)
             return ProxigramRssSource(href=href)
         elif TiktokRssSource.match(href):
             return TiktokRssSource(href=href)
