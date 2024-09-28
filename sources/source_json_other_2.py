@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 class TwoOtherJsonSource(OtherJsonSource):
     @staticmethod
     def match(href: str):
-        if os.environ.get("SOURCE_2_FROM") in href:
+        if json.loads(os.environ.get("SOURCE_2"))[0]["href"]["from"] in href:
             return True
-        elif os.environ.get("SOURCE_2_FROM").split("/")[2] in href:
+        elif json.loads(os.environ.get("SOURCE_2"))[0]["href"]["match"] in href:
             return True
 
         return False
@@ -48,7 +48,7 @@ class TwoOtherJsonSource(OtherJsonSource):
             ):
                 return {
                     "title": username,
-                    "href": os.environ.get("SOURCE_2_FROM") + creator["id"],
+                    "href": json.loads(os.environ.get("SOURCE_2"))[0]["href"]["from"] + creator["id"],
                     "href_user": "",
                     "private": True,
                     "frequency": "days",
@@ -59,15 +59,15 @@ class TwoOtherJsonSource(OtherJsonSource):
     def __init__(self, href: str):
         if os.environ.get("SOURCE_2_FROM") in href:
             self.href = href.replace(
-                os.environ.get("SOURCE_2_FROM"),
-                os.environ.get("SOURCE_2_TO"),
+                json.loads(os.environ.get("SOURCE_2"))[0]["href"]["from"],
+                json.loads(os.environ.get("SOURCE_2"))[0]["href"]["to"],
             )
-        elif os.environ.get("SOURCE_2_FROM").split("/")[2] in href:
+        elif json.loads(os.environ.get("SOURCE_2"))[0]["href"]["match"] in href:
             self.href = href
         self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
-        if os.environ.get("SOURCE_2_TO") in self.href:
+        if json.loads(os.environ.get("SOURCE_2"))[0]["href"]["to"] in self.href:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     self.href + "/profile",
@@ -84,7 +84,7 @@ class TwoOtherJsonSource(OtherJsonSource):
                         "notes": "",
                         "json": {},
                     }
-        elif os.environ.get("SOURCE_2_FROM").split("/")[2] in self.href:
+        elif json.loads(os.environ.get("SOURCE_2"))[0]["href"]["match"] in self.href:
             return await self.__explain_from_creator_list(
                 username=self.href.split("/")[-1],
             )
