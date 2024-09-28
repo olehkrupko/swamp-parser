@@ -34,10 +34,15 @@ class TwoOtherJsonSource(OtherJsonSource):
                 response_str = response_str.lstrip("[{")
                 response_str = response_str.rstrip("}]")
 
-                response_creators = [json.loads("{"+x+"}") for x in response_str.split('},{')]
+                response_creators = [
+                    json.loads("{" + x + "}") for x in response_str.split("},{")
+                ]
 
                 for creator in response_creators:
-                    if creator["service"] == service and creator["name"].lower() == username.lower():
+                    if (
+                        creator["service"] == service
+                        and creator["name"].lower() == username.lower()
+                    ):
                         return {
                             "title": username,
                             "href": os.environ.get("SOURCE_2_FROM") + creator["id"],
