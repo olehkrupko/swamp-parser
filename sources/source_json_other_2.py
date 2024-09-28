@@ -1,7 +1,8 @@
-import aiohttp
 import json
 import logging
 import os
+
+import aiohttp
 
 from schemas.feed_explained import ExplainedFeed
 from sources.source_json_other import OtherJsonSource
@@ -20,38 +21,40 @@ class TwoOtherJsonSource(OtherJsonSource):
 
         return False
 
-    @staticmethod
-    async def __explain_from_creator_list(username: str, service: str = "patreon"):
-        href = os.environ.get("SOURCE_2_TO").split("/api/v1", 1)[0]
-        href += "/api/v1/creators.txt"
+    @classmethod
+    async def __explain_from_creator_list(cls, username: str, service: str = "patreon") -> ExplainedFeed:
+        href = json.loads(os.environ.get("SOURCE_2"))["creators"]
+        response_str = cls.__request_via_random_proxy(href)
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                href,
-            ) as response:
-                response_str = await response.read()
-                response_str = response_str.decode("utf-8")
-                response_str = response_str.lstrip("[{")
-                response_str = response_str.rstrip("}]")
+        if not response_str:
+            # logger.warning(">>>> >>>> EMPTY RESPONSE STR")
+            return
+        # else:
+        #     logger.warning(f">>>> >>>> {response_str=}")
 
-                response_creators = [
-                    json.loads("{" + x + "}") for x in response_str.split("},{")
-                ]
+        response_str = response_str.decode("utf-8")
+        response_str = response_str.lstrip("[{")
+        response_str = response_str.rstrip("}]")
 
-                for creator in response_creators:
-                    if (
-                        creator["service"] == service
-                        and creator["name"].lower() == username.lower()
-                    ):
-                        return {
-                            "title": username,
-                            "href": os.environ.get("SOURCE_2_FROM") + creator["id"],
-                            "href_user": "",
-                            "private": True,
-                            "frequency": "days",
-                            "notes": "",
-                            "json": {},
-                        }
+        lst = response_str.split("},{")
+        response_creators = [
+            json.loads("{" + x + "}") for x in lst
+        ]
+
+        for creator in response_creators:
+            if (
+                creator["service"] == service
+                and creator["name"].lower() == username.lower()
+            ):
+                return {
+                    "title": username,
+                    "href": os.environ.get("SOURCE_2_FROM") + creator["id"],
+                    "href_user": "",
+                    "private": True,
+                    "frequency": "days",
+                    "notes": "",
+                    "json": {},
+                }
 
     def __init__(self, href: str):
         if os.environ.get("SOURCE_2_FROM") in href:

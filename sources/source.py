@@ -5,6 +5,7 @@ import random
 import string
 from datetime import datetime
 
+from aiohttp_socks import ProxyType, ProxyConnector
 from sentry_sdk import capture_exception as sentry_capture_exception
 
 from schemas.update import Update
@@ -85,3 +86,42 @@ class Source:
 
     async def explain(self) -> None:
         raise NotImplementedError
+
+    @staticmethod
+    async def __request_via_random_proxy(href, max_attempts=100):
+        proxy_list = []
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/http.txt",
+            ) as response:
+                response_str = await response.read()
+                proxy_list = response_str.decode("utf-8").split("\n")
+                # logger.warning(f">>>> >>>> {type(proxy_list)} {len(proxy_list)}")
+
+        if proxy_list:
+            for proxy in random.choices(proxy_list, k = max_attempts):
+                connector = ProxyConnector(
+                    proxy_type=ProxyType.HTTP,
+                    host=proxy.split(":")[0],
+                    port=int(proxy.split(":")[1]),
+                )
+
+                try:
+                    async with aiohttp.ClientSession(
+                        connector=connector
+                    ) as session:
+                        async with session.get(
+                            href,
+                        ) as response:
+                            return await response.read()
+                except Exception as error:
+                    # logger.warning(f">>>> >>>> FAILURE {error}")
+                    pass
+        else:
+            async with aiohttp.ClientSession(
+                connector=connector
+            ) as session:
+                async with session.get(
+                    href,
+                ) as response:
+                    return await response.read()
