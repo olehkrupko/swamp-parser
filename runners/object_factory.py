@@ -4,7 +4,6 @@ import os
 from sources.source_disabled import DisabledSource
 from sources.source_json_other_1 import OneOtherJsonSource
 from sources.source_json_other_2 import TwoOtherJsonSource
-from sources.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from sources.source_rss import RssSource
 from sources.source_rss_artstation import ArtstationRssSource
 from sources.source_rss_deviantart import DeviantartRssSource
@@ -46,9 +45,6 @@ class ObjectFactory:
         elif TwoOtherJsonSource.match(href):
             # custom source_2 import
             return TwoOtherJsonSource(href=href)
-        elif PrepareTwoOtherJsonSource.match(href):
-            # custom source_2 import
-            return PrepareTwoOtherJsonSource(href=href)
         elif ThreeOtherRssSource.match(href):
             # custom source_3 import
             return ThreeOtherRssSource(href=href)
