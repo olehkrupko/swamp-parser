@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 class TwoOtherJsonSource(OtherJsonSource):
     @staticmethod
     def match(href: str):
-        if json.loads(os.environ.get("SOURCE_2"))[0]["href"]["from"] in href:
+        if json.loads(os.environ.get("SOURCE_2"))["services"][0]["href"]["from"] in href:
             return True
-        elif json.loads(os.environ.get("SOURCE_2"))[0]["href"]["match"] in href:
+        elif json.loads(os.environ.get("SOURCE_2"))["services"][0]["href"]["match"] in href:
             return True
 
         return False
