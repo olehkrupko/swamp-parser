@@ -39,7 +39,7 @@ class ObjectFactory:
         elif os.environ.get("SOURCE_1_FROM") in href:
             # custom source_1 import
             return OneOtherJsonSource(href=href)
-        elif os.environ.get("SOURCE_2_FROM") in href:
+        elif TwoOtherJsonSource.match(href):
             # custom source_2 import
             return TwoOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
