@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter
 
 from runners import parsers
@@ -9,6 +10,9 @@ from schemas.update import Update
 router = APIRouter(
     prefix="/parse",
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 # curl -X GET "http://127.0.0.1:30015/parse/updates?href=https://texty.org.ua/articles/feed.xml"

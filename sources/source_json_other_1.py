@@ -1,9 +1,13 @@
 import aiohttp
 import json
+import logging
 import os
 
 from schemas.feed_explained import ExplainedFeed
 from sources.source_json_other import OtherJsonSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class OneOtherJsonSource(OtherJsonSource):

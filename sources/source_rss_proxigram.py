@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import random
 from functools import reduce
 
 from schemas.feed_explained import ExplainedFeed
@@ -13,10 +14,23 @@ logger = logging.getLogger(__name__)
 
 
 class ProxigramRssSource(RssSource):
+    @staticmethod
+    def match(href: str):
+        if "https://www.instagram.com/" in href:
+            return True
+        elif "https://instagram.com/" in href:
+            return True
+
+        return False
+
     def __init__(self, href: str):
         if "?" in href:
             href = href.split("?")[0]
         href = href.rstrip("/")
+        href = href.replace(
+            "https://instagram.com/",
+            "https://www.instagram.com/",
+        )
 
         username = href.replace("https://www.instagram.com/", "")
 
@@ -67,9 +81,24 @@ class ProxigramRssSource(RssSource):
 
             await asyncio.sleep(3)
 
+        # cache failure to avoid repeats
+        if os.environ["ALLOW_CACHE"] == "true":
+            await Cache.set(
+                type="request",
+                href=self.href,
+                timeout={
+                    "minutes": random.randint(0, 59),
+                    "hours": random.randint(0, 23),
+                    "days": random.randint(7, 31),
+                },
+                value="",
+            )
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
+        if response_str == "":
+            return []
+
         results = []
         for each in await super().parse(response_str=response_str):
             each["href"] = each["href"].replace(
