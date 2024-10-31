@@ -13,7 +13,7 @@ class ThreeOtherRssSource(RssSource):
     def match(href: str):
         href = href.replace("https://rt.", "https://www.")
 
-        if os.environ.get("SOURCE_3_FROM") in href:
+        if os.environ.get("SOURCE_3")["href"]["match"] in href:
             return True
 
         return False
@@ -36,7 +36,7 @@ class ThreeOtherRssSource(RssSource):
         type = href.split("/")[-2]
 
         self.href = "{0}&{1}&type={2}&q={3}&_cache_timeout={4}".format(
-            os.environ.get("SOURCE_3_TO"),
+            os.environ.get("SOURCE_3")["href"]["to"],
             RSS_BRIDGE_ARGS,
             type,
             username,
