@@ -113,7 +113,7 @@ class Source:
                         ) as response:
                             return await response.read()
                 except Exception as error:
-                    # logger.warning(f">>>> >>>> FAILURE {error}")
+                    logger.warning(f">>>> >>>> FAILURE {error}")
                     pass
         else:
             async with aiohttp.ClientSession(connector=connector) as session:
