@@ -116,9 +116,7 @@ class Source:
                     # logger.warning(f">>>> >>>> FAILURE {error}")
                     pass
         else:
-            async with aiohttp.ClientSession(
-                connector=connector
-            ) as session:
+            async with aiohttp.ClientSession(connector=connector) as session:
                 async with session.get(
                     href,
                 ) as response:
