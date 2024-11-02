@@ -7,7 +7,7 @@ from sources.source_json_other_2 import TwoOtherJsonSource
 from sources.source_rss import RssSource
 from sources.source_rss_artstation import ArtstationRssSource
 from sources.source_rss_deviantart import DeviantartRssSource
-from sources.source_rss_other_3 import ThreeOtherRssSource
+from sources.source_rss_other3 import ThreeOtherRssSource
 from sources.source_rss_proxigram import ProxigramRssSource
 from sources.source_rss_tiktok import TiktokRssSource
 from sources.source_rss_youtube import YoutubeRssSource

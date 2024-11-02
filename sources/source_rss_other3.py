@@ -59,5 +59,8 @@ class ThreeOtherRssSource(RssSource):
             "private": True,
             "frequency": "days",
             "notes": "",
-            "json": {},
+            "json": os.environ.get("SOURCE_3")["default"]["json"],
         }
+
+
+# ignore items with name "Bridge returned error 0! (19971)"
