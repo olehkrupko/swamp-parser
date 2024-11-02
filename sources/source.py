@@ -99,7 +99,7 @@ class Source:
                 # logger.warning(f">>>> >>>> {type(proxy_list)} {len(proxy_list)}")
 
         if proxy_list:
-            for proxy in random.choices(proxy_list, k = max_attempts):
+            for proxy in random.choices(proxy_list, k=max_attempts):
                 connector = ProxyConnector(
                     proxy_type=ProxyType.HTTP,
                     host=proxy.split(":")[0],
@@ -107,9 +107,7 @@ class Source:
                 )
 
                 try:
-                    async with aiohttp.ClientSession(
-                        connector=connector
-                    ) as session:
+                    async with aiohttp.ClientSession(connector=connector) as session:
                         async with session.get(
                             href,
                         ) as response:
