@@ -33,14 +33,12 @@ class Source:
         self.href_original = href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
-            cached_value = await Cache.get(
-                type="request",
-                href=self.href,
-            )
-            if cached_value is not None:
-                logger.debug(f"Successful cache retrieval for {self.href=}")
-                return cached_value
+        cached_value = await Cache.get(
+            type="request",
+            href=self.href,
+        )
+        if cached_value is not None:
+            return cached_value
 
         # avoiding blocks
         referer_domain = "".join(random.choices(string.ascii_letters, k=16))
@@ -59,13 +57,12 @@ class Source:
                 #     ssl, "_create_unverified_context"
                 # )
                 result = await response.read()
-                if os.environ["ALLOW_CACHE"] == "true":
-                    await Cache.set(
-                        type="request",
-                        href=self.href,
-                        timeout={"seconds": 15},
-                        value=result,
-                    )
+                await Cache.set(
+                    type="request",
+                    href=self.href,
+                    timeout={"seconds": 15},
+                    value=result,
+                )
                 return result
 
     @classmethod
