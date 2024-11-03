@@ -78,6 +78,7 @@ class Source:
 
         return results
 
+    @staticmethod
     def capture_exception(msg: str):
         sentry_capture_exception(msg)
 

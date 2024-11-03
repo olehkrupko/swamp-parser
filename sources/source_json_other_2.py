@@ -53,7 +53,7 @@ class TwoOtherJsonSource(OtherJsonSource):
             ):
                 return {
                     "title": username,
-                    "href": cls.environ[0]["href"]["from"] + creator["id"],
+                    "href": cls.environ["services"][0]["href"]["from"] + creator["id"],
                     "href_user": "",
                     "private": True,
                     "frequency": "days",
@@ -62,17 +62,17 @@ class TwoOtherJsonSource(OtherJsonSource):
                 }
 
     def __init__(self, href: str):
-        if os.environ.get("SOURCE_2_FROM") in href:
+        if self.environ["services"][0]["href"]["from"] in href:
             self.href = href.replace(
-                self.environ[0]["href"]["from"],
-                self.environ[0]["href"]["to"],
+                self.environ["services"][0]["href"]["from"],
+                self.environ["services"][0]["href"]["to"],
             )
-        elif self.environ[0]["href"]["match"] in href:
+        elif self.environ["services"][0]["href"]["match"] in href:
             self.href = href
         self.href_original = href
 
     async def explain(self) -> ExplainedFeed:
-        if self.environ[0]["href"]["to"] in self.href:
+        if self.environ["services"][0]["href"]["to"] in self.href:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     self.href + "/profile",
@@ -89,7 +89,7 @@ class TwoOtherJsonSource(OtherJsonSource):
                         "notes": "",
                         "json": {},
                     }
-        elif self.environ[0]["href"]["match"] in self.href:
+        elif self.environ["services"][0]["href"]["match"] in self.href:
             return await self.__explain_from_creator_list(
                 username=self.href.split("/")[-1],
             )
