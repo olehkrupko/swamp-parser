@@ -38,7 +38,7 @@ class TwoOtherJsonSource(OtherJsonSource):
         # else:
         #     logger.warning(f">>>> >>>> {response_str=}")
 
-        response_str = response_str.decode("utf-8")
+        # response_str = response_str.lstrip("b'")
         response_str = response_str.lstrip("[{")
         response_str = response_str.rstrip("}]")
 
@@ -52,7 +52,7 @@ class TwoOtherJsonSource(OtherJsonSource):
                 and creator["name"].lower() == username.lower()
             ):
                 return {
-                    "title": username,
+                    "title": username + " - " + cls.environ["services"][0]["name"],
                     "href": cls.environ["services"][0]["href"]["from"] + creator["id"],
                     "href_user": "",
                     "private": True,

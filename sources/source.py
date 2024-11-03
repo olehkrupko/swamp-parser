@@ -123,6 +123,7 @@ class Source:
                             href,
                         ) as response:
                             result = await response.read()
+                            result = result.decode("utf-8")
                             await Cache.set(
                                 type="request",
                                 href=href,
