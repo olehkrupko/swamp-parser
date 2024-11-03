@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import sentry_sdk
 from fastapi import FastAPI
 
-from routers import consumers, parsers
+from routers import consumers, parsers, tests
 from workers.worker_parser_loop import ParserLoopWorker
 
 
@@ -13,11 +13,11 @@ sentry_sdk.init(
     dsn=os.environ["SENTRY_SDK_DSN"],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
-    traces_sample_rate=0.1,
+    traces_sample_rate=1,
     # Set profiles_sample_rate to 1.0 to profile 100%
     # of sampled transactions.
     # We recommend adjusting this value in production.
-    profiles_sample_rate=0.1,
+    profiles_sample_rate=1,
 )
 
 
@@ -40,5 +40,6 @@ app = FastAPI(
     version="2.3",  # Issue 10: fast-api routes
     lifespan=lifespan,
 )
-app.include_router(parsers.router)
 app.include_router(consumers.router)  # not expected to be used
+app.include_router(parsers.router)
+app.include_router(tests.router)

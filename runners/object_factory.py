@@ -1,15 +1,19 @@
+import logging
 import os
 
 from sources.source_disabled import DisabledSource
 from sources.source_json_other_1 import OneOtherJsonSource
 from sources.source_json_other_2 import TwoOtherJsonSource
-from sources.source_json_other_2_prepare import PrepareTwoOtherJsonSource
 from sources.source_rss import RssSource
 from sources.source_rss_artstation import ArtstationRssSource
 from sources.source_rss_deviantart import DeviantartRssSource
+from sources.source_rss_other3 import ThreeOtherRssSource
 from sources.source_rss_proxigram import ProxigramRssSource
 from sources.source_rss_tiktok import TiktokRssSource
 from sources.source_rss_youtube import YoutubeRssSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectFactory:
@@ -20,9 +24,10 @@ class ObjectFactory:
             raise ValueError(f"Provided {href=} is invalid")
         elif "https://twitter.com/" in href:
             return DisabledSource(href=href)
-        elif "instagram.com" in href:
+        elif ProxigramRssSource.match(href):
+            return DisabledSource(href=href)
             return ProxigramRssSource(href=href)
-        elif "https://www.tiktok.com/@" in href:
+        elif TiktokRssSource.match(href):
             return TiktokRssSource(href=href)
         elif YoutubeRssSource.match(href):
             return YoutubeRssSource(href=href)
@@ -34,15 +39,15 @@ class ObjectFactory:
         elif os.environ.get("SOURCE_1_FROM") in href:
             # custom source_1 import
             return OneOtherJsonSource(href=href)
-        elif os.environ.get("SOURCE_2_FROM") in href:
+        elif TwoOtherJsonSource.match(href):
             # custom source_2 import
             return TwoOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
             # custom source_2 import
             return TwoOtherJsonSource(href=href)
-        elif PrepareTwoOtherJsonSource.match(href):
-            # custom source_2 import
-            return PrepareTwoOtherJsonSource(href=href)
+        elif ThreeOtherRssSource.match(href):
+            # custom source_3 import
+            return ThreeOtherRssSource(href=href)
         else:
             # default import used for RSS
             # warning: weird stuff can be sent there

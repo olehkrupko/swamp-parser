@@ -1,11 +1,17 @@
 import aiohttp
+import logging
 import random
 import string
 from datetime import datetime
 
+from aiohttp_socks import ProxyType, ProxyConnector
 from sentry_sdk import capture_exception as sentry_capture_exception
 
 from schemas.update import Update
+from services.cache import Cache
+
+
+logger = logging.getLogger(__name__)
 
 
 class Source:
@@ -26,6 +32,13 @@ class Source:
         self.href_original = href
 
     async def request(self) -> str:
+        cached_value = await Cache.get(
+            type="request",
+            href=self.href,
+        )
+        if cached_value is not None:
+            return cached_value
+
         # avoiding blocks
         referer_domain = "".join(random.choices(string.ascii_letters, k=16))
         headers = {
@@ -42,7 +55,14 @@ class Source:
                 # ssl._create_default_https_context = getattr(
                 #     ssl, "_create_unverified_context"
                 # )
-                return await response.read()
+                result = await response.read()
+                await Cache.set(
+                    type="request",
+                    href=self.href,
+                    timeout={"seconds": 15},
+                    value=result,
+                )
+                return result
 
     @classmethod
     async def parse(cls, each):
@@ -57,8 +77,72 @@ class Source:
 
         return results
 
+    @staticmethod
     def capture_exception(msg: str):
         sentry_capture_exception(msg)
 
     async def explain(self) -> None:
         raise NotImplementedError
+
+    @staticmethod
+    async def request_via_random_proxy(href, max_attempts=100) -> str:
+        cached_value = await Cache.get(
+            type="request",
+            href=href,
+        )
+        if cached_value is not None:
+            return cached_value
+
+        proxy_list = []
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/http.txt",
+            ) as response:
+                response_str = await response.read()
+                proxy_list = response_str.decode("utf-8").split("\n")
+                # logger.warning(f">>>> >>>> {type(proxy_list)} {len(proxy_list)}")
+
+        if proxy_list:
+            for proxy in random.choices(proxy_list, k=max_attempts):
+                cached_value = await Cache.get(
+                    type="proxy",
+                    href=proxy,
+                )
+                if cached_value == "FAILURE":
+                    continue
+
+                connector = ProxyConnector(
+                    proxy_type=ProxyType.HTTP,
+                    host=proxy.split(":")[0],
+                    port=int(proxy.split(":")[1]),
+                )
+
+                try:
+                    async with aiohttp.ClientSession(connector=connector) as session:
+                        async with session.get(
+                            href,
+                        ) as response:
+                            result = await response.read()
+                            result = result.decode("utf-8")
+                            await Cache.set(
+                                type="request",
+                                href=href,
+                                timeout={"days": 1},
+                                value=result,
+                            )
+                            return result
+                except Exception as error:
+                    logger.warning(f">>>> >>>> FAILURE {error}")
+                    await Cache.set(
+                        type="proxy",
+                        href=proxy,
+                        timeout={"days": 7},
+                        value="FAILURE",
+                    )
+                    pass
+        else:
+            async with aiohttp.ClientSession(connector=connector) as session:
+                async with session.get(
+                    href,
+                ) as response:
+                    return await response.read()
