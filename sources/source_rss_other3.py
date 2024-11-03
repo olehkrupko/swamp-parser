@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -9,11 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class ThreeOtherRssSource(RssSource):
-    @staticmethod
-    def match(href: str):
+    environ = json.loads(os.environ.get("SOURCE_3"))
+
+    @classmethod
+    def match(cls, href: str):
         href = href.replace("https://rt.", "https://www.")
 
-        if os.environ.get("SOURCE_3")["href"]["match"] in href:
+        if cls.environ["href"]["match"] in href:
             return True
 
         return False
@@ -36,7 +39,7 @@ class ThreeOtherRssSource(RssSource):
         type = href.split("/")[-2]
 
         self.href = "{0}&{1}&type={2}&q={3}&_cache_timeout={4}".format(
-            os.environ.get("SOURCE_3")["href"]["to"],
+            self.environ["href"]["to"],
             RSS_BRIDGE_ARGS,
             type,
             username,
@@ -59,7 +62,7 @@ class ThreeOtherRssSource(RssSource):
             "private": True,
             "frequency": "days",
             "notes": "",
-            "json": os.environ.get("SOURCE_3")["default"]["json"],
+            "json": self.environ["default"]["json"],
         }
 
 
