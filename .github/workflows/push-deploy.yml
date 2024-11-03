@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - '39-sources-other3'
 jobs:
   checkout:
     runs-on: self-hosted
