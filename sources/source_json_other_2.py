@@ -30,7 +30,7 @@ class TwoOtherJsonSource(OtherJsonSource):
         cls, username: str, service: str = "patreon"
     ) -> ExplainedFeed:
         href = cls.environ["creators"]
-        response_str = cls.__request_via_random_proxy(href)
+        response_str = await cls.request_via_random_proxy(href)
 
         if not response_str:
             # logger.warning(">>>> >>>> EMPTY RESPONSE STR")

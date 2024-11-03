@@ -86,7 +86,14 @@ class Source:
         raise NotImplementedError
 
     @staticmethod
-    async def __request_via_random_proxy(href, max_attempts=100):
+    async def request_via_random_proxy(href, max_attempts=100) -> str:
+        cached_value = await Cache.get(
+            type="request",
+            href=href,
+        )
+        if cached_value is not None:
+            return cached_value
+
         proxy_list = []
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -98,6 +105,13 @@ class Source:
 
         if proxy_list:
             for proxy in random.choices(proxy_list, k=max_attempts):
+                cached_value = await Cache.get(
+                    type="proxy",
+                    href=proxy,
+                )
+                if cached_value == "FAILURE":
+                    continue
+
                 connector = ProxyConnector(
                     proxy_type=ProxyType.HTTP,
                     host=proxy.split(":")[0],
@@ -109,9 +123,22 @@ class Source:
                         async with session.get(
                             href,
                         ) as response:
-                            return await response.read()
+                            result = await response.read()
+                            await Cache.set(
+                                type="request",
+                                href=href,
+                                timeout={"days": 1},
+                                value=result,
+                            )
+                            return result
                 except Exception as error:
                     logger.warning(f">>>> >>>> FAILURE {error}")
+                    await Cache.set(
+                        type="proxy",
+                        href=proxy,
+                        timeout={"days": 7},
+                        value="FAILURE",
+                    )
                     pass
         else:
             async with aiohttp.ClientSession(connector=connector) as session:
