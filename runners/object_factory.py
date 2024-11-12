@@ -28,6 +28,7 @@ class ObjectFactory:
             return DisabledSource(href=href)
             return ProxigramRssSource(href=href)
         elif TiktokRssSource.match(href):
+            return DisabledSource(href=href)
             return TiktokRssSource(href=href)
         elif YoutubeRssSource.match(href):
             return YoutubeRssSource(href=href)
