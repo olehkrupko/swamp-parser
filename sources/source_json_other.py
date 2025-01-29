@@ -16,7 +16,7 @@ class OtherJsonSource(JsonSource):
             results.append(
                 {
                     "name": each["title"],  # longer alternative: each["content"]
-                    "href": f"{ self.href.replace('/api/v1', '') }/post/{ each['id'] }",
+                    "href": f"{ self.href.replace('/api/v1', '') }/post{ each['id'] }",
                     "datetime": self.strptime(datetime_string),
                 }
             )
