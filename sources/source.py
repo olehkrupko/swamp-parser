@@ -5,7 +5,6 @@ import string
 from datetime import datetime
 
 from aiohttp_socks import ProxyType, ProxyConnector
-from sentry_sdk import capture_exception as sentry_capture_exception
 
 from schemas.update import Update
 from services.cache import Cache
@@ -76,10 +75,6 @@ class Source:
         results = await self.parse(response_str=response_str)
 
         return results
-
-    @staticmethod
-    def capture_exception(msg: str):
-        sentry_capture_exception(msg)
 
     async def explain(self) -> None:
         raise NotImplementedError
