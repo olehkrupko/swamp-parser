@@ -31,6 +31,7 @@ class ProxigramRssSource(RssSource):
             "https://instagram.com/",
             "https://www.instagram.com/",
         )
+        href = href.replace("/profilecard", "")
 
         username = href.replace("https://www.instagram.com/", "")
 
@@ -165,7 +166,7 @@ class ProxigramRssSource(RssSource):
             "href": self.href_original,
             "href_user": "",
             "private": True,
-            "frequency": "days",
+            "frequency": "months",
             "notes": "",
             "json": {},
         }

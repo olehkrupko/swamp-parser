@@ -73,7 +73,7 @@ class TiktokRssSource(RssSource):
             "href": href,
             "href_user": "",
             "private": True,
-            "frequency": "days",
+            "frequency": "months",
             "notes": "",
             "json": {},
         }

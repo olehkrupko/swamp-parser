@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class YoutubeRssSource(RssSource):
     @staticmethod
     def match(href: str):
+        href = href.replace("https://youtube.com", "https://www.youtube.com")
         if "https://www.youtube.com/channel/" in href:
             return True
         elif "https://www.youtube.com/feeds/videos.xml?channel_id=" in href:
@@ -22,6 +23,10 @@ class YoutubeRssSource(RssSource):
         return False
 
     def __init__(self, href: str):
+        if "?si=" in href:
+            href = href.split("?si=")[0]
+        if "?sub_confirmation=" in href:
+            href = href.split("?sub_confirmation=")[0]
         CHANNEL_BASE_URL = "https://www.youtube.com/feeds/videos.xml?channel_id="
         if CHANNEL_BASE_URL in href:
             channel_id = href.replace(CHANNEL_BASE_URL, "")
