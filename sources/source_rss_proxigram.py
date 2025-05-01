@@ -42,7 +42,7 @@ class ProxigramRssSource(RssSource):
         self.href_original = href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] == True:
             cached_value = await Cache.get(
                 type="request",
                 href=self.href,
@@ -67,7 +67,7 @@ class ProxigramRssSource(RssSource):
                 logger.info(
                     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
                 )
-                if os.environ["ALLOW_CACHE"] == "true":
+                if os.environ["ALLOW_CACHE"] == True:
                     await Cache.set(
                         type="request",
                         href=self.href,
@@ -83,7 +83,7 @@ class ProxigramRssSource(RssSource):
             await asyncio.sleep(3)
 
         # cache failure to avoid repeats
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] == True:
             await Cache.set(
                 type="request",
                 href=self.href,
