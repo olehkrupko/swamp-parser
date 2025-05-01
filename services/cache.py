@@ -19,7 +19,7 @@ class Cache:
 
     @classmethod
     async def get(cls, type: str, href: str) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] is True:
             r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
             async with r.pipeline(transaction=True) as pipe:
                 values = await pipe.get(
@@ -32,7 +32,7 @@ class Cache:
 
     @classmethod
     async def set(cls, type: str, href: str, value: str, timeout: dict):
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] is True:
             r = await redis.from_url(os.environ["REDIS"], decode_responses=True)
             async with r.pipeline(transaction=True) as pipe:
                 await pipe.set(
