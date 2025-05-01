@@ -13,7 +13,7 @@ class ParserLoopWorker:
     name = "Worker: parser loop"
 
     async def start():
-        if os.environ.get("ALLOW_PARSER_LOOP", False) != True:
+        if os.environ.get("ALLOW_PARSER_LOOP", False) is False:
             logger.warning("ParserLoopWorker: Disabled")
             return
 
