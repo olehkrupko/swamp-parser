@@ -97,7 +97,7 @@ class ProxigramRssSource(RssSource):
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
-        if os.environ["ALLOW_CACHE"] == True
+        if os.environ["ALLOW_CACHE"] == True:
             cache_key = "ProxigramRssSource:parse_blocked"
 
             parse_blocked = await Cache.get(type="boolean", key=cache_key)
