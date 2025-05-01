@@ -97,6 +97,16 @@ class ProxigramRssSource(RssSource):
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
+        cache_key = "ProxigramRssSource:parse_blocked"
+
+        parse_blocked = await Cache.get(type="boolean", key=cache_key)
+        if parse_blocked:
+            logger.info("Skipping parse as it was called less than an hour ago.")
+            return []
+
+        # Update the cache with the current timestamp
+        await Cache.set(type="boolean", key=cache_key, value=True, timeout={"hours": 1})
+        
         if response_str == "":
             return []
 
