@@ -43,6 +43,6 @@ app = FastAPI(
     version="V3",
     lifespan=lifespan,
 )
-app.include_router(consumers.router)  # not expected to be used
+app.include_router(consumers.router)  # not in use for now
 app.include_router(parsers.router)
 app.include_router(tests.router)
