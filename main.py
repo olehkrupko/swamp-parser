@@ -37,7 +37,6 @@ app = FastAPI(
     title="swamp-parser",
     description="""
         GitHub: [swamp-parser](https://github.com/olehkrupko/swamp-parser)
-        
         Is one of swamp services, related to [swamp-api](https://github.com/olehkrupko/swamp-api)
     """,
     version="V3",

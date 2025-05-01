@@ -106,7 +106,7 @@ class ProxigramRssSource(RssSource):
 
         # Update the cache with the current timestamp
         await Cache.set(type="boolean", key=cache_key, value=True, timeout={"hours": 1})
-        
+
         if response_str == "":
             return []
 

@@ -70,7 +70,7 @@ class TwoOtherJsonSource(OtherJsonSource):
         elif self.environ["services"][0]["href"]["match"] in href:
             self.href = href
         self.href_original = href
-    
+
     async def request(self):
         return await super().request_via_random_proxy(href=self.href)
 
