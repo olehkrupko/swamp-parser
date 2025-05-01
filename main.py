@@ -33,11 +33,14 @@ async def lifespan(app: FastAPI):
     # run on shutdown
 
 
-URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
-    description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
-    version="2.3",  # Issue 10: fast-api routes
+    description="""
+        GitHub: [swamp-parser](https://github.com/olehkrupko/swamp-parser)
+        
+        Is one of swamp services, related to [swamp-api](https://github.com/olehkrupko/swamp-api)
+    """,
+    version="V3",
     lifespan=lifespan,
 )
 app.include_router(consumers.router)  # not expected to be used
