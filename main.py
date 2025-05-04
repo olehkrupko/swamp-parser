@@ -13,11 +13,11 @@ sentry_sdk.init(
     dsn=os.environ["SENTRY_SDK_DSN"],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
-    traces_sample_rate=1,
+    traces_sample_rate=1.0,
     # Set profiles_sample_rate to 1.0 to profile 100%
     # of sampled transactions.
     # We recommend adjusting this value in production.
-    profiles_sample_rate=1,
+    profiles_sample_rate=1.0,
 )
 
 
@@ -33,13 +33,15 @@ async def lifespan(app: FastAPI):
     # run on shutdown
 
 
-URL = "[swamp-api](https://github.com/olehkrupko/swamp-api)"
 app = FastAPI(
     title="swamp-parser",
-    description=f"Parser micro-service for Swamp project ({ URL }, to be exact)",
-    version="2.3",  # Issue 10: fast-api routes
+    description="""
+        GitHub: [swamp-parser](https://github.com/olehkrupko/swamp-parser)
+        Is one of swamp services, related to [swamp-api](https://github.com/olehkrupko/swamp-api)
+    """,
+    version="V3",
     lifespan=lifespan,
 )
-app.include_router(consumers.router)  # not expected to be used
+app.include_router(consumers.router)  # not in use for now
 app.include_router(parsers.router)
 app.include_router(tests.router)

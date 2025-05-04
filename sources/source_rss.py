@@ -75,6 +75,7 @@ class RssSource(Source):
             await self.request(),
         )
 
+        logger.debug(f"Parsed data: {data}")
         return {
             "title": data["feed"]["title"],
             "href": self.href,
