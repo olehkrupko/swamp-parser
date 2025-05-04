@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - '45-refactoring-code-cleanup'
 jobs:
   checkout:
     runs-on: self-hosted
