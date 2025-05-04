@@ -13,7 +13,7 @@ class ParserLoopWorker:
     name = "Worker: parser loop"
 
     async def start():
-        while True:
+        while False:
             # waiting before run to allow other services some time to start
             await asyncio.sleep(3 * 60)
             try:
