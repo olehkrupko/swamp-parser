@@ -71,6 +71,9 @@ class TwoOtherJsonSource(OtherJsonSource):
             self.href = href
         self.href_original = href
 
+    async def request(self):
+        return await super().request_via_random_proxy(href=self.href)
+
     async def explain(self) -> ExplainedFeed:
         if self.environ["services"][0]["href"]["to"] in self.href:
             async with aiohttp.ClientSession() as session:

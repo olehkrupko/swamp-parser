@@ -31,6 +31,7 @@ class ProxigramRssSource(RssSource):
             "https://instagram.com/",
             "https://www.instagram.com/",
         )
+        href = href.replace("/profilecard", "")
 
         username = href.replace("https://www.instagram.com/", "")
 
@@ -41,7 +42,7 @@ class ProxigramRssSource(RssSource):
         self.href_original = href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] is True:
             cached_value = await Cache.get(
                 type="request",
                 href=self.href,
@@ -66,7 +67,7 @@ class ProxigramRssSource(RssSource):
                 logger.info(
                     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
                 )
-                if os.environ["ALLOW_CACHE"] == "true":
+                if os.environ["ALLOW_CACHE"] is True:
                     await Cache.set(
                         type="request",
                         href=self.href,
@@ -82,7 +83,7 @@ class ProxigramRssSource(RssSource):
             await asyncio.sleep(3)
 
         # cache failure to avoid repeats
-        if os.environ["ALLOW_CACHE"] == "true":
+        if os.environ["ALLOW_CACHE"] is True:
             await Cache.set(
                 type="request",
                 href=self.href,
@@ -96,6 +97,23 @@ class ProxigramRssSource(RssSource):
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
+        if os.environ["ALLOW_CACHE"] is True:
+            parse_blocked = await Cache.get(
+                type="ProxigramRssSource",
+                href="parse_blocked",
+            )
+            if parse_blocked:
+                logger.info("Skipping parse as it was called less than an hour ago.")
+                return []
+
+            # Update the cache with the current timestamp
+            await Cache.set(
+                type="ProxigramRssSource",
+                href="parse_blocked",
+                timeout={"hours": 1},
+                value=True,
+            )
+
         if response_str == "":
             return []
 
@@ -165,7 +183,7 @@ class ProxigramRssSource(RssSource):
             "href": self.href_original,
             "href_user": "",
             "private": True,
-            "frequency": "days",
+            "frequency": "months",
             "notes": "",
             "json": {},
         }

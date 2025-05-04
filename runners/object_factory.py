@@ -20,14 +20,16 @@ class ObjectFactory:
     @staticmethod
     def create_object(href: str):
         """Create an object based on the href."""
+        logger.debug(f"ObjectFactory {href=}")
         if not href:
             raise ValueError(f"Provided {href=} is invalid")
         elif "https://twitter.com/" in href:
             return DisabledSource(href=href)
         elif ProxigramRssSource.match(href):
-            return DisabledSource(href=href)
+            # return DisabledSource(href=href)
             return ProxigramRssSource(href=href)
         elif TiktokRssSource.match(href):
+            # return DisabledSource(href=href)
             return TiktokRssSource(href=href)
         elif YoutubeRssSource.match(href):
             return YoutubeRssSource(href=href)

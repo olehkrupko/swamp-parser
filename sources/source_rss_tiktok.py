@@ -6,6 +6,7 @@ from sentry_sdk import capture_message
 
 from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
+from services.cache import Cache
 from sources.source_rss import RssSource
 
 
@@ -45,6 +46,23 @@ class TiktokRssSource(RssSource):
         self.href_original = href
 
     async def parse(self, response_str: str) -> list[Update]:
+        if os.environ["ALLOW_CACHE"] is True:
+            parse_blocked = await Cache.get(
+                type="ProxigramRssSource",
+                href="parse_blocked",
+            )
+            if parse_blocked:
+                logger.info("Skipping parse as it was called less than an hour ago.")
+                return []
+
+            # Update the cache with the current timestamp
+            await Cache.set(
+                type="ProxigramRssSource",
+                href="parse_blocked",
+                timeout={"hours": 1},
+                value=True,
+            )
+
         results = await super().parse(response_str=response_str)
 
         # safeguard against failed attempts' error messages stored as updates
@@ -73,7 +91,7 @@ class TiktokRssSource(RssSource):
             "href": href,
             "href_user": "",
             "private": True,
-            "frequency": "days",
+            "frequency": "months",
             "notes": "",
             "json": {},
         }
