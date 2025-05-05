@@ -44,9 +44,6 @@ class ObjectFactory:
         elif TwoOtherJsonSource.match(href):
             # custom source_2 import
             return TwoOtherJsonSource(href=href)
-        elif TwoOtherJsonSource.match(href):
-            # custom source_2 import
-            return TwoOtherJsonSource(href=href)
         elif ThreeOtherRssSource.match(href):
             # custom source_3 import
             return ThreeOtherRssSource(href=href)
