@@ -46,22 +46,21 @@ class TiktokRssSource(RssSource):
         self.href_original = href
 
     async def parse(self, response_str: str) -> list[Update]:
-        if getenv("ALLOW_CACHE") is True:
-            parse_blocked = await Cache.get(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-            )
-            if parse_blocked:
-                logger.info("Skipping parse as it was called less than an hour ago.")
-                return []
+        parse_blocked = await Cache.get(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+        )
+        if parse_blocked:
+            logger.info("Skipping parse as it was called less than an hour ago.")
+            return []
 
-            # Update the cache with the current timestamp
-            await Cache.set(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-                timeout={"hours": 1},
-                value=True,
-            )
+        # Update the cache with the current timestamp
+        await Cache.set(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+            timeout={"hours": 1},
+            value=True,
+        )
 
         results = await super().parse(response_str=response_str)
 
