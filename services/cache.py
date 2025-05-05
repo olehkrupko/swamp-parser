@@ -21,9 +21,7 @@ class Cache:
     async def get(cls, type: str, href: str) -> str:
         r = await redis.from_url(getenv["REDIS"], decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
-            values = await pipe.get(
-                cls.key_from_href(type=type, href=href)
-            ).execute()
+            values = await pipe.get(cls.key_from_href(type=type, href=href)).execute()
             # result is a list, but we need only one item
             # if values[0] is not None:
             #     logger.debug(f"Successful cache retrieval for {href=}")
