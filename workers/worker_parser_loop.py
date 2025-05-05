@@ -1,6 +1,6 @@
 import asyncio
 import logging
-import os
+from os import getenv
 
 from runners.consumer import Consumer
 from services.capture_exception import CaptureException
@@ -13,10 +13,10 @@ class ParserLoopWorker:
     name = "Worker: parser loop"
 
     async def start():
-        if os.environ.get("AUTOINGEST_ENABLED", False) is False:
+        if getenv("AUTOINGEST_ENABLED", False) is False:
             logger.warning("ParserLoopWorker: Disabled")
             return
-        elif os.environ.get("AUTOINGEST_ENABLED", False) is not True:
+        elif getenv("AUTOINGEST_ENABLED", False) is not True:
             logger.warning("ParserLoopWorker: Wrong AUTOINGEST_ENABLED value")
             return
 

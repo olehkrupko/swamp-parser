@@ -1,7 +1,7 @@
 import aiohttp
 import json
 import logging
-import os
+from os import getenv
 
 from schemas.feed_explained import ExplainedFeed
 from sources.source_json_other import OtherJsonSource
@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 class OneOtherJsonSource(OtherJsonSource):
     def __init__(self, href: str):
         self.href = href.replace(
-            os.environ.get("SOURCE_1_FROM"),
-            os.environ.get("SOURCE_1_TO"),
+            getenv("SOURCE_1_FROM"),
+            getenv("SOURCE_1_TO"),
         )
         self.href_original = href
 

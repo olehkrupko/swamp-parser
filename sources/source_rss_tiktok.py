@@ -1,5 +1,5 @@
 import logging
-import os
+from os import getenv
 
 import random
 from sentry_sdk import capture_message
@@ -38,7 +38,7 @@ class TiktokRssSource(RssSource):
         username = href.split("/")[-1]
 
         self.href = "{0}/?{1}&username={2}&_cache_timeout={3}".format(
-            os.environ.get("RSS_BRIDGE_URL"),
+            getenv("RSS_BRIDGE_URL"),
             RSS_BRIDGE_ARGS,
             username,
             timeout,
@@ -46,7 +46,7 @@ class TiktokRssSource(RssSource):
         self.href_original = href
 
     async def parse(self, response_str: str) -> list[Update]:
-        if os.environ["ALLOW_CACHE"] is True:
+        if getenv("ALLOW_CACHE") is True:
             parse_blocked = await Cache.get(
                 type="ProxigramRssSource",
                 href="parse_blocked",

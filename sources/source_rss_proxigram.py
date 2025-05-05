@@ -1,8 +1,8 @@
 import asyncio
 import logging
-import os
 import random
 from functools import reduce
+from os import getenv
 
 from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
@@ -36,13 +36,13 @@ class ProxigramRssSource(RssSource):
         username = href.replace("https://www.instagram.com/", "")
 
         self.href = "{base}/{username}/rss".format(
-            base=os.environ.get("SOURCE_PROXIGRAM_HOST"),
+            base=getenv("SOURCE_PROXIGRAM_HOST"),
             username=username,
         )
         self.href_original = href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] is True:
+        if getenv("ALLOW_CACHE") is True:
             cached_value = await Cache.get(
                 type="request",
                 href=self.href,
@@ -67,7 +67,7 @@ class ProxigramRssSource(RssSource):
                 logger.info(
                     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
                 )
-                if os.environ["ALLOW_CACHE"] is True:
+                if getenv("ALLOW_CACHE") is True:
                     await Cache.set(
                         type="request",
                         href=self.href,
@@ -83,7 +83,7 @@ class ProxigramRssSource(RssSource):
             await asyncio.sleep(3)
 
         # cache failure to avoid repeats
-        if os.environ["ALLOW_CACHE"] is True:
+        if getenv("ALLOW_CACHE") is True:
             await Cache.set(
                 type="request",
                 href=self.href,
@@ -97,7 +97,7 @@ class ProxigramRssSource(RssSource):
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
-        if os.environ["ALLOW_CACHE"] is True:
+        if getenv("ALLOW_CACHE") is True:
             parse_blocked = await Cache.get(
                 type="ProxigramRssSource",
                 href="parse_blocked",

@@ -1,6 +1,6 @@
 import json
 import logging
-import os
+from os import getenv
 
 import aiohttp
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class TwoOtherJsonSource(OtherJsonSource):
-    environ = json.loads(os.environ.get("SOURCE_2"))
+    environ = json.loads(getenv("SOURCE_2"))
 
     @classmethod
     def match(cls, href: str):

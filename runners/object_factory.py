@@ -1,5 +1,5 @@
 import logging
-import os
+from os import getenv
 
 from sources.source_disabled import DisabledSource
 from sources.source_json_other_1 import OneOtherJsonSource
@@ -38,7 +38,7 @@ class ObjectFactory:
             return ArtstationRssSource(href=href)
         elif DeviantartRssSource.match(href):
             return DeviantartRssSource(href=href)
-        elif os.environ.get("SOURCE_1_FROM") in href:
+        elif getenv("SOURCE_1_FROM") in href:
             # custom source_1 import
             return OneOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
