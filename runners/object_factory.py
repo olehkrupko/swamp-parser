@@ -1,5 +1,4 @@
 import logging
-from os import getenv
 
 from sources.source_disabled import DisabledSource
 from sources.source_json_other_1 import OneOtherJsonSource
