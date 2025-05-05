@@ -1,7 +1,8 @@
-import aiohttp
 import json
 import logging
 from os import getenv
+
+import aiohttp
 
 from schemas.feed_explained import ExplainedFeed
 from sources.source_json_other import OtherJsonSource
