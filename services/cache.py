@@ -19,7 +19,7 @@ class Cache:
 
     @classmethod
     async def get(cls, type: str, href: str) -> str:
-        r = await redis.from_url(getenv["REDIS"], decode_responses=True)
+        r = await redis.from_url(getenv("REDIS"), decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             values = await pipe.get(cls.key_from_href(type=type, href=href)).execute()
             # result is a list, but we need only one item
@@ -29,7 +29,7 @@ class Cache:
 
     @classmethod
     async def set(cls, type: str, href: str, value: str, timeout: dict):
-        r = await redis.from_url(getenv["REDIS"], decode_responses=True)
+        r = await redis.from_url(getenv("REDIS"), decode_responses=True)
         async with r.pipeline(transaction=True) as pipe:
             await pipe.set(
                 cls.key_from_href(type=type, href=href),
