@@ -11,10 +11,19 @@ logger = logging.getLogger(__name__)
 
 
 class OneOtherJsonSource(OtherJsonSource):
+    environ = json.loads(getenv("SOURCE_1"))
+
+    @classmethod
+    def match(cls, href: str):
+        if cls.environ["services"][0]["href"]["match"] in href:
+            return True
+
+        return False
+
     def __init__(self, href: str):
         self.href = href.replace(
-            getenv("SOURCE_1_FROM"),
-            getenv("SOURCE_1_TO"),
+            self.environ["services"][0]["href"]["match"],
+            self.environ["services"][0]["href"]["to"],
         )
         self.href_original = href
 
@@ -27,7 +36,7 @@ class OneOtherJsonSource(OtherJsonSource):
                 data = json.loads(response_str)
 
                 return {
-                    "title": data["name"],
+                    "title": data["name"] + " - " + self.environ["services"][0]["name"],
                     "href": self.href_original,
                     "href_user": "",
                     "private": True,

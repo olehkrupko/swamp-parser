@@ -84,7 +84,7 @@ class TwoOtherJsonSource(OtherJsonSource):
                     data = json.loads(response_str)
 
                     return {
-                        "title": data["name"],
+                        "title": data["name"] + " - " + self.environ["services"][0]["name"],
                         "href": self.href_original,
                         "href_user": "",
                         "private": True,
