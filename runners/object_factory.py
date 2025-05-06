@@ -37,7 +37,7 @@ class ObjectFactory:
             return ArtstationRssSource(href=href)
         elif DeviantartRssSource.match(href):
             return DeviantartRssSource(href=href)
-        elif OneOtherJsonSource.match(href) in href:
+        elif OneOtherJsonSource.match(href):
             # custom source_1 import
             return OneOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
