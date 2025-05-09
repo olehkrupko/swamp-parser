@@ -18,6 +18,7 @@ class ParserLoopWorker:
             return
         elif getenv("AUTOINGEST_ENABLED", False) is not True:
             logger.warning("ParserLoopWorker: Wrong AUTOINGEST_ENABLED value")
+            logger.warning(f"{type(getenv('AUTOINGEST_ENABLED'))} - {getenv('AUTOINGEST_ENABLED')=}")
             return
 
         logger.warning("ParserLoopWorker: Enabled")
