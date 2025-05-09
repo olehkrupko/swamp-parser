@@ -1,5 +1,5 @@
 import aiohttp
-import os
+from os import getenv
 
 from schemas.feed import Feed
 
@@ -15,7 +15,7 @@ class Swamp:
     async def get_feeds() -> list[Feed]:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"{ os.environ['SWAMP_API'] }/feeds/?requires_update=true"
+                f"{ getenv('SWAMP_API') }/feeds/?requires_update=true"
             ) as response:
                 return [Feed.from_full(x) for x in await response.json()]
 
@@ -23,6 +23,6 @@ class Swamp:
     async def get_feed(feed_id: int) -> Feed:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"{ os.environ['SWAMP_API'] }/feeds/{ feed_id }"
+                f"{ getenv('SWAMP_API') }/feeds/{ feed_id }"
             ) as response:
                 return Feed.from_full(await response.json())
