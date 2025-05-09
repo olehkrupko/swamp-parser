@@ -14,7 +14,7 @@ class ParserLoopWorker:
 
     async def start():
         if getenv("AUTOINGEST") != "enabled":
-            logger.warning("ParserLoopWorker: Disabled")
+            logger.warning(f"ParserLoopWorker: Disabled ({ getenv('AUTOINGEST')= })")
             return
 
         logger.warning("ParserLoopWorker: Enabled")
