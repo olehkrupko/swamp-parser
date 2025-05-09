@@ -13,14 +13,14 @@ class ParserLoopWorker:
     name = "Worker: parser loop"
 
     async def start():
-        AUTOINGEST_ENABLED = bool(getenv("AUTOINGEST_ENABLED", "false"))
+        AUTOINGEST = getenv("AUTOINGEST") == "enabled"
 
-        if AUTOINGEST_ENABLED is False:
+        if AUTOINGEST is False:
             logger.warning("ParserLoopWorker: Disabled")
             return
-        elif AUTOINGEST_ENABLED is not True:
-            logger.warning("ParserLoopWorker: Wrong AUTOINGEST_ENABLED value")
-            logger.warning(f"{type(getenv('AUTOINGEST_ENABLED'))} - {getenv('AUTOINGEST_ENABLED')=}")
+        elif AUTOINGEST is not True:
+            logger.warning("ParserLoopWorker: Wrong AUTOINGEST value")
+            logger.warning(f"{type(getenv('AUTOINGEST'))} - {getenv('AUTOINGEST')=}")
             return
 
         logger.warning("ParserLoopWorker: Enabled")
