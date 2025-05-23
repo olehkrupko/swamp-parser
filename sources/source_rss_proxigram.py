@@ -42,6 +42,7 @@ class ProxigramRssSource(RssSource):
         self.href_original = href
 
     async def request(self) -> str:
+        return ""  # proxigram is not configured yet
         cached_value = await Cache.get(
             type="request",
             href=self.href,
