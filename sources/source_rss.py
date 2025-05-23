@@ -21,7 +21,10 @@ class RssSource(Source):
         }
 
         if datetime_string.isdigit():
-            return datetime.fromtimestamp(int(datetime_string), tz=datetime.timezone.utc)
+            return datetime.fromtimestamp(
+                timestamp=int(datetime_string),
+                tz=datetime.timezone.utc,
+            )
         elif isinstance(datetime_string, datetime):
             raise ValueError(
                 f"datetime_string is already a datetime object: {datetime_string}"
