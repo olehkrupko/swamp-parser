@@ -38,13 +38,10 @@ class ObjectFactory:
         elif DeviantartRssSource.match(href):
             return DeviantartRssSource(href=href)
         elif OneOtherJsonSource.match(href):
-            # custom source_1 import
             return OneOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
-            # custom source_2 import
             return TwoOtherJsonSource(href=href)
         elif ThreeOtherRssSource.match(href):
-            # custom source_3 import
             return ThreeOtherRssSource(href=href)
         else:
             # default import used for RSS
