@@ -38,6 +38,7 @@ class TiktokRssSource(RssSource):
 
         timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
         username = href.split("/")[-1]
+        username = username.replace("@", "")
 
         self.href = "{0}/?{1}&username={2}&_cache_timeout={3}".format(
             getenv("RSS_BRIDGE_URL"),
@@ -72,7 +73,6 @@ class TiktokRssSource(RssSource):
             results = []
 
         # reversing order to sort data from old to new
-        results.reverse()
         for index, each in enumerate(results):
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
