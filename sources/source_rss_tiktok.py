@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class TiktokRssSource(RssSource):
+    datetime_format = "NOW"
+
     @staticmethod
     def match(href: str):
         if "https://www.tiktok.com/@" in href:

@@ -63,6 +63,8 @@ class RssSource(Source):
                 result_datetime = self.strptime(each["delayed"])
             elif "updated" in each:
                 result_datetime = self.strptime(each["updated"])
+            elif self.datetime_format == "NOW":
+                result_datetime = datetime.now()
             else:
                 CaptureException.run("result_datetime broke for feed")
 
