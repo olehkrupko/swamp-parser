@@ -60,7 +60,7 @@ class TiktokRssSource(RssSource):
         await Cache.set(
             type="ProxigramRssSource",
             href="parse_blocked",
-            timeout={"hours": 1},
+            timeout={"hours": 6},
             value=True,
         )
 
