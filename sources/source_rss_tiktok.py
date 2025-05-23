@@ -73,6 +73,7 @@ class TiktokRssSource(RssSource):
             results = []
 
         # reversing order to sort data from old to new
+        results.reverse()
         for index, each in enumerate(results):
             # parser returns each["name"] == "Video" by default
             each["name"] = "" if each["name"] == "Video" else each["name"]
