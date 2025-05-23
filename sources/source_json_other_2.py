@@ -77,8 +77,7 @@ class TwoOtherJsonSource(OtherJsonSource):
                 async with session.get(
                     self.href + "/profile",
                 ) as response:
-                    response_str = await response.read()
-                    data = json.loads(response_str)
+                    data = await response.json()
 
                     title = data["name"] + " - " + self.environ["services"][0]["name"]
 
