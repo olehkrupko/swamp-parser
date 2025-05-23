@@ -5,6 +5,7 @@ from dateutil import parser, tz  # adding custom timezones
 import feedparser
 
 from schemas.feed_explained import ExplainedFeed
+from services.capture_exception import CaptureException
 from sources.source import Source
 from schemas.update import Update
 
@@ -45,7 +46,7 @@ class RssSource(Source):
             elif "updated" in each:
                 result_datetime = each["updated"]
             else:
-                self.capture_exception("result_datetime broke for feed")
+                CaptureException.run("result_datetime broke for feed")
 
             tzinfos = {
                 "PDT": tz.gettz("America/Los_Angeles"),
