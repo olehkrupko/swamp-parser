@@ -14,6 +14,24 @@ logger = logging.getLogger(__name__)
 
 
 class RssSource(Source):
+    def strptime(self, datetime_string: str) -> datetime:
+        tzinfos = {
+            "PDT": tz.gettz("America/Los_Angeles"),
+            "PST": tz.gettz("America/Juneau"),
+        }
+
+        if datetime_string.isdigit():
+            return datetime.fromtimestamp(int(datetime_string), tz=datetime.timezone.utc)
+        elif isinstance(datetime_string, datetime):
+            raise ValueError(
+                f"datetime_string is already a datetime object: {datetime_string}"
+            )
+        else:
+            return parser.parse(
+                datetime_string,
+                tzinfos=tzinfos,
+            )
+
     async def parse(self, response_str: str, name_field: str = None) -> list[Update]:
         request = feedparser.parse(response_str)
 
@@ -40,25 +58,13 @@ class RssSource(Source):
 
             # DATE RESULT: parsing dates
             if "published" in each:
-                result_datetime = each["published"]
+                result_datetime = self.strptime(each["published"])
             elif "delayed" in each:
-                result_datetime = each["delayed"]
+                result_datetime = self.strptime(each["delayed"])
             elif "updated" in each:
-                result_datetime = each["updated"]
+                result_datetime = self.strptime(each["updated"])
             else:
                 CaptureException.run("result_datetime broke for feed")
-
-            tzinfos = {
-                "PDT": tz.gettz("America/Los_Angeles"),
-                "PST": tz.gettz("America/Juneau"),
-            }
-            if result_datetime.isdigit():
-                result_datetime = datetime.utcfromtimestamp(int(result_datetime))
-            elif not isinstance(result_datetime, datetime):
-                result_datetime = parser.parse(
-                    result_datetime,
-                    tzinfos=tzinfos,
-                )
 
             # APPEND RESULT
             results.append(
