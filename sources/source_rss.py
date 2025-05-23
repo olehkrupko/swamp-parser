@@ -21,12 +21,12 @@ class RssSource(Source):
         for each in request["items"]:
             if not each:
                 message = f"Feed {self.href=} is empty, skipping"
-                self.capture_exception(message)
+                CaptureException.run(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                self.capture_exception(
+                CaptureException.run(
                     f"Data missing URL, skipping item {self.href=} {each=}"
                 )
                 continue
