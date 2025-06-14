@@ -47,6 +47,15 @@ class ThreeOtherRssSource(RssSource):
         )
         self.href_original = href
 
+    async def parse(self, **kwargs) -> list:
+        result = await super().parse(**kwargs)
+
+        # it seems that all URLs on the page are parsed by feedparser
+        # however, some of them are not valid
+        result = result[:40]
+
+        return result
+
     async def explain(self) -> ExplainedFeed:
         result = await super().explain()
 
