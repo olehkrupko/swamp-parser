@@ -1,5 +1,10 @@
+import logging
+
 from schemas.update import Update
 from sources.source_json import JsonSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class OtherJsonSource(JsonSource):
