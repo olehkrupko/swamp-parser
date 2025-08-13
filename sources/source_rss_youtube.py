@@ -61,5 +61,6 @@ class YoutubeRssSource(RssSource):
         feed = await super().explain()
         feed["title"] += " - YouTube"
         feed["href"] = f"https://www.youtube.com/channel/{channel_id}/videos"
+        feed["frequency"] = "days"
 
         return feed
