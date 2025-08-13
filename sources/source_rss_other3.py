@@ -50,6 +50,10 @@ class ThreeOtherRssSource(RssSource):
     async def parse(self, **kwargs) -> list:
         result = await super().parse(**kwargs)
 
+        # ignore errors
+        if len(result) == 1 and "Bridge returned error 0!" in result[0]["title"]:
+            return []
+
         # it seems that all URLs on the page are parsed by feedparser
         # however, some of them are not valid
         result = result[:40]
