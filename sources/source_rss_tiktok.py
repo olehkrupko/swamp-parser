@@ -1,5 +1,5 @@
 import logging
-import os
+from os import getenv
 
 import random
 from sentry_sdk import capture_message
@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class TiktokRssSource(RssSource):
+    datetime_format = "NOW"
+
     @staticmethod
     def match(href: str):
         if "https://www.tiktok.com/@" in href:
@@ -36,9 +38,10 @@ class TiktokRssSource(RssSource):
 
         timeout = random.randrange(7, 32) * 24 * 60 * 60  # 7-31 days
         username = href.split("/")[-1]
+        username = username.replace("@", "")
 
         self.href = "{0}/?{1}&username={2}&_cache_timeout={3}".format(
-            os.environ.get("RSS_BRIDGE_URL"),
+            getenv("RSS_BRIDGE_URL"),
             RSS_BRIDGE_ARGS,
             username,
             timeout,
@@ -46,22 +49,21 @@ class TiktokRssSource(RssSource):
         self.href_original = href
 
     async def parse(self, response_str: str) -> list[Update]:
-        if os.environ["ALLOW_CACHE"] is True:
-            parse_blocked = await Cache.get(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-            )
-            if parse_blocked:
-                logger.info("Skipping parse as it was called less than an hour ago.")
-                return []
+        parse_blocked = await Cache.get(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+        )
+        if parse_blocked:
+            logger.info("Skipping parse as it was called less than an hour ago.")
+            return []
 
-            # Update the cache with the current timestamp
-            await Cache.set(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-                timeout={"hours": 1},
-                value=True,
-            )
+        # Update the cache with the current timestamp
+        await Cache.set(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+            timeout={"hours": 6},
+            value=True,
+        )
 
         results = await super().parse(response_str=response_str)
 

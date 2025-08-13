@@ -5,6 +5,7 @@ from dateutil import parser, tz  # adding custom timezones
 import feedparser
 
 from schemas.feed_explained import ExplainedFeed
+from services.capture_exception import CaptureException
 from sources.source import Source
 from schemas.update import Update
 
@@ -13,6 +14,27 @@ logger = logging.getLogger(__name__)
 
 
 class RssSource(Source):
+    def strptime(self, datetime_string: str) -> datetime:
+        tzinfos = {
+            "PDT": tz.gettz("America/Los_Angeles"),
+            "PST": tz.gettz("America/Juneau"),
+        }
+
+        if datetime_string.isdigit():
+            return datetime.fromtimestamp(
+                timestamp=int(datetime_string),
+                tz=datetime.timezone.utc,
+            )
+        elif isinstance(datetime_string, datetime):
+            raise ValueError(
+                f"datetime_string is already a datetime object: {datetime_string}"
+            )
+        else:
+            return parser.parse(
+                datetime_string,
+                tzinfos=tzinfos,
+            )
+
     async def parse(self, response_str: str, name_field: str = None) -> list[Update]:
         request = feedparser.parse(response_str)
 
@@ -20,12 +42,12 @@ class RssSource(Source):
         for each in request["items"]:
             if not each:
                 message = f"Feed {self.href=} is empty, skipping"
-                self.capture_exception(message)
+                CaptureException.run(message)
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                self.capture_exception(
+                CaptureException.run(
                     f"Data missing URL, skipping item {self.href=} {each=}"
                 )
                 continue
@@ -39,25 +61,15 @@ class RssSource(Source):
 
             # DATE RESULT: parsing dates
             if "published" in each:
-                result_datetime = each["published"]
+                result_datetime = self.strptime(each["published"])
             elif "delayed" in each:
-                result_datetime = each["delayed"]
+                result_datetime = self.strptime(each["delayed"])
             elif "updated" in each:
-                result_datetime = each["updated"]
+                result_datetime = self.strptime(each["updated"])
+            elif self.datetime_format == "NOW":
+                result_datetime = datetime.now()
             else:
-                self.capture_exception("result_datetime broke for feed")
-
-            tzinfos = {
-                "PDT": tz.gettz("America/Los_Angeles"),
-                "PST": tz.gettz("America/Juneau"),
-            }
-            if result_datetime.isdigit():
-                result_datetime = datetime.utcfromtimestamp(int(result_datetime))
-            elif not isinstance(result_datetime, datetime):
-                result_datetime = parser.parse(
-                    result_datetime,
-                    tzinfos=tzinfos,
-                )
+                CaptureException.run("result_datetime broke for feed")
 
             # APPEND RESULT
             results.append(

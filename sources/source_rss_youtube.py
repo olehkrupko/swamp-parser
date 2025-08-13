@@ -43,11 +43,24 @@ class YoutubeRssSource(RssSource):
         self.href = CHANNEL_BASE_URL + channel_id
         self.href_original = href
 
+    async def parse(self, response_str: str, **kwargs) -> list:
+        result = await super().parse(response_str, **kwargs)
+
+        # Fix Shorts URLs
+        for update in result:
+            update["href"] = update["href"].replace(
+                "https://www.youtube.com/shorts/",
+                "https://www.youtube.com/watch?v=",
+            )
+
+        return result
+
     async def explain(self) -> ExplainedFeed:
         channel_id = self.href.split("?channel_id=")[-1]
 
         feed = await super().explain()
         feed["title"] += " - YouTube"
         feed["href"] = f"https://www.youtube.com/channel/{channel_id}/videos"
+        feed["frequency"] = "days"
 
         return feed
