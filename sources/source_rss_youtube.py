@@ -48,10 +48,13 @@ class YoutubeRssSource(RssSource):
 
         # Fix Shorts URLs
         for update in result:
-            update["href"] = update["href"].replace(
-                "https://www.youtube.com/shorts/",
-                "https://www.youtube.com/watch?v=",
-            )
+            if "/shorts/" in update["href"]:
+                update["href"] = update["href"].replace(
+                    "https://www.youtube.com/shorts/",
+                    "https://www.youtube.com/watch?v=",
+                )
+                if "#shorts" not in update["title"]:
+                    update["title"] += " #shorts"
 
         return result
 
