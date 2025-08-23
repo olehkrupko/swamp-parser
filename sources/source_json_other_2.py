@@ -1,6 +1,6 @@
 import json
 import logging
-import os
+from os import getenv
 
 import aiohttp
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class TwoOtherJsonSource(OtherJsonSource):
-    environ = json.loads(os.environ.get("SOURCE_2"))
+    environ = json.loads(getenv("SOURCE_2"))
 
     @classmethod
     def match(cls, href: str):
@@ -71,20 +71,18 @@ class TwoOtherJsonSource(OtherJsonSource):
             self.href = href
         self.href_original = href
 
-    async def request(self):
-        return await super().request_via_random_proxy(href=self.href)
-
     async def explain(self) -> ExplainedFeed:
         if self.environ["services"][0]["href"]["to"] in self.href:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     self.href + "/profile",
                 ) as response:
-                    response_str = await response.read()
-                    data = json.loads(response_str)
+                    data = await response.json()
+
+                    title = data["name"] + " - " + self.environ["services"][0]["name"]
 
                     return {
-                        "title": data["name"],
+                        "title": title,
                         "href": self.href_original,
                         "href_user": "",
                         "private": True,

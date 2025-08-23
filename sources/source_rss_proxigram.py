@@ -1,8 +1,8 @@
 import asyncio
 import logging
-import os
 import random
 from functools import reduce
+from os import getenv
 
 from schemas.feed_explained import ExplainedFeed
 from schemas.update import Update
@@ -36,20 +36,20 @@ class ProxigramRssSource(RssSource):
         username = href.replace("https://www.instagram.com/", "")
 
         self.href = "{base}/{username}/rss".format(
-            base=os.environ.get("SOURCE_PROXIGRAM_HOST"),
+            base=getenv("SOURCE_PROXIGRAM_HOST"),
             username=username,
         )
         self.href_original = href
 
     async def request(self) -> str:
-        if os.environ["ALLOW_CACHE"] is True:
-            cached_value = await Cache.get(
-                type="request",
-                href=self.href,
-            )
-            if cached_value is not None:
-                logger.debug(f"Successful cache retrieval for {self.href=}")
-                return cached_value
+        return ""  # proxigram is not configured yet
+        cached_value = await Cache.get(
+            type="request",
+            href=self.href,
+        )
+        if cached_value is not None:
+            logger.debug(f"Successful cache retrieval for {self.href=}")
+            return cached_value
 
         global proxigram_semaphore
         # avoiding connection overwhelming and status code 429
@@ -67,13 +67,12 @@ class ProxigramRssSource(RssSource):
                 logger.info(
                     f"---- ProxigramRssSource.request({self.href=}, {attempt=}) -> {len(results)=}"
                 )
-                if os.environ["ALLOW_CACHE"] is True:
-                    await Cache.set(
-                        type="request",
-                        href=self.href,
-                        timeout={"days": 7},
-                        value=results,
-                    )
+                await Cache.set(
+                    type="request",
+                    href=self.href,
+                    timeout={"days": 7},
+                    value=results,
+                )
                 return response_str
             else:
                 logger.debug(
@@ -83,36 +82,34 @@ class ProxigramRssSource(RssSource):
             await asyncio.sleep(3)
 
         # cache failure to avoid repeats
-        if os.environ["ALLOW_CACHE"] is True:
-            await Cache.set(
-                type="request",
-                href=self.href,
-                timeout={
-                    "minutes": random.randint(0, 59),
-                    "hours": random.randint(0, 23),
-                    "days": random.randint(7, 31),
-                },
-                value="",
-            )
+        await Cache.set(
+            type="request",
+            href=self.href,
+            timeout={
+                "minutes": random.randint(0, 59),
+                "hours": random.randint(0, 23),
+                "days": random.randint(7, 31),
+            },
+            value="",
+        )
         return ""
 
     async def parse(self, response_str: str) -> list[Update]:
-        if os.environ["ALLOW_CACHE"] is True:
-            parse_blocked = await Cache.get(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-            )
-            if parse_blocked:
-                logger.info("Skipping parse as it was called less than an hour ago.")
-                return []
+        parse_blocked = await Cache.get(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+        )
+        if parse_blocked:
+            logger.info("Skipping parse as it was called less than an hour ago.")
+            return []
 
-            # Update the cache with the current timestamp
-            await Cache.set(
-                type="ProxigramRssSource",
-                href="parse_blocked",
-                timeout={"hours": 1},
-                value=True,
-            )
+        # Update the cache with the current timestamp
+        await Cache.set(
+            type="ProxigramRssSource",
+            href="parse_blocked",
+            timeout={"hours": 6},
+            value=True,
+        )
 
         if response_str == "":
             return []

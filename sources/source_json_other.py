@@ -1,9 +1,17 @@
+import logging
+
 from schemas.update import Update
 from sources.source_json import JsonSource
 
 
+logger = logging.getLogger(__name__)
+
+
 class OtherJsonSource(JsonSource):
     datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    async def request(self):
+        return await super().request_via_random_proxy(href=self.href)
 
     async def parse(self, response_str: str) -> list[Update]:
         results = []

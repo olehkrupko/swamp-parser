@@ -1,6 +1,6 @@
 import json
 import logging
-import os
+from os import getenv
 
 from schemas.feed_explained import ExplainedFeed
 from sources.source_rss import RssSource
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class ThreeOtherRssSource(RssSource):
-    environ = json.loads(os.environ.get("SOURCE_3"))
+    environ = json.loads(getenv("SOURCE_3"))
 
     @classmethod
     def match(cls, href: str):
@@ -46,6 +46,19 @@ class ThreeOtherRssSource(RssSource):
             3600,  # 1 hour
         )
         self.href_original = href
+
+    async def parse(self, **kwargs) -> list:
+        result = await super().parse(**kwargs)
+
+        # ignore errors
+        if len(result) == 1 and "Bridge returned error 0!" in result[0]["title"]:
+            return []
+
+        # it seems that all URLs on the page are parsed by feedparser
+        # however, some of them are not valid
+        result = result[:40]
+
+        return result
 
     async def explain(self) -> ExplainedFeed:
         result = await super().explain()
