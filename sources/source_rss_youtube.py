@@ -53,8 +53,8 @@ class YoutubeRssSource(RssSource):
                     "https://www.youtube.com/shorts/",
                     "https://www.youtube.com/watch?v=",
                 )
-                if "#shorts" not in update["title"]:
-                    update["title"] += " #shorts"
+                if "#shorts" not in update["name"]:
+                    update["name"] += " #shorts"
 
         return result
 
