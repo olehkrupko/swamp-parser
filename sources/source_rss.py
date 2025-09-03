@@ -69,6 +69,7 @@ class RssSource(Source):
             elif self.datetime_format == "NOW":
                 result_datetime = datetime.now()
             else:
+                result_datetime = datetime.now()
                 CaptureException.run("result_datetime broke for feed")
 
             # APPEND RESULT
