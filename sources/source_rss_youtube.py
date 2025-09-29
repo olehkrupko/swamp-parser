@@ -43,18 +43,33 @@ class YoutubeRssSource(RssSource):
         self.href = CHANNEL_BASE_URL + channel_id
         self.href_original = href
 
+    # @classmethod
+    # def request_ytdlp(cls, href) -> dict:
+    #     with yt_dlp.YoutubeDL({
+    #         "extract_flat": True,
+    #         "quiet": True,
+    #         "skip_download": True,
+    #     }) as ydl:
+    #         info = ydl.extract_info(href)
+
+    #         # return ydl.sanitize_info(info)
+    #         return dict(info)
+
     async def parse(self, response_str: str, **kwargs) -> list:
         result = await super().parse(response_str, **kwargs)
 
         # Fix Shorts URLs
         for update in result:
             if "/shorts/" in update["href"]:
+                # you can also use thumbnail data to detect shorts
                 update["href"] = update["href"].replace(
                     "https://www.youtube.com/shorts/",
                     "https://www.youtube.com/watch?v=",
                 )
-                if "#shorts" not in update["title"]:
-                    update["title"] += " #shorts"
+                if "#shorts" not in update["name"]:
+                    update["name"] += " #shorts"
+            # if yt_dlp_object["live_status"] == "is_live":
+            #     update["title"] += " #live"
 
         return result
 
