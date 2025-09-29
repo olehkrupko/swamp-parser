@@ -80,7 +80,7 @@ class Source:
         raise NotImplementedError
 
     @staticmethod
-    async def request_via_random_proxy(href, max_attempts=100) -> str:
+    async def request_via_random_proxy(href, max_attempts=100, headers={}) -> str:
         cached_value = await Cache.get(
             type="request",
             href=href,
@@ -116,6 +116,7 @@ class Source:
                     async with aiohttp.ClientSession(connector=connector) as session:
                         async with session.get(
                             href,
+                            headers=headers,
                         ) as response:
                             result = await response.read()
                             result = result.decode("utf-8")
