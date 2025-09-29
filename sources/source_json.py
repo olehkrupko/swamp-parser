@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 class JsonSource(Source):
     @classmethod
     async def parse(cls, response_str: str) -> list[Update]:
+        if response_str == "":
+            return []
         response_data = json.loads(response_str)
 
         return response_data

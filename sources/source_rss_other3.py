@@ -51,7 +51,7 @@ class ThreeOtherRssSource(RssSource):
         result = await super().parse(**kwargs)
 
         # ignore errors
-        if len(result) == 1 and "Bridge returned error 0!" in result[0]["title"]:
+        if len(result) == 1 and "Bridge returned error 0!" in result[0]["name"]:
             return []
 
         # it seems that all URLs on the page are parsed by feedparser
@@ -77,6 +77,3 @@ class ThreeOtherRssSource(RssSource):
             "notes": "",
             "json": self.environ["default"]["json"],
         }
-
-
-# ignore items with name "Bridge returned error 0! (19971)"

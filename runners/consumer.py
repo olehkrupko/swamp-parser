@@ -60,11 +60,11 @@ class Consumer:
                 feeds = await Swamp.get_feeds()
             else:
                 feeds = [await Swamp.get_feed(x) for x in feed_ids]
-        except aiohttp.client_exceptions.ClientConnectorError as e:
+        except aiohttp.client_exceptions.ClientConnectorError as err:
             # triggered by swamp-api not being up on startup
             # skipping this error so it can work properly next time instead of failing
-            CaptureException.run(e)
-            logger.error(f"ERROR: {e}")
+            CaptureException.run(err)
+            logger.error(f"ERROR: {err}")
             feeds = []
 
         coroutines = []

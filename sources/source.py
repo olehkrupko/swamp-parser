@@ -134,7 +134,7 @@ class Source:
                         timeout={"days": 7},
                         value="FAILURE",
                     )
-                    pass
+                    return ""
         else:
             async with aiohttp.ClientSession(connector=connector) as session:
                 async with session.get(
