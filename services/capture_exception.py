@@ -10,4 +10,4 @@ class CaptureException:
     @staticmethod
     def run(msg: str) -> None:
         logger.debug(f"Exception captured: {msg}")
-        # capture_exception(msg)
+        capture_exception(msg)
