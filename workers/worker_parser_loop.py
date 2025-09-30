@@ -23,6 +23,5 @@ class ParserLoopWorker:
             await asyncio.sleep(3 * 60)
             try:
                 await Consumer.runner()
-            except Exception as e:
-                CaptureException.run(e)
-                logger.error(f"ERROR: {e}")
+            except Exception as err:
+                CaptureException.run(err)

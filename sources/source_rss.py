@@ -41,14 +41,15 @@ class RssSource(Source):
         results = []
         for each in request["items"]:
             if not each:
-                message = f"Feed {self.href=} is empty, skipping"
-                CaptureException.run(message)
+                CaptureException.run(
+                    ValueError(f"Feed {self.href=} is empty, skipping")
+                )
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
                 CaptureException.run(
-                    f"Data missing URL, skipping item {self.href=} {each=}"
+                    KeyError(f"Data missing URL, skipping item {self.href=} {each=}")
                 )
                 continue
 
@@ -70,7 +71,9 @@ class RssSource(Source):
                 result_datetime = datetime.now()
             else:
                 result_datetime = datetime.now()
-                CaptureException.run("result_datetime broke for feed")
+                CaptureException.run(
+                    ValueError("No datetime found, using datetime.now()")
+                )
 
             # APPEND RESULT
             results.append(

@@ -11,7 +11,9 @@ class OtherJsonSource(JsonSource):
     datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     async def request(self):
-        return await super().request_via_random_proxy(href=self.href)
+        return await super().request_via_random_proxy(
+            href=self.href, headers={"Accept": "text/css"}
+        )
 
     async def parse(self, response_str: str) -> list[Update]:
         results = []

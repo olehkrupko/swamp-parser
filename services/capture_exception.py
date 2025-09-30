@@ -8,6 +8,6 @@ logger = logging.getLogger(__name__)
 
 class CaptureException:
     @staticmethod
-    def run(msg: str) -> None:
-        logger.debug(f"Exception captured: {msg}")
-        capture_exception(msg)
+    def run(err: Exception) -> None:
+        logger.error(f"ERROR: {err}")
+        capture_exception(err)
