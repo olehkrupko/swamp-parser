@@ -41,8 +41,9 @@ class RssSource(Source):
         results = []
         for each in request["items"]:
             if not each:
-                message = f"Feed {self.href=} is empty, skipping"
-                CaptureException.run(message)
+                CaptureException.run(
+                    ValueError(f"Feed {self.href=} is empty, skipping")
+                )
                 continue
             try:
                 result_href = each["links"][0]["href"]

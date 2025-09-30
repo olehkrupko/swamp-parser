@@ -25,4 +25,3 @@ class ParserLoopWorker:
                 await Consumer.runner()
             except Exception as err:
                 CaptureException.run(err)
-                logger.error(f"ERROR: {err}")
