@@ -129,16 +129,18 @@ class Source:
                             return result
                 except Exception as error:
                     logger.warning(f">>>> >>>> FAILURE {error}")
-                    await Cache.set(
-                        type="proxy",
-                        href=proxy,
-                        timeout={"days": 7},
-                        value="FAILURE",
-                    )
-                    return ""
+
+            await Cache.set(
+                type="proxy",
+                href=proxy,
+                timeout={"days": 7},
+                value="FAILURE",
+            )
+            return ""
         else:
-            async with aiohttp.ClientSession(connector=connector) as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.get(
                     href,
+                    headers=headers,
                 ) as response:
                     return await response.read()
