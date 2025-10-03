@@ -8,6 +8,7 @@ from aiohttp_socks import ProxyType, ProxyConnector
 
 from schemas.update import Update
 from services.cache import Cache
+from services.capture_exception import CaptureException
 
 
 logger = logging.getLogger(__name__)
@@ -128,7 +129,7 @@ class Source:
                             )
                             return result
                 except Exception as error:
-                    logger.warning(f">>>> >>>> FAILURE {error}")
+                    CaptureException.run(error)
 
             await Cache.set(
                 type="proxy",
