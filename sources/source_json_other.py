@@ -12,7 +12,7 @@ class OtherJsonSource(JsonSource):
 
     async def request(self):
         return await super().request_via_random_proxy(
-            href=self.href+"/posts", headers={"Accept": "text/css"}
+            href=self.href + "/posts",
         )
 
     async def parse(self, response_str: str) -> list[Update]:
