@@ -5,7 +5,6 @@ from os import getenv
 import aiohttp
 
 from schemas.feed_explained import ExplainedFeed
-from services.capture_exception import capture_exception
 from sources.source_json_other import OtherJsonSource
 
 
