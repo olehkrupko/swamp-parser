@@ -30,15 +30,14 @@ class TwoOtherJsonSource(OtherJsonSource):
         cls, username: str, service: str = "patreon"
     ) -> ExplainedFeed:
         href = cls.environ["creators"]
-        response_str = await cls.request_via_random_proxy(href)
+        response_str = await cls.request_via_random_proxy(
+            href=href,
+            headers={"Accept": "text/css"},
+        )
 
         if not response_str:
-            # logger.warning(">>>> >>>> EMPTY RESPONSE STR")
-            return
-        # else:
-        #     logger.warning(f">>>> >>>> {response_str=}")
+            raise Exception("No response")
 
-        # response_str = response_str.lstrip("b'")
         response_str = response_str.lstrip("[{")
         response_str = response_str.rstrip("}]")
 
@@ -60,6 +59,8 @@ class TwoOtherJsonSource(OtherJsonSource):
                     "notes": "",
                     "json": {},
                 }
+
+        raise Exception("No matching user found")
 
     def __init__(self, href: str):
         if self.environ["services"][0]["href"]["from"] in href:
