@@ -131,12 +131,13 @@ class Source:
                 except Exception as error:
                     CaptureException.run(error)
 
-            await Cache.set(
-                type="proxy",
-                href=proxy,
-                timeout={"days": 7},
-                value="FAILURE",
-            )
+                await Cache.set(
+                    type="proxy",
+                    href=proxy,
+                    timeout={"days": 7},
+                    value="FAILURE",
+                )
+
             return ""
         else:
             async with aiohttp.ClientSession() as session:
