@@ -5,6 +5,7 @@ from os import getenv
 import aiohttp
 
 from schemas.feed_explained import ExplainedFeed
+from services.capture_exception import capture_exception
 from sources.source_json_other import OtherJsonSource
 
 
@@ -36,12 +37,8 @@ class TwoOtherJsonSource(OtherJsonSource):
         )
 
         if not response_str:
-            # logger.warning(">>>> >>>> EMPTY RESPONSE STR")
-            return
-        # else:
-        #     logger.warning(f">>>> >>>> {response_str=}")
+            raise Exception("No response")
 
-        # response_str = response_str.lstrip("b'")
         response_str = response_str.lstrip("[{")
         response_str = response_str.rstrip("}]")
 
@@ -63,6 +60,8 @@ class TwoOtherJsonSource(OtherJsonSource):
                     "notes": "",
                     "json": {},
                 }
+
+        raise Exception("No matching user found")
 
     def __init__(self, href: str):
         if self.environ["services"][0]["href"]["from"] in href:
