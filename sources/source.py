@@ -8,6 +8,7 @@ from aiohttp_socks import ProxyType, ProxyConnector
 
 from schemas.update import Update
 from services.cache import Cache
+from services.capture_exception import CaptureException
 
 
 logger = logging.getLogger(__name__)
@@ -128,17 +129,20 @@ class Source:
                             )
                             return result
                 except Exception as error:
-                    logger.warning(f">>>> >>>> FAILURE {error}")
-                    await Cache.set(
-                        type="proxy",
-                        href=proxy,
-                        timeout={"days": 7},
-                        value="FAILURE",
-                    )
-                    return ""
+                    CaptureException.run(error)
+
+                await Cache.set(
+                    type="proxy",
+                    href=proxy,
+                    timeout={"days": 7},
+                    value="FAILURE",
+                )
+
+            return ""
         else:
-            async with aiohttp.ClientSession(connector=connector) as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.get(
                     href,
+                    headers=headers,
                 ) as response:
                     return await response.read()

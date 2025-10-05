@@ -9,5 +9,5 @@ logger = logging.getLogger(__name__)
 class CaptureException:
     @staticmethod
     def run(err: Exception) -> None:
-        logger.error(f"ERROR: {err}")
+        logger.warning(f"ERROR: {err}")
         capture_exception(err)

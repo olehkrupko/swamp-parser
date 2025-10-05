@@ -32,6 +32,7 @@ class OneOtherJsonSource(OtherJsonSource):
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 self.href + "/profile",
+                headers={"Accept": "text/css"},
             ) as response:
                 data = await response.json()
 
