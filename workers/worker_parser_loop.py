@@ -18,8 +18,8 @@ class ParserLoopWorker:
             return
 
         logger.warning("ParserLoopWorker: Enabled")
-        # initial delay of 3h to allow other services to start
-        await asyncio.sleep(3 * 60 * 60)
+        # initial delay of 1h to allow other services to start
+        await asyncio.sleep(1 * 60 * 60)
 
         while True:
             try:
