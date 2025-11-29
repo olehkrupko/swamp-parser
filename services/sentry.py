@@ -39,7 +39,7 @@ class Sentry:
                         "stacktrace": stacktrace,
                     }
                 ]
-            }
+            },
         }
 
         logger.warning(f"SENTRY MESSAGE: {message}")
