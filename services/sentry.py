@@ -13,7 +13,6 @@ class Sentry:
         logger.warning(f"SENTRY ERROR: {err}")
         capture_exception(err)
 
-
     @staticmethod
     def run_message(message):
         """
@@ -31,16 +30,18 @@ class Sentry:
         event = {
             "level": "error",
             "exception": {
-                "values": [{
-                    "mechanism": {
-                        "type": "generic",
-                        "handled": True
-                    },
-                    "module": stacktrace["frames"][-1]["module"],
-                    "type": "CapturedStacktrace",
-                    "value": message,
-                    "stacktrace": stacktrace,
-                }]
+                "values": [
+                    {
+                        "mechanism": {
+                            "type": "generic",
+                            "handled": True
+                        },
+                        "module": stacktrace["frames"][-1]["module"],
+                        "type": "CapturedStacktrace",
+                        "value": message,
+                        "stacktrace": stacktrace,
+                    }
+                ]
             }
         }
 
