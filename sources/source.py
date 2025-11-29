@@ -4,7 +4,7 @@ import random
 import string
 from datetime import datetime
 
-from aiohttp_socks import ProxyType, ProxyConnector
+from aiohttp_socks import ProxyType, ProxyConnector, ProxyError
 
 from schemas.update import Update
 from services.cache import Cache
