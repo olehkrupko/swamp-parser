@@ -128,7 +128,7 @@ class Source:
                                 value=result,
                             )
                             return result
-                except ProxyError as error:
+                except ProxyError:
                     pass
                 except Exception as error:
                     CaptureException.run(error)
