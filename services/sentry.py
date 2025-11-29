@@ -14,11 +14,13 @@ class Sentry:
         capture_exception(err)
 
 
-    # from https://www.bugsink.com/blog/capture-stacktrace-no-exception/
+    @staticmethod
     def run_message(message):
         """
         Capture the current stacktrace and send it to Sentry as an
         CapturedStacktrace with stacktrace context.
+
+        Copied from from https://www.bugsink.com/blog/capture-stacktrace-no-exception/
         """
         # with capture_internal_exceptions():  commented out "for now"
         # client_options = sentry_sdk.client.get_options()  "not yet"
@@ -27,17 +29,17 @@ class Sentry:
         stacktrace["frames"].pop()  # the present function
 
         event = {
-            'level': 'error',
-            'exception': {
-                'values': [{
-                    'mechanism': {
-                        'type': 'generic',
-                        'handled': True
+            "level": "error",
+            "exception": {
+                "values": [{
+                    "mechanism": {
+                        "type": "generic",
+                        "handled": True
                     },
-                    'module': stacktrace["frames"][-1]["module"],
-                    'type': 'CapturedStacktrace',
-                    'value': message,
-                    'stacktrace': stacktrace,
+                    "module": stacktrace["frames"][-1]["module"],
+                    "type": "CapturedStacktrace",
+                    "value": message,
+                    "stacktrace": stacktrace,
                 }]
             }
         }

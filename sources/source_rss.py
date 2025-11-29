@@ -46,7 +46,9 @@ class RssSource(Source):
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                Sentry.capture_message(f"Data missing URL, skipping item {self.href=} {each=}")
+                Sentry.capture_message(
+                    f"Data missing URL, skipping item {self.href=} {each=}"
+                )
                 continue
 
             if name_field:
