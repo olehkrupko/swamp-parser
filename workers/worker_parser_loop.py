@@ -3,7 +3,7 @@ import logging
 from os import getenv
 
 from runners.consumer import Consumer
-from services.capture_exception import CaptureException
+from services.sentry import Sentry
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class ParserLoopWorker:
             try:
                 await Consumer.runner()
             except Exception as err:
-                CaptureException.run(err)
+                Sentry.capture_exception(err)
             finally:
                 # waiting before between runs
                 await asyncio.sleep(3 * 60)

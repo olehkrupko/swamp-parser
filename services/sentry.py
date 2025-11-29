@@ -7,10 +7,10 @@ from sentry_sdk.utils import current_stacktrace
 logger = logging.getLogger(__name__)
 
 
-class CaptureException:
+class Sentry:
     @staticmethod
-    def run(err: Exception) -> None:
-        logger.warning(f"ERROR: {err}")
+    def capture_exception(err: Exception) -> None:
+        logger.warning(f"SENTRY ERROR: {err}")
         capture_exception(err)
 
 
@@ -41,4 +41,6 @@ class CaptureException:
                 }]
             }
         }
+
+        logger.warning(f"SENTRY MESSAGE: {message}")
         capture_event(event)

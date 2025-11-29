@@ -8,7 +8,7 @@ from aiohttp_socks import ProxyType, ProxyConnector, ProxyError
 
 from schemas.update import Update
 from services.cache import Cache
-from services.capture_exception import CaptureException
+from services.sentry import Sentry
 
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,7 @@ class Source:
                 except ProxyError:
                     pass
                 except Exception as error:
-                    CaptureException.run(error)
+                    Sentry.capture_exception(error)
 
                 await Cache.set(
                     type="proxy",
