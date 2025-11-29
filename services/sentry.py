@@ -32,10 +32,7 @@ class Sentry:
             "exception": {
                 "values": [
                     {
-                        "mechanism": {
-                            "type": "generic",
-                            "handled": True
-                        },
+                        "mechanism": {"type": "generic", "handled": True},
                         "module": stacktrace["frames"][-1]["module"],
                         "type": "CapturedStacktrace",
                         "value": message,
