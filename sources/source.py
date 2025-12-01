@@ -4,10 +4,11 @@ import random
 import string
 from datetime import datetime
 
-from aiohttp_socks import ProxyType, ProxyConnector
+from aiohttp_socks import ProxyType, ProxyConnector, ProxyError
 
 from schemas.update import Update
 from services.cache import Cache
+from services.sentry import Sentry
 
 
 logger = logging.getLogger(__name__)
@@ -127,18 +128,23 @@ class Source:
                                 value=result,
                             )
                             return result
+                except ProxyError:
+                    pass
                 except Exception as error:
-                    logger.warning(f">>>> >>>> FAILURE {error}")
-                    await Cache.set(
-                        type="proxy",
-                        href=proxy,
-                        timeout={"days": 7},
-                        value="FAILURE",
-                    )
-                    return ""
+                    Sentry.capture_exception(error)
+
+                await Cache.set(
+                    type="proxy",
+                    href=proxy,
+                    timeout={"days": 7},
+                    value="FAILURE",
+                )
+
+            return ""
         else:
-            async with aiohttp.ClientSession(connector=connector) as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.get(
                     href,
+                    headers=headers,
                 ) as response:
                     return await response.read()

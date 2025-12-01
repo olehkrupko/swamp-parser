@@ -3,7 +3,7 @@ import logging
 import os
 
 import aiohttp
-from services.capture_exception import CaptureException
+from services.sentry import Sentry
 
 from runners import parsers
 from schemas.feed import Feed
@@ -63,8 +63,7 @@ class Consumer:
         except aiohttp.client_exceptions.ClientConnectorError as err:
             # triggered by swamp-api not being up on startup
             # skipping this error so it can work properly next time instead of failing
-            CaptureException.run(err)
-            logger.error(f"ERROR: {err}")
+            Sentry.capture_exception(err)
             feeds = []
 
         coroutines = []
@@ -85,7 +84,7 @@ class Consumer:
         # prepare results
         errors = list(filter(lambda x: not isinstance(x, dict), results))
         for err in errors:
-            CaptureException.run(err)
+            Sentry.capture_exception(err)
         errors = list(map(lambda x: f"{ type(x) }: {x}", errors))
         results = list(filter(lambda x: isinstance(x, dict), results))
         updates_new = sum([x["updates_new"] for x in results])

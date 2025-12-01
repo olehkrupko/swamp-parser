@@ -5,7 +5,7 @@ from dateutil import parser, tz  # adding custom timezones
 import feedparser
 
 from schemas.feed_explained import ExplainedFeed
-from services.capture_exception import CaptureException
+from services.sentry import Sentry
 from sources.source import Source
 from schemas.update import Update
 
@@ -41,15 +41,13 @@ class RssSource(Source):
         results = []
         for each in request["items"]:
             if not each:
-                CaptureException.run(
-                    ValueError(f"Feed {self.href=} is empty, skipping")
-                )
+                Sentry.capture_message(f"Feed {self.href=} is empty, skipping")
                 continue
             try:
                 result_href = each["links"][0]["href"]
             except KeyError:
-                CaptureException.run(
-                    KeyError(f"Data missing URL, skipping item {self.href=} {each=}")
+                Sentry.capture_message(
+                    f"Data missing URL, skipping item {self.href=} {each=}"
                 )
                 continue
 
@@ -71,9 +69,7 @@ class RssSource(Source):
                 result_datetime = datetime.now()
             else:
                 result_datetime = datetime.now()
-                CaptureException.run(
-                    ValueError("No datetime found, using datetime.now()")
-                )
+                Sentry.capture_message("No datetime found, using datetime.now()")
 
             # APPEND RESULT
             results.append(

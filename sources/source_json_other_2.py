@@ -5,6 +5,7 @@ from os import getenv
 import aiohttp
 
 from schemas.feed_explained import ExplainedFeed
+from services.cache import Cache
 from sources.source_json_other import OtherJsonSource
 
 
@@ -30,21 +31,37 @@ class TwoOtherJsonSource(OtherJsonSource):
         cls, username: str, service: str = "patreon"
     ) -> ExplainedFeed:
         href = cls.environ["creators"]
-        response_str = await cls.request_via_random_proxy(href)
+
+        cached_value = await Cache.get(
+            type="request",
+            href=href,
+        )
+        if cached_value is not None:
+            return cached_value
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                url=href,
+                headers={"Accept": "text/css"},
+            ) as response:
+                response_str = await response.text()
 
         if not response_str:
-            # logger.warning(">>>> >>>> EMPTY RESPONSE STR")
-            return
-        # else:
-        #     logger.warning(f">>>> >>>> {response_str=}")
+            raise Exception("No response")
 
-        # response_str = response_str.lstrip("b'")
         response_str = response_str.lstrip("[{")
         response_str = response_str.rstrip("}]")
 
         response_creators = [
             json.loads("{" + x + "}") for x in response_str.split("},{")
         ]
+
+        await Cache.set(
+            type="request",
+            href=href,
+            timeout={"days": 7},
+            value=response_str,
+        )
 
         for creator in response_creators:
             if (
@@ -60,6 +77,8 @@ class TwoOtherJsonSource(OtherJsonSource):
                     "notes": "",
                     "json": {},
                 }
+
+        raise Exception("No matching user found")
 
     def __init__(self, href: str):
         if self.environ["services"][0]["href"]["from"] in href:
