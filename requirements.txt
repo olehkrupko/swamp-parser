@@ -5,7 +5,7 @@ legacy-cgi==2.6.4
 # legacy-cgi is required by feedparser, maybe it's time to replace it
 python-dateutil==2.8.2
 beautifulsoup4==4.12.3
-aiohttp==3.13.3
+aiohttp==3.13.4
 aiohttp-socks==0.9.0
 sentry-sdk[fastapi]==2.39.0
 redis==5.0.4
