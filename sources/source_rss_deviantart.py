@@ -20,6 +20,8 @@ class DeviantartRssSource(RssSource):
 
         username = href.split("deviantart.com/")[-1]
         username = username.split("/")[0]
+        if "?" in username:
+            username = username.split("?")[0]
 
         self.href = f"{ HREF_BASE }&q=by%3A{ username }+sort%3Atime+meta%3Aall"
         self.href_original = href
@@ -28,6 +30,7 @@ class DeviantartRssSource(RssSource):
         feed = await super().explain()
 
         feed["title"] = feed["title"].replace("DeviantArt: ", "")
+        feed["title"] = feed["title"].replace("'s gallery", "")
         feed["title"] += " - DeviantArt"
 
         feed["href"] = self.href_original
@@ -35,5 +38,6 @@ class DeviantartRssSource(RssSource):
             feed["href"] += "/gallery"
 
         feed["private"] = True
+        feed["frequency"] = "weeks"
 
         return feed
