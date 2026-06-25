@@ -38,8 +38,10 @@ class ObjectFactory:
         elif DeviantartRssSource.match(href):
             return DeviantartRssSource(href=href)
         elif OneOtherJsonSource.match(href):
+            return DisabledSource(href=href)
             return OneOtherJsonSource(href=href)
         elif TwoOtherJsonSource.match(href):
+            return DisabledSource(href=href)
             return TwoOtherJsonSource(href=href)
         elif ThreeOtherRssSource.match(href):
             return ThreeOtherRssSource(href=href)
