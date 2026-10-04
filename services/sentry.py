@@ -9,6 +9,11 @@ logger = logging.getLogger(__name__)
 
 class Sentry:
     @staticmethod
+    def capture_message(msg: str) -> None:
+        logger.warning(f"SENTRY MESSAGE: {msg}")
+        capture_event({"level": "warning", "message": msg})
+
+    @staticmethod
     def capture_exception(err: Exception) -> None:
         logger.warning(f"SENTRY ERROR: {err}")
         capture_exception(err)
